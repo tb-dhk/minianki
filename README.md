@@ -4,6 +4,10 @@
 
 **working idea:** emulate an anki session in the terminal. users should be able to import and export modified data files containing progress, etc..
 
+## directory
+- [main.py](https://github.com/shuu-wasseo/minianki/blob/main/cards.py) (main file to be run, emulates an anki session)
+- [cards.py](https://github.com/shuu-wasseo/minianki/blob/main/cards.py) (contains formatting for each card in a python class)
+
 required steps:
 
 ![](https://progress-bar.dev/100/?title=format+cards)
