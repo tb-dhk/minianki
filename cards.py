@@ -15,6 +15,7 @@ class card:
     self.lastint = lastint
     self.duedate = duedate
 
-deck = [card("term1", "defin1", 0, 2.5, 0, date(2023, 1, 1)), 
-        card("term2", "defin2", 2, 2.5, 3, date(2023, 1, 1)), 
-        card("term3", "defin3", 2, 2.5, 4, date(2023, 1, 1))]
+# sample deck
+# deck = [card("term1", "defin1", 0, 2.5, 0, date(2023, 1, 1)), 
+#         card("term2", "defin2", 2, 2.5, 3, date(2023, 1, 1)), 
+#         card("term3", "defin3", 2, 2.5, 4, date(2023, 1, 1))]
