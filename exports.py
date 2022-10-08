@@ -1,4 +1,4 @@
-from learn import deck
+from main import deck
 import csv
 
 fileformat = input("would you like to export with scheduling? Y/n")
