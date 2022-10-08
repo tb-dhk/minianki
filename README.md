@@ -1,4 +1,4 @@
-![](https://progress-bar.dev/83/?title=completed)
+![](https://progress-bar.dev/58.3/?title=completed)
 
 # minianki
 
@@ -6,21 +6,20 @@
 
 ## directory
 - [main.py](https://github.com/shuu-wasseo/minianki/blob/main/main.py) - main user interface.
-- [save.py](https://github.com/shuu-wasseo/minianki/blob/main/save.py) - save flashcards with scheduling and without scheduling.
-- [imports.py](https://github.com/shuu-wasseo/minianki/blob/main/imports.py) - adds new flashcards in txt format to the main database.
-- [init.py](https://github.com/shuu-wasseo/minianki/blob/main/init.py) - "syncs" the database with the python program.
-- [learn.py](https://github.com/shuu-wasseo/minianki/blob/main/learn.py) - emulates an anki session.
+- [minianki.py]
+- [README.md]
+- [import.txt]
 
 required steps:
 
 ![](https://progress-bar.dev/100/?title=format+cards)
 
-![](https://progress-bar.dev/100/?title=emulate+anki's+spaced+repetition+algorithm)
+![](https://progress-bar.dev/50/?title=emulate+anki's+spaced+repetition+algorithm)
 
-![](https://progress-bar.dev/100/?title=allow+exporting+cards+%2B+data)
+![](https://progress-bar.dev/50/?title=allow+exporting+cards+%2B+data)
 
 ![](https://progress-bar.dev/100/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
 
-![](https://progress-bar.dev/100/?title=optimise+user+interface)
+![](https://progress-bar.dev/50/?title=optimise+user+interface)
 
 ![](https://progress-bar.dev/0/?title=allow+preference+customisation)
