@@ -5,7 +5,7 @@
 **working idea:** emulate an anki session in the terminal. users should be able to import and export modified data files containing progress, etc..
 
 ## directory
-- [exports.py](https://github.com/shuu-wasseo/minianki/blob/main/exports.py) - exports flashcard either with scheduling or without scheduling.
+- [save.py](https://github.com/shuu-wasseo/minianki/blob/main/save.py) - save flashcards with scheduling and without scheduling.
 - [imports.py](https://github.com/shuu-wasseo/minianki/blob/main/imports.py) - adds new flashcards in txt format to the main database.
 - [init.py](https://github.com/shuu-wasseo/minianki/blob/main/init.py) - "syncs" the database with the python program.
 - [learn.py](https://github.com/shuu-wasseo/minianki/blob/main/learn.py) - emulates an anki session.
