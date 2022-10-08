@@ -1,4 +1,4 @@
-from init import deck
+from learn import deck
 import datetime
 import csv
 
@@ -8,21 +8,10 @@ import csv
 # last interval (the interval given for the last time the card was touched)
 # due date (the next date at which the card will be reviewed)
 
-# card structure
-class card:
-  def __init__(term, defin, ls, ease, lastint, duedate):
-    self.term = term
-    self.defin = defin
-    self.ls = ls
-    self.ease = ease
-    self.lastint = lastint
-    self.duedate = duedate
-
 # make a deck
 deck = []
 reader = csv.reader(open('import.txt', 'r'))
 writer = csv.writer(open('.csv.mnak', 'w'))
-
 
 # import new cards into deck
 for row in reader:
