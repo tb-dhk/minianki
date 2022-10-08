@@ -1,4 +1,4 @@
-![](https://progress-bar.dev/83.3/?title=completed)
+![](https://progress-bar.dev/83/?title=completed)
 
 # minianki
 
