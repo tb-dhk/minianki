@@ -1,4 +1,4 @@
-![](https://progress-bar.dev/42/?title=completed)
+![](https://progress-bar.dev/50/?title=completed)
 
 # minianki
 
@@ -21,6 +21,6 @@ required steps:
 
 ![](https://progress-bar.dev/50/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
 
-![](https://progress-bar.dev/0/?title=optimise+user+interface)
+![](https://progress-bar.dev/50/?title=optimise+user+interface)
 
 ![](https://progress-bar.dev/0/?title=allow+preference+customisation)

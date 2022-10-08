@@ -1,0 +1,4 @@
+"term", "defin", "ls", "ease", "lastint", "duedate"
+"term1", "defin1", 0, 2.5, 0, date(2023, 1, 1)
+"term2", "defin2", 2, 2.5, 3, date(2023, 1, 1)
+"term3", "defin3", 2, 2.5, 4, date(2023, 1, 1)
