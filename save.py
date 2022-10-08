@@ -1,10 +1,11 @@
+import os
 import csv
 
-def save():
-  writer1 = txt.writer(open('txt.mnak', 'w'))
-  writer2 = csv.writer(open('csv.mnak', 'w'))
-  
+def save(deck):
+  writecsv = csv.writer(open(os.getcwd()+'/export/csv.mnak', 'w'))
+  writetxt = open(os.getcwd()+'/export/readme.txt', 'w')
+
   # save to 
   for x in deck:
-    writer1.writerow(x.term + "  " + x.defin)
-    writer2.writerow([x.term, x.defin, x.ls, x.ease, x.lastint, x.duedate])
+    writecsv.writerow([x.term, x.defin, x.ls, x.ease, x.lastint, x.duedate])
+    writetxt.write(x.term + "    " + x.defin)

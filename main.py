@@ -1,8 +1,9 @@
-import imports
-import init
-import learn
-import save
-import settings
+from imports import impt
+from init import init
+from learn import learn
+from save import save
+from settings import settings
+import os
 
 deck = []
 
@@ -20,10 +21,13 @@ def help():
   print("""
   list of commands:
   import: import cards in import.txt to the main database.
+  export: view instructions on how to export.
   init: initialise or synchronise the program with the database.
   learn: an anki-esque learning session.
   save: save your progress/scheduling and cards to the database.
-  settings: view settings.
+  settings: customise learning variables. (work in progress)
+  help: view this message again.
+  exit (or Ctrl+C): end the program.
   """)
   
 print("""welcome to minianki!""")
@@ -40,9 +44,14 @@ while 1:
     case "learn":
       learn(deck)
     case "save":
-      save()
+      save(deck)
     case "settings":
       settings()
+    case "export":
+      f = open(os.getcwd()+'/export/export.txt', 'r')
+      for line in f.readlines():
+        print(line)
+      f.close()
     case "help":
       help()
     case "shua":

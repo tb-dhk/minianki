@@ -1,0 +1,3 @@
+to export a deck without scheduling, go to ~/export/txt.mnak.
+to export a deck with scheduling, go to ~/export/csv.mnak.
+these instructions can be found in ~/export/export.txt.

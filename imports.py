@@ -8,5 +8,4 @@ def impt(deck):
   
   # import new cards into deck
   for row in reader:
-    ccs = row.split("  ")
-    writer.writerow(ccs[0], ccs[1], 0, 2.5, 0, datetime.today())
+    writer.writerow([row[0], row[1], 0, 2.5, 0, datetime.date.today()])

@@ -1,3 +1,4 @@
+import os
 import csv
 
 # variables:
@@ -8,7 +9,7 @@ import csv
 
 # card structure
 class flashcard:
-  def __init__(term, defin, ls, ease, lastint, duedate):
+  def __init__(self, term, defin, ls, ease, lastint, duedate):
     self.term = term
     self.defin = defin
     self.ls = ls
@@ -18,12 +19,11 @@ class flashcard:
 
 # initialisation function
 def init(deck):
-  reader = csv.reader(open('csv.mnak', 'r')) 
+  reader = csv.reader(open(os.getcwd()+'/export/csv.mnak', 'r')) 
   
   # import csv into deck
   for row in reader:
-    fc = row.split(", ")
     for ocard in deck:
-      if ocard.term == fc[0]:
+      if ocard.term == row[0]:
         deck.remove(ocard) # remove old copy of card
-    deck.append(flashcard(fc[0], fc[1], fc[2], fc[3], fc[4], fc[5]))
+    deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5]))
