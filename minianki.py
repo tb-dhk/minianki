@@ -1,8 +1,6 @@
 import datetime
 import csv
 import os
-import datetime
-import init
 from math import ceil
 
 # IMPT
@@ -158,5 +156,42 @@ def save(deck):
 
 # SETTINGS
 
+class vari:
+    def __init__(self, name, value, exp):
+        self.name = name
+        self.value = value
+        self.exp = exp
+
+vars = []
+
+readvari = csv.reader(open(os.getcwd()+'/export/learnvars.csv', 'r'))
+
+for x in readvari:
+  vars.append(vari(x[0], float(x[1]), x[2]))
+
+string = ""
+for x in range(len(vars)):
+  vari = vars[x]
+  string = string + vari.name + " (" + str(x) + ") - " + vari.exp + "\ncurrent value: " + str(vari.value) + "\n~~~~~~~~~~~~~~~~~~~~\n"
+
 def settings():
-    pass
+  print(string)
+  while 1: 
+    comm = input("enter any number to change the value of its corresponding variable, 'help' to print all variables again or 'exit' to exit settings. ")
+    match comm:
+      case 'help':
+        print(string)
+      case 'exit':
+        break
+      case __:
+        try:
+          comm = int(comm)
+          vari = vars[comm]
+        except:
+          print("invalid command. try again!")
+        else:
+          print(vari.name + " (" + str(int(comm)) + ") - " + vari.exp + "\ncurrent value: " + str(vari.value) + "\n")
+          vari.value = input("enter new value: ")
+          writevari = csv.writer(open(os.getcwd()+'/export/learnvars.csv', 'w'))
+          for x in vars:
+            writevari.writerow([x.name, x.value, x.exp])
