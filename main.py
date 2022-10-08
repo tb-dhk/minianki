@@ -1,4 +1,4 @@
-from cards import deck
+from init import deck, card
 import math
 
 # variables:
@@ -32,6 +32,7 @@ def printno(no):
 
 # function to schedule a new card
 def newint(card):
+  # prompting user
   input(card.term)
   print(card.defin)
   option = input(f"""
@@ -42,6 +43,7 @@ def newint(card):
   4. easy ({printno(genints(card)[3])})
   """)
   if type(genints(card)[option]) == str:
+    # rescheduling card
     try:
       queue[int(genints(card)[option])].append(card)
     except:
@@ -49,7 +51,12 @@ def newint(card):
         queue.append([])
       queue[-1].append(card)
   else:
-    queue[0].remove(card)
+    # change data in deck
+    for ocard in deck:
+      if ocard.term == card.term:
+        deck.remove(ocard.term) # remove old copy of card
+    deck.append(card) # add new copy of card
+    queue[0].remove(card) # remove card from queue
 
 # SESSION
 # making queue
