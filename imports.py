@@ -1,4 +1,4 @@
-from learn import deck
+from main import deck
 import datetime
 import csv
 
