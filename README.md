@@ -1,12 +1,14 @@
-![](https://progress-bar.dev/25/?title=completed)
+![](https://progress-bar.dev/42/?title=completed)
 
 # minianki
 
 **working idea:** emulate an anki session in the terminal. users should be able to import and export modified data files containing progress, etc..
 
 ## directory
-- [main.py](https://github.com/shuu-wasseo/minianki/blob/main/cards.py) (main file to be run, emulates an anki session)
-- [cards.py](https://github.com/shuu-wasseo/minianki/blob/main/cards.py) (contains formatting for each card in a python class)
+- [exports.py](https://github.com/shuu-wasseo/minianki/blob/main/exports.py) - this file exports flashcard either with scheduling or without scheduling.
+- [imports.py](https://github.com/shuu-wasseo/minianki/blob/main/imports.py) - this file adds new flashcards in txt format to the main database.
+- [init.py](https://github.com/shuu-wasseo/minianki/blob/main/init.py) - this file "syncs" the database with the python program.
+- [learn.py](https://github.com/shuu-wasseo/minianki/blob/main/learn.py) - this file emulates an anki session.
 
 required steps:
 
@@ -14,9 +16,9 @@ required steps:
 
 ![](https://progress-bar.dev/50/?title=emulate+anki's+spaced+repetition+algorithm)
 
-![](https://progress-bar.dev/0/?title=allow+exporting+cards+%2B+data)
+![](https://progress-bar.dev/50/?title=allow+exporting+cards+%2B+data)
 
-![](https://progress-bar.dev/0/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
+![](https://progress-bar.dev/50/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
 
 ![](https://progress-bar.dev/0/?title=optimise+user+interface)
 
