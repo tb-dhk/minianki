@@ -190,8 +190,17 @@ def settings():
         except:
           print("invalid command. try again!")
         else:
-          print(vari.name + " (" + str(int(comm)) + ") - " + vari.exp + "\ncurrent value: " + str(vari.value) + "\n")
-          vari.value = input("enter new value: ")
+          print(vari.name + " (" + str(int(comm)) + ") - " + vari.exp + "\ncurrent value: " + str(vari.value))
+          while 1:
+            newval = input("enter new value: ")
+            try:
+              float(newval)
+            except:
+              print("invalid. try again")
+            else:
+              vari.value = newval
+              break
+          print("\n")
           writevari = csv.writer(open(os.getcwd()+'/export/learnvars.csv', 'w'))
           for x in vars:
             writevari.writerow([x.name, x.value, x.exp])
