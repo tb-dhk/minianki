@@ -1,4 +1,4 @@
-![](https://progress-bar.dev/58.3/?title=completed)
+![](https://progress-bar.dev/83/?title=completed)
 
 # minianki
 
@@ -14,12 +14,12 @@ required steps:
 
 ![](https://progress-bar.dev/100/?title=format+cards)
 
-![](https://progress-bar.dev/50/?title=emulate+anki's+spaced+repetition+algorithm)
+![](https://progress-bar.dev/100/?title=emulate+anki's+spaced+repetition+algorithm)
 
-![](https://progress-bar.dev/50/?title=allow+exporting+cards+%2B+data)
+![](https://progress-bar.dev/100/?title=allow+exporting+cards+%2B+data)
 
 ![](https://progress-bar.dev/100/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
 
-![](https://progress-bar.dev/50/?title=optimise+user+interface)
+![](https://progress-bar.dev/100/?title=optimise+user+interface)
 
 ![](https://progress-bar.dev/0/?title=allow+preference+customisation)
