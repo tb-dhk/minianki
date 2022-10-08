@@ -1,8 +1,9 @@
-from imports import impt
-from init import init
-from learn import learn
-from save import save
-from settings import settings
+import minianki
+#from impt import impt
+#from init import init
+#from learn import learn
+#from save import save
+#from settings import settings
 import os
 
 deck = []
@@ -38,15 +39,15 @@ while 1:
   command = input(">>> ")
   match command:
     case "import":
-      impt(deck)
+      minianki.impt(deck)
     case "init":
-      init(deck)
+      minianki.init(deck)
     case "learn":
-      learn(deck)
+      minianki.learn(deck)
     case "save":
-      save(deck)
+      minianki.save(deck)
     case "settings":
-      settings()
+      minianki.settings()
     case "export":
       f = open(os.getcwd()+'/export/export.txt', 'r')
       for line in f.readlines():
