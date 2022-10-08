@@ -1,4 +1,5 @@
-from init import deck, card
+from init import card
+from main import deck
 import math
 
 # variables:
@@ -54,7 +55,7 @@ def newint(card):
     # change data in deck
     for ocard in deck:
       if ocard.term == card.term:
-        deck.remove(ocard.term) # remove old copy of card
+        deck.remove(ocard) # remove old copy of card
     deck.append(card) # add new copy of card
     queue[0].remove(card) # remove card from queue
 
