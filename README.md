@@ -9,6 +9,7 @@
 - [imports.py](https://github.com/shuu-wasseo/minianki/blob/main/imports.py) - this file adds new flashcards in txt format to the main database.
 - [init.py](https://github.com/shuu-wasseo/minianki/blob/main/init.py) - this file "syncs" the database with the python program.
 - [learn.py](https://github.com/shuu-wasseo/minianki/blob/main/learn.py) - this file emulates an anki session.
+- [Makefile](https://github.com/shuu-wasseo/minianki/blob/main/Makefile) - on setup, makes the necessary files for import and export
 
 required steps:
 
