@@ -30,7 +30,7 @@ review/learning sessions:
 - learn: an anki-esque learning session.
 
 settings and help:
-- settings: customise learning variables.
+- settings: customise deck options.
 - guide: see guides.
 - help: view this message again.
 - exit: end the program.
@@ -45,7 +45,7 @@ settings and help:
 ### subdirectories
 - [.userdata](https://github.com/shuu-wasseo/minianki/tree/main/.userdata) - exportable data.
   - [csv.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/csv.mnak) - all cards with scheduling.
-  - [learnvars.csv](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/learnvars.csv) - all customised learning variables.
+  - [learnvars.csv](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/learnvars.csv) - all customised deck options.
   - [txt.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/txt.mnak) - all cards without scheduling.
 
 - [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - guides.
