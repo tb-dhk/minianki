@@ -1,6 +1,7 @@
 import datetime
 import csv
 import os
+import random
 from math import ceil
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -45,9 +46,9 @@ def impt():
   writer2.write("")
 
   if impted == 0:
-    print("no cards imported. maybe check import.txt?")
+    print("    no cards imported. maybe check import.txt?")
   else:
-    print(f"{impted} card(s) imported.")
+    print(f"    {impted} card(s) imported.")
 
 # INIT
 
@@ -75,6 +76,8 @@ def init(deck):
 
   # import csv into deck
   for row in reader:
+    if row == []:
+      break
     for ocard in deck:
       if ocard.term == row[0]:
         deck.remove(ocard) # remove old copy of card
@@ -82,7 +85,7 @@ def init(deck):
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5]))
     added += 1
 
-  print(f"deck initialised and synced. {len(deck)} card(s) in deck ({added} cards added)")
+  print(f"    deck initialised and synced. {len(deck)} card(s) in deck ({added} cards added)")
 
 # LEARN
 
@@ -125,15 +128,15 @@ def learn(deck):
   # function to schedule a new card
   def newint(card):
     # prompting user
-    print("~~~~~~~~~~~~~~~~~~~~")
-    input(f"term: {card.term}\n")
-    print(f"definition: {card.defin}\n")
-    option = int(input("enter 1-4 for:" + 
-    f"\n1. again ({printno(genints(card)[0])})" + 
-    f"\n2. hard ({printno(genints(card)[1])})" +
-    f"\n3. good ({printno(genints(card)[2])})" +
-    f"\n4. easy ({printno(genints(card)[3])})\n\n"))-1
-    print("card delayed by:", printno(genints(card)[option]))
+    print("    ~~~~~~~~~~~~~~~~~~~~")
+    input(f"    term: {card.term}\n")
+    print(f"    definition: {card.defin}\n")
+    option = int(input("    enter 1-4 for:" + 
+    f"\n    1. again ({printno(genints(card)[0])})" + 
+    f"\n    2. hard ({printno(genints(card)[1])})" +
+    f"\n    3. good ({printno(genints(card)[2])})" +
+    f"\n    4. easy ({printno(genints(card)[3])})\n\n"))-1
+    print("    card delayed by:", printno(genints(card)[option]))
     if type(genints(card)[option]) == str:
       # rescheduling card
       try:
@@ -186,14 +189,16 @@ def learn(deck):
           newcount += 1
     if newcount >= variables[0][1] or revcount >= variables[1][1]:
       break
+
+  random.shuffle(queue[0])
   
   # begin!
-  print(f"hello! welcome to your learning session.")
+  print(f"    hello! welcome to your learning session.")
   
   if cardnum() == 0:
-    print("no cards today. maybe check import.txt?")
+    print("    no cards today. maybe check import.txt?")
   else:
-    print(f"today's card count: {cardnum()}")
+    print(f"    today's card count: {cardnum()}")
 
   while queue != []:
     for card in queue[0]:
@@ -220,24 +225,22 @@ def save(deck):
     writetxt.write(x.term + "    " + x.defin)
     saved += 1
 
-  print(f"{saved} card(s) saved.")
+  print(f"    {saved} card(s) saved.")
 
 # SETTINGS
 
-string = ""
-for x in range(len(vars)):
-  varia = vars[x]
-  string = string + "~~~~~~~~~~~~~~~~~~~~\n" + varia.name + " (" + str(x) + ") - " + varia.exp + "\ncurrent value: " + str(varia.value) + "\n" 
-string = string + "~~~~~~~~~~~~~~~~~~~~\n"
-
 def settings():
   while 1: 
+    string = "\n    variables: \n"
+    for x in range(len(vars)):
+      varia = vars[x]
+      string = string + "    ~~~~~~~~~~~~~~~~~~~~\n    " + varia.name + " (" + str(x) + ") - " + varia.exp + "\n    current value: " + str(varia.value) + "\n" 
+    string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
     print(string)
-    comm = input("enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings. ")
-    print("\n")
+    comm = input("    enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings.\n    _______\n    >>> ")
     match comm:
       case 'help':
-        print(string)
+        print("\n    " + string)
       case 'exit':
         break
       case __:
@@ -245,46 +248,58 @@ def settings():
           comm = int(comm)
           varia = vars[comm]
         except:
-          print("invalid command. try again!")
+          print("    invalid command. try again!")
         else:
-          print(varia.name + " (" + str(int(comm)) + ") - " + varia.exp + "\ncurrent value: " + str(varia.value))
+          print("    " + varia.name + " (" + str(int(comm)) + ") - " + varia.exp + "\n    current value: " + str(varia.value))
           while 1:
-            newval = input("enter new value: ")
+            newval = input("    enter new value: ")
             try:
-              float(newval)
+              match varia.format:
+                case "float":
+                  newval = float(newval)
+                case "int":
+                  newval = int(newval)
+                case "bool":
+                  match newval:
+                    case "False":
+                      newval = False
+                    case "True":
+                      newval = True
+                    case __:
+                      raise TypeError('value could not be converted to bool')
             except:
-              print("invalid. try again")
+              print("    invalid. try again")
             else:
               varia.value = newval
               break
-          print("\n")
           writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
           for x in vars:
             writevari.writerow([x.name, x.value, x.format, x.exp])
 
+# GUIDE
 def guide():
   guidelist = {
     "faq" : "see frequently asked questions.",
-    "imexport" : "see instructions on how to import and export data."
+    "imexportguide" : "see instructions on how to import and export data."
   }
   for x in guidelist:
-    print(x + ": " + guidelist[x])
+    print("    " + x + ": " + guidelist[x])
   while 1:
-    comm = input("\nenter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides. ")
-    print("\n")
+    comm = input("\n    enter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides.\n    ______\n    >>> ")
     match comm:
       case "help":
-        print(guidelist)
+        for x in guidelist:
+          print("    " + x + ": " + guidelist[x])
       case "exit":
         break
       case __:
         try:
           f = open(os.getcwd()+'/.guides/'+comm+'.txt', 'r')
         except:
-          print("invalid. try again")
+          print("    invalid. try again")
         else:
-          print("~~~~~~~~~~~~~~~~~~~~")
+          print("\n    ~~~~~~~~~~~~~~~~~~~~")
           for line in f.readlines():
-            print(line)
+            print("    " + line)
           f.close()
-          print("~~~~~~~~~~~~~~~~~~~~")
+          print("    ~~~~~~~~~~~~~~~~~~~~")
