@@ -1,9 +1,4 @@
 import minianki
-#from impt import impt
-#from init import init
-#from learn import learn
-#from save import save
-#from settings import settings
 import os
 
 deck = []
