@@ -59,7 +59,7 @@ the following can also be found in [`./guides/`](https://github.com/shuu-wasseo/
 ### import/export 
 *(also found in [.guides/imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/imexportguide.txt))*
 
-**IMPORTING NEW CARDS:**
+**importing new cards:**
 
 either:
 - paste text into import.txt in a terms-definitions format
@@ -70,7 +70,7 @@ minianki will:
 - refresh the deck with the "init" command. 
 do remember to do both "import" and "init" everytime new cards are added into import.txt.
 
-**IMPORTING/EXPORTING USER DATA:**
+**importing/exporting user data:**
 
 simply paste another .userdata subdirectory from your old minianki setup into the main minianki directory of your new minianki setup. 
 the .userdata subdirectory contains data such as cards (with or without scheduling) and learning variables (preferences).
