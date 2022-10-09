@@ -69,7 +69,7 @@ def init(deck):
     for ocard in deck:
       if ocard.term == row[0]:
         deck.remove(ocard) # remove old copy of card
-        removed -= 1
+        added -= 1
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5]))
     added += 1
 
