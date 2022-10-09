@@ -1,4 +1,4 @@
-![](https://progress-bar.dev/83/?title=completed)
+![](https://progress-bar.dev/90/?title=completed)
 
 # minianki
 
@@ -17,19 +17,5 @@
   - [learnvars.csv](https://github.com/shuu-wasseo/minianki/blob/main/export/learnvars.csv) - all customised learning variables.
   - [txt.mnak](https://github.com/shuu-wasseo/minianki/blob/main/export/txt.mnak) - all cards without scheduling.
 
-- [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - exportable files.
+- [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - guides.
   - [exportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/export/export.txt) - exporting instructions.
-  
-required steps:
-
-![](https://progress-bar.dev/100/?title=format+cards)
-
-![](https://progress-bar.dev/100/?title=emulate+anki's+spaced+repetition+algorithm)
-
-![](https://progress-bar.dev/100/?title=allow+exporting+cards+%2B+data)
-
-![](https://progress-bar.dev/100/?title=allow+importing+cards+%2B+data+(incl.+new+cards))
-
-![](https://progress-bar.dev/100/?title=optimise+user+interface)
-
-![](https://progress-bar.dev/0/?title=allow+preference+customisation)
