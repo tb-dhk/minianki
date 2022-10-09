@@ -34,7 +34,7 @@ class flashcard:
 
 # initialisation function
 def init(deck):
-  reader = csv.reader(open(os.getcwd()+'/export/csv.mnak', 'r')) 
+  reader = csv.reader(open(os.getcwd()+'/.userdata/csv.mnak', 'r')) 
   
   # import csv into deck
   for row in reader:
@@ -146,8 +146,8 @@ def learn(deck):
 # SAVE
 
 def save(deck):
-  writecsv = csv.writer(open(os.getcwd()+'/export/csv.mnak', 'w'))
-  writetxt = open(os.getcwd()+'/export/readme.txt', 'w')
+  writecsv = csv.writer(open(os.getcwd()+'/.userdata/csv.mnak', 'w'))
+  writetxt = open(os.getcwd()+'/.userdata/readme.txt', 'w')
 
   # save to 
   for x in deck:
@@ -164,7 +164,7 @@ class vari:
 
 vars = []
 
-readvari = csv.reader(open(os.getcwd()+'/export/learnvars.csv', 'r'))
+readvari = csv.reader(open(os.getcwd()+'/.userdata/learnvars.csv', 'r'))
 
 for x in readvari:
   vars.append(vari(x[0], float(x[1]), x[2]))
@@ -201,6 +201,6 @@ def settings():
               vari.value = newval
               break
           print("\n")
-          writevari = csv.writer(open(os.getcwd()+'/export/learnvars.csv', 'w'))
+          writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
           for x in vars:
             writevari.writerow([x.name, x.value, x.exp])
