@@ -234,7 +234,7 @@ def settings():
     string = "\n    variables: \n"
     for x in range(len(vars)):
       varia = vars[x]
-      string = string + "    ~~~~~~~~~~~~~~~~~~~~\n    " + varia.name + " (" + str(x) + ") - " + varia.exp + "\n    current value: " + str(varia.value) + "\n" 
+      string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varia.name} ({str(x)}): {str(varia.value)}  \n    {varia.exp } \n" 
     string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
     print(string)
     comm = input("    enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings.\n    _______\n    >>> ")
