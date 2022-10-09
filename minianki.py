@@ -3,6 +3,8 @@ import csv
 import os
 from math import ceil
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # import learning variables
 class vari:
     def __init__(self, name, value, exp):
@@ -20,10 +22,10 @@ for x in readvari:
 
 # IMPT
 
-def impt(deck):
+def impt():
   # make a deck
   reader = open('import.txt', 'r').readlines()
-  writer = csv.writer(open(os.getcwd()+'/.userdata/csv.mnak', 'a'))
+  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
   writer2 = open('import.txt', 'w')
   impted = 0
 
@@ -58,7 +60,7 @@ class flashcard:
 
 # initialisation function
 def init(deck):
-  reader = csv.reader(open(os.getcwd()+'/.userdata/csv.mnak', 'r')) 
+  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r')) 
   
   added = 0 
 
@@ -95,7 +97,7 @@ def learn(deck):
       case 1:
         ints = learnsteps + [easyint]
       case 2:
-        ints = ["10", ceil(card.lastint * card.ease, 0), ceil(card.lastint * card.ease), ceil(card.lastint * card.ease * card.easybonus)]
+        ints = ["10", ceil(card.lastint * card.hardint, 0), ceil(card.lastint * card.ease), ceil(card.lastint * card.ease * card.easybonus)]
       case __:
         card.ls == 0
         ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
@@ -199,8 +201,8 @@ def learn(deck):
 # SAVE
 
 def save(deck):
-  writecsv = csv.writer(open(os.getcwd()+'/.userdata/csv.mnak', 'w'))
-  writetxt = open(os.getcwd()+'/.userdata/txt.mnak', 'w')
+  writecsv = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'w'))
+  writetxt = open(os.getcwd()+'/.userdata/nsched.mnak', 'w')
   saved = 0
 
   # save to 
