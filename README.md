@@ -38,8 +38,8 @@ settings and help:
 ### main directory
 - [README.md](https://github.com/shuu-wasseo/minianki/blob/main/READNE.md) - the file you are reading now :>
 - [import.txt](https://github.com/shuu-wasseo/minianki/blob/main/import.txt) - file for importing new cards.
-- [main.py](https://github.com/shuu-wasseo/minianki/blob/main/main.py) - main user interface.
 - [minianki.py](https://github.com/shuu-wasseo/minianki/blob/main/minianki.py) - package file, contains all functions for main.py
+- [mnak](https://github.com/shuu-wasseo/minianki/blob/main/mnak) - main user interface.
 
 ### subdirectories
 - [.userdata](https://github.com/shuu-wasseo/minianki/tree/main/.userdata) - exportable data.
