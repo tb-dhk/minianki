@@ -11,21 +11,32 @@ class vari:
         self.exp = exp
 
 vars = []
+variables = []
 
 readvari = csv.reader(open(os.getcwd()+'/.userdata/learnvars.csv', 'r'))
-
-
+for x in readvari:
+  vars.append(vari(x[0], float(x[1]), x[2]))
+  variables.append([x[0], float(x[1]), x[2]])
 
 # IMPT
 
 def impt(deck):
   # make a deck
-  reader = csv.reader(open('import.txt', 'r'))
-  writer = csv.writer(open('csv.mnak', 'w'))
-  
+  reader = open('import.txt', 'r').readlines()
+  writer = csv.writer(open(os.getcwd()+'/.userdata/csv.mnak', 'a'))
+  writer2 = open('import.txt', 'w')
+  impted = 0
+
   # import new cards into deck
   for row in reader:
-    writer.writerow([row[0], row[1], 0, float(readvari[7][1]), 0, datetime.date.today()])
+    writer.writerow(row.rstrip().split("    ") + [0,variables[7][1],0,datetime.date.today()])
+    impted += 1
+  writer2.write("")
+
+  if impted == 0:
+    print("no cards imported. maybe check import.txt?")
+  else:
+    print(f"{impted} card(s) imported.")
 
 # INIT
 
@@ -49,39 +60,49 @@ class flashcard:
 def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/csv.mnak', 'r')) 
   
+  added = 0 
+
   # import csv into deck
   for row in reader:
     for ocard in deck:
       if ocard.term == row[0]:
         deck.remove(ocard) # remove old copy of card
+        removed -= 1
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5]))
+    added += 1
+
+  print(f"deck initialised and synced. {len(deck)} card(s) in deck ({added} cards added)")
 
 # LEARN
 
 def learn(deck):
   # variables:
   # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-  learnsteps = [readvari[2][1], readvari[3][1], int(readvari[4][1])]
+  learnsteps = [str(int(variables[2][1])), str(int(variables[3][1])), int(variables[4][1])]
   # easy interval (time between picking easy and reviewing the card for the first time)
-  easyint = int(readvari[5][1])
+  easyint = int(variables[5][1])
   # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-  easybonus = float(readvari[8][1])
+  easybonus = variables[8][1]
   # hard bonus (multiplier from last value, default 1.2)
-  hardint = float(readvari[9][1])
+  hardint = variables[9][1]
   
   # FUNCTIONS
   # function to generate intervals
   def genints(card):
-    match card.ls:
+    match int(card.ls):
       case 0:
-        ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
+        ints = [learnsteps[0], str(round((float(learnsteps[0])+float(learnsteps[1]))/2)), learnsteps[1], easyint]
       case 1:
-        ints = learnsteps + easyint
+        ints = learnsteps + [easyint]
       case 2:
         ints = ["10", ceil(card.lastint * card.ease, 0), ceil(card.lastint * card.ease), ceil(card.lastint * card.ease * card.easybonus)]
+      case __:
+        card.ls == 0
+        ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
     for x in ints:
-      if type(x) == int and x > int(readvari[6][1]):
-        x = int(readvari[6][1])
+      if type(x) == int and x > variables[6][1]:
+        x = variables[6][1]
+    return ints
   
   # function to print out intervals
   def printno(no):
@@ -130,7 +151,7 @@ def learn(deck):
           card.ls += 1
       case 3:
         card.ls = 2
-        card.ease *= card.easybonus
+        card.ease *= easybonus
     
   # count cards
   def cardnum():
@@ -152,12 +173,17 @@ def learn(deck):
           revcount += 1
         case __:
           newcount += 1
-    if newcount >= int(readvari[0][1]) or revcount >= int(readvari[1][1]):
+    if newcount >= variables[0][1] or revcount >= variables[1][1]:
       break
   
   # begin!
-  print(f"hello! welcome to your learning session.\ntoday's card count: {cardnum()}.")
+  print(f"hello! welcome to your learning session.")
   
+  if cardnum() == 0:
+    print("no cards today. maybe check import.txt?")
+  else:
+    print(f"today's card count: {cardnum()}")
+
   while queue != []:
     for card in queue[0]:
       newint(card)
@@ -174,17 +200,18 @@ def learn(deck):
 
 def save(deck):
   writecsv = csv.writer(open(os.getcwd()+'/.userdata/csv.mnak', 'w'))
-  writetxt = open(os.getcwd()+'/.userdata/readme.txt', 'w')
+  writetxt = open(os.getcwd()+'/.userdata/txt.mnak', 'w')
+  saved = 0
 
   # save to 
   for x in deck:
-    writecsv.writerow([x.term, x.defin, x.ls, x.ease, x.lastint, x.duedate])
+    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate])
     writetxt.write(x.term + "    " + x.defin)
+    saved += 1
+
+  print(f"{saved} card(s) saved.")
 
 # SETTINGS
-
-for x in readvari:
-  vars.append(vari(x[0], float(x[1]), x[2]))
 
 string = ""
 for x in range(len(vars)):
@@ -195,6 +222,7 @@ def settings():
   print(string)
   while 1: 
     comm = input("enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings. ")
+    print("\n")
     match comm:
       case 'help':
         print(string)
@@ -224,13 +252,14 @@ def settings():
 
 def guide():
   guidelist = {
-    "faq" : "see frequently asked questions."
+    "faq" : "see frequently asked questions.",
     "imexport" : "see instructions on how to import and export data."
   }
   for x in guidelist:
     print(x + ": " + guidelist[x])
   while 1:
-    comm = input("\nenter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides.")
+    comm = input("\nenter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides. ")
+    print("\n")
     match comm:
       case "help":
         print(guidelist)
@@ -242,6 +271,9 @@ def guide():
         except:
           print("invalid. try again")
         else:
+          print("~~~~~~~~~~~~~~~~~~~~")
           for line in f.readlines():
             print(line)
           f.close()
+          print("~~~~~~~~~~~~~~~~~~~~")
+          

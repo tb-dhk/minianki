@@ -22,11 +22,13 @@ def help():
   print("""
   list of commands:
   import: import cards in import.txt to the main database.
-  export: view instructions on how to export.
   init: initialise or synchronise the program with the database.
+  save: save your progress/scheduling and cards to the database. 
+
   learn: an anki-esque learning session.
-  save: save your progress/scheduling and cards to the database.
-  settings: customise learning variables. (work in progress)
+  
+  settings: customise learning variables.
+  guide: see guides.
   help: view this message again.
   exit (or Ctrl+C): end the program.
   """)
@@ -65,3 +67,4 @@ while 1:
       break
     case _:
       "invalid command. try again!"
+  print("\n")
