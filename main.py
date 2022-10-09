@@ -48,11 +48,8 @@ while 1:
       minianki.save(deck)
     case "settings":
       minianki.settings()
-    case "export":
-      f = open(os.getcwd()+'/export/export.txt', 'r')
-      for line in f.readlines():
-        print(line)
-      f.close()
+    case "guide":
+      minianki.guide()
     case "help":
       help()
     case "shua":

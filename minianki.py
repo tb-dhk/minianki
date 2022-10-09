@@ -177,7 +177,7 @@ for x in range(len(vars)):
 def settings():
   print(string)
   while 1: 
-    comm = input("enter any number to change the value of its corresponding variable, 'help' to print all variables again or 'exit' to exit settings. ")
+    comm = input("enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings. ")
     match comm:
       case 'help':
         print(string)
@@ -204,3 +204,27 @@ def settings():
           writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
           for x in vars:
             writevari.writerow([x.name, x.value, x.exp])
+
+def guide():
+  guidelist = {
+    "faq" : "see frequently asked questions."
+    "imexport" : "see instructions on how to import and export data."
+  }
+  for x in guidelist:
+    print(x + ": " + guidelist[x])
+  while 1:
+    comm = input("\nenter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides.")
+    match comm:
+      case "help":
+        print(guidelist)
+      case "exit":
+        break
+      case __:
+        try:
+          f = open(os.getcwd()+'/.guides/'+comm+'.txt', 'r')
+        except:
+          print("invalid. try again")
+        else:
+          for line in f.readlines():
+            print(line)
+          f.close()
