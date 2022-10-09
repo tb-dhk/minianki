@@ -4,6 +4,10 @@
 
 emulates an anki session in the terminal.
 
+## requirements
+- python 3 (3.10 and up)
+- any working command line / terminal
+
 ## installation instructions
 firstly, clone this repository.
 
