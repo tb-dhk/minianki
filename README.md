@@ -70,7 +70,7 @@ do remember to do both "import" and "init" everytime new cards are added into im
 **IMPORTING/EXPORTING USER DATA:**
 
 simply paste another .userdata subdirectory from your old minianki setup into the main minianki directory of your new minianki setup. 
-the .userdata subdirectory contains data such as cards (with or without scheduling) and learning variables (preferences). see README.md for more.
+the .userdata subdirectory contains data such as cards (with or without scheduling) and learning variables (preferences).
 
 ### faq
 **how does the algorithm work in minianki?**
