@@ -1,5 +1,3 @@
-![](https://progress-bar.dev/90/?title=alpha%20release)
-
 # minianki
 
 emulates an anki session in the terminal.
