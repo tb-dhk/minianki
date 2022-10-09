@@ -56,6 +56,7 @@ settings and help:
 the following can also be found in [`./guides/`](https://github.com/shuu-wasseo/minianki/tree/main/export).
 
 ### import/export 
+*(also found in [.guides/imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/imexportguide.txt))*
 **IMPORTING NEW CARDS:**
 
 either:
@@ -73,6 +74,8 @@ simply paste another .userdata subdirectory from your old minianki setup into th
 the .userdata subdirectory contains data such as cards (with or without scheduling) and learning variables (preferences).
 
 ### faq
+*(also found in [.guides/faq.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/faq.txt))*
+
 **how does the algorithm work in minianki?**
 
 the minianki algorithm is similar to anki's algorithm without the use of leeches, timers and certain other features. for more information, see https://docs.ankiweb.net/deck-options.html.
