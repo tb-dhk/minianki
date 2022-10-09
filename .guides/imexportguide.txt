@@ -1,0 +1,15 @@
+IMPORTING NEW CARDS:
+
+either:
+- paste text into import.txt in a terms-definitions format
+- or replace import.txt with a .txt file in that format.
+
+minianki will:
+- import your files into the database with the "import" command and prompt you for a delimiter (4-space tab by default)
+- refresh the deck with the "init" command. 
+do remember to do both "import" and "init" everytime new cards are added into import.txt.
+
+IMPORTING/EXPORTING USER DATA:
+
+simply paste another .userdata subdirectory from your old minianki setup into the main minianki directory of your new minianki setup. 
+the .userdata subdirectory contains data such as cards (with or without scheduling) and learning variables (preferences). see README.md for more.
