@@ -17,7 +17,7 @@ def help():
   - learn: an anki-esque learning session.
   
   settings and help:
-  - settings: customise learning variables.
+  - settings: customise deck options.
   - guide: see guides.
   - help: view this message again.
   - exit: end the program.
