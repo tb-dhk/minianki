@@ -44,9 +44,9 @@ settings and help:
 
 ### subdirectories
 - [.userdata](https://github.com/shuu-wasseo/minianki/tree/main/.userdata) - exportable data.
-  - [csv.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/csv.mnak) - all cards with scheduling.
   - [learnvars.csv](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/learnvars.csv) - all customised deck options.
-  - [txt.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/txt.mnak) - all cards without scheduling.
+  - [nsched.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/nsched.mnak) - all cards without scheduling.
+  - [sched.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/sched.mnak) - all cards with scheduling.
 
 - [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - guides.
   - [faq.txt](https://github.com/shuu-wasseo/minianki/blob/main/guides/faq.txt)
