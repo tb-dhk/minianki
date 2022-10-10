@@ -181,7 +181,7 @@ def learn(deck):
   newcount = 0
   revcount = 0
   for card in deck:
-    if card.duedate == str(datetime.date.today()) && card.suspended == False:
+    if card.duedate == str(datetime.date.today()) and card.suspended == False:
       queue[0].append(card)
       match card.ls:
         case 2:
@@ -309,7 +309,7 @@ def guide():
 def browse():
 # print out deck
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
-  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak'))
+  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
   nocards = 0
   fulldeck = []
   
@@ -342,10 +342,9 @@ def browse():
       case "help":
         printcards()
       case "exit":
-        f = open(filename, "w+")
-        f.close()
         for card in fulldeck:
           writer.writerow(card)
+        break
       case _:
         try:
           int(comm)
