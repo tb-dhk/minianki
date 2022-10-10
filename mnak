@@ -12,7 +12,6 @@ def help():
 
     importing/exporting:
     - import: import cards in import.txt to the main database.
-    - init: initialise your deck/synchronise your deck with the main database.
     - save: save your progress/scheduling and cards to the database.
 
     manage/use deck:
@@ -36,8 +35,6 @@ while 1:
   match command:
     case "import":
       minianki.impt()
-    case "init":
-      minianki.init(deck)
     case "learn":
       minianki.learn(deck)
     case "save":

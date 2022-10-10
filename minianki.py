@@ -36,9 +36,10 @@ def impt():
 
   # import new cards into deck
   for row in reader:
-    writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
-    writer2.write(row.strip().split("    "))
-    impted += 1
+    if row != "":
+      writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
+      writer2.write(str(row.strip().split("    ")))
+      impted += 1
 
   if impted == 0:
     print("    no cards imported. maybe check import.txt?")
