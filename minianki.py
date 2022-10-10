@@ -37,26 +37,6 @@ for x in readvari:
         vars.append(vari(x[0], False, x[2], x[3]))
         variables.append([x[0], False, x[2], x[3]])  
 
-# IMPT
-
-def impt():
-  # make a deck
-  reader = open('import.txt', 'r').readlines()
-  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-  writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
-  impted = 0
-
-  # import new cards into deck
-  for row in reader:
-    writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
-    writer2.write(row.strip().split("    ") + "\n")
-    impted += 1
-
-  if impted == 0:
-    print("    no cards imported. maybe check import.txt?")
-  else:
-    print(f"    {impted} card(s) imported.")
-
 # INIT
 
 # variables:
@@ -260,8 +240,6 @@ def save(deck):
     writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended])
     writetxt.write(x.term + "    " + x.defin + "\n")
     saved += 1
-
-  print(f"    {saved} card(s) saved.")
 
 # SETTINGS
 
