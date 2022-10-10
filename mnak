@@ -15,6 +15,7 @@ def help():
     - save: save your progress/scheduling and cards to the database.
 
     manage/use deck:
+    - browse: see all your cards and edit, suspend or delete them.
     - learn: an anki-esque learning session.
   
     settings and help:
@@ -34,11 +35,13 @@ while 1:
   command = input("__________\n>>> ")
   match command:
     case "import":
-      minianki.impt()
+      minianki.impt(deck)
     case "learn":
       minianki.learn(deck)
     case "save":
       minianki.save(deck)
+    case "browse":
+      minianki.browse()
     case "settings":
       minianki.settings()
     case "guide":
@@ -63,3 +66,4 @@ while 1:
         break
       else:
         "invalid command. try again!"
+  minianki.init(deck)
