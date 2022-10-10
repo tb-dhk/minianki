@@ -71,7 +71,6 @@ def init(deck):
   # import csv into deck
   for row in reader:
     if row == [] or row[0] == "" or len(row) != 7:
-      print("empty card")
       continue
     for card in deck:
       if card.term == row[0]:
