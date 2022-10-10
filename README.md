@@ -13,7 +13,6 @@ firstly, clone this repository.
 $ git clone https://github.com/shuu-wasseo/minianki
 ```
 secondly, add the minianki directory into your PATH. 
-
 thirdly, make the mnak file executable. for example, if you added minianki into your home directory:
 ```
 $ chmod +x /home/uname/minianki/mnak
