@@ -189,8 +189,8 @@ def learn(deck):
           newcount += 1
     if newcount >= variables[0][1] or revcount >= variables[1][1]:
       break
-
-  random.shuffle(queue[0])
+  if variables[10][1] == "True":
+    random.shuffle(queue[0])
   
   # begin!
   print(f"    hello! welcome to your learning session.")
