@@ -3,6 +3,9 @@ import csv
 import os
 import random
 import math
+import pandas as pd
+
+deck = []
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -36,14 +39,14 @@ def impt():
   # make a deck
   reader = open('import.txt', 'r').readlines()
   writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-  writer2 = open('import.txt', 'w')
+  writer2 = csv.writer(open(os.getcwd()+'/.userdata/nsched.mnak', 'a'))
   impted = 0
 
   # import new cards into deck
   for row in reader:
     writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
+    writer2.writerow(row.strip().split("    "))
     impted += 1
-  writer2.write("")
 
   if impted == 0:
     print("    no cards imported. maybe check import.txt?")
@@ -71,26 +74,22 @@ class flashcard:
 
 # initialisation function
 def init(deck):
-  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r')) 
-  
-  added = 0 
+  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
 
   # import csv into deck
   for row in reader:
-    if row == []:
-      break
-    for ocard in deck:
-      if ocard.term == row[0]:
-        deck.remove(ocard) # remove old copy of card
-        added -= 1
+    if row == [] or row[0] == "" or len(row) != 7:
+      print("empty card")
+      continue
+    for card in deck:
+      if card.term == row[0]:
+        deck.remove(card)
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
-    added += 1
-
-  print(f"    deck initialised and synced. {len(deck)} card(s) in deck ({added} cards added)")
-
+       
 # LEARN
 
 def learn(deck):
+  init(deck)
   # variables:
   # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
   learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
@@ -110,7 +109,7 @@ def learn(deck):
       case 1:
         ints = learnsteps + [easyint]
       case 2:
-        ints = ["10", math.ceil(card.lastint * hardint), math.ceil(card.lastint * card.ease), math.ceil(card.lastint * card.ease * card.easybonus)]
+        ints = ["10", math.ceil(card.lastint * hardint), math.ceil(card.lastint * card.ease), math.ceil(card.lastint * card.ease * easybonus)]
       case _:
         card.ls = 0
         ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
@@ -130,45 +129,58 @@ def learn(deck):
   def newint(card):
     # prompting user
     print("    ~~~~~~~~~~~~~~~~~~~~")
-    input(f"    term: {card.term}\n")
+    input(f"    term: {card.term}\n    ")
     print(f"    definition: {card.defin}\n")
-    option = int(input("    enter 1-4 for:" + 
+    print("    enter 1-4 for:" + 
     f"\n    1. again ({printno(genints(card)[0])})" + 
     f"\n    2. hard ({printno(genints(card)[1])})" +
     f"\n    3. good ({printno(genints(card)[2])})" +
-    f"\n    4. easy ({printno(genints(card)[3])})\n\n"))-1
-    print("    card delayed by:", printno(genints(card)[option]))
-    if type(genints(card)[option]) == str:
-      # rescheduling card
+    f"\n    4. easy ({printno(genints(card)[3])})\n")
+
+    while 1:
       try:
-        queue[int(genints(card)[option])].append(card)
+        option = int(input("    "))-1 
       except:
-        while len(queue) < int(genints(card)[option])+1:
-          queue.append([])
-      queue[-1].append(card)
-    else:
-      # change data in deck
-      for ocard in deck:
-        if ocard.term == card.term:
-          deck.remove(ocard) # remove old copy of card
-      card.duedate = str(datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option]))
-      card.lastint = genints(card)[option]
-      print("1 card less!")
-      deck.append(card) # add new copy of card
-    queue[0].remove(card) # remove card from queue
-    match option:
-      case 0:
-        card.ls = 0
-      case 1:
-        pass
-      case 2:
-        if card.ls < 2:
-          card.ls += 1
-      case 3:
-        card.ls = 2
-        card.ease *= easybonus
-    
-  # count cards
+        print("    invalid. try again.")
+      else:
+        if option < 1 or option > 4:
+          print("    invalid. try again.")
+        else:
+          print("\n    card delayed by:", printno(genints(card)[option]), "\n")
+          if type(genints(card)[option]) == str:
+            # rescheduling card
+            try:
+              queue[int(genints(card)[option])].append(card)
+            except:
+              while len(queue) < int(genints(card)[option])+1:
+                queue.append([])
+              queue[-1].append(card)
+            finally:
+               queue[0].remove(card)
+          else:
+            # change data in deck
+            for ocard in deck:
+              if ocard.term == card.term:
+                deck.remove(ocard) # remove old copy of card
+            card.duedate = str(datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option]))
+            card.lastint = genints(card)[option]
+            print("    1 card less!")
+            deck.append(card) # add new copy of card
+            queue[0].remove(card) # remove card from queue
+          match option:
+            case 0:
+              card.ls = 0
+            case 1:
+              pass
+            case 2:
+              if card.ls < 2:
+                card.ls += 1
+            case 3:
+              card.ls = 2
+              card.ease *= easybonus
+        break
+
+# count cards
   def cardnum():
     count = 0
     for x in queue:
@@ -177,11 +189,12 @@ def learn(deck):
 
   # SESSION
   # making queue
+  init(deck)
   queue = [[]]
   newcount = 0
   revcount = 0
   for card in deck:
-    if card.duedate == str(datetime.date.today()) and card.suspended == False:
+    if card.duedate == str(datetime.date.today()) and card.suspended == "False":
       queue[0].append(card)
       match card.ls:
         case 2:
@@ -205,24 +218,25 @@ def learn(deck):
     for card in queue[0]:
       newint(card)
       if cardnum() > 0:
-        print("remaining cards:", cardnum())
-        if input("continue? (Y/n)") == "n":
+        print("    remaining cards:", cardnum())
+        if input("    continue? (Y/n)") == "n":
           break
       else:
-        print("good job! you finished the deck.")
+        print("    good job! you finished the deck.")
     if queue[0] == []:
       queue.pop(0)
 
 # SAVE
 
 def save(deck):
+  init(deck)
   writecsv = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'w'))
   writetxt = open(os.getcwd()+'/.userdata/nsched.mnak', 'w')
   saved = 0
 
   # save to 
   for x in deck:
-    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate])
+    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended])
     writetxt.write(x.term + "    " + x.defin)
     saved += 1
 
@@ -237,11 +251,9 @@ def settings():
       varia = vars[x]
       string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varia.name} ({str(x)}): {str(varia.value)}  \n    {varia.exp } \n" 
     string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
-    print(string)
-    comm = input("    enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to save and exit settings.\n    _______\n    >>> ")
+    print("    " + string)
+    comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit settings.\n    _______\n    >>> ")
     match comm:
-      case 'help':
-        print("\n    " + string)
       case 'exit':
         break
       case _:
@@ -307,9 +319,8 @@ def guide():
 
 # BROWSE
 def browse():
-# print out deck
+  # print out deck
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
-  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
   nocards = 0
   fulldeck = []
   
@@ -333,15 +344,21 @@ def browse():
     for card in fulldeck:
       if card[6] == "True":
         suspend = " (suspended)"
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + card[0] + ", " + card[1] + suspend)
+      else:
+        suspend = ""
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card[0] + ", " + card[1] + ", " + card[5] + suspend)
       cardcount += 1
 
   while 1:
-    comm = input("    enter any number to edit its corresponding card, 'help' to see the full deck again or 'exit' to save and exit the deck.\n    _______\n    >>> ")
+    print("    ~~~~~~~~~~~~~~~~~~~~")
+    printcards()
+    print("    ~~~~~~~~~~~~~~~~~~~~")
+
+
+    comm = input("\n    enter any number to edit its corresponding card or 'exit' to save and exit the deck.\n    ______\n    >>> ")
     match comm:
-      case "help":
-        printcards()
       case "exit":
+        writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
         for card in fulldeck:
           writer.writerow(card)
         break
@@ -356,24 +373,27 @@ def browse():
             suspend = " (suspended)"
           else:
             suspend = ""
-          print("    " + digs(nocards) * " " + card[0] + ", " + card[1] + suspend)
+          print("    (" + comm + ") "  + card[0] + ", " + card[1] + ", " + card[5] + suspend)
           while 1:
-            toedit = input("    enter value you would like to change (term, def or suspension): ")
+            toedit = input("    enter value you would like to change (term, def or suspension) or 'exit' to cancel: ")
             match toedit:
               case "term":
                 card[0] = input("    enter new value: ")
+                break
               case "def":
                 card[1] = input("    enter new value: ")
+                break
               case "suspension":
-                while 1:  
-                  match input("    enter new value: "):
-                    case "True":
-                      card[6] == "False"
-                      print("    suspend toggled.")
-                      break
-                    case "False":
-                      card[6] == "True"
-                      print("    suspend toggled.")
-                      break
-                    case _:
-                      print("    invalid. try again.") 
+                match card[6]:
+                  case "True":
+                    card[6] = "False"
+                  case "False":
+                    card[6] = "True"
+                  case _:
+                    card[6] = "True"
+                print("\n    suspension toggled to", card[6])
+                break
+              case 'exit':
+                break
+              case _:
+                print("    invalid. try again")
