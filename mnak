@@ -14,7 +14,6 @@ def help():
     - save: save your progress/scheduling and cards to the database.
 
     manage/use deck:
-    - browse: browse deck, edit/delete/toggle suspend cards.
     - learn: an anki-esque learning session.
   
     settings and help:
@@ -43,8 +42,6 @@ while 1:
       minianki.settings()
     case "guide":
       minianki.guide()
-    case "browse":
-      minianki.browse()
     case "help":
       help()
     case "shua":
