@@ -6,21 +6,21 @@ deck = []
 
 def help():
   print("""
-  list of commands:
+    list of commands:
 
-  importing/exporting:
-  - import: import cards in import.txt to the main database.
-  - init: initialise or synchronise the program with the database.
-  - save: save your progress/scheduling and cards to the database. 
+    importing/exporting:
+    - import: import cards in import.txt to the main database.
+    - init: initialise your deck/synchronise your deck with the main database.
+    - save: save your progress/scheduling and cards to the database.
 
-  review/learning sessions:
-  - learn: an anki-esque learning session.
+    manage/use deck:
+    - learn: an anki-esque learning session.
   
-  settings and help:
-  - settings: customise deck options.
-  - guide: see guides.
-  - help: view this message again.
-  - exit: end the program.
+    settings and help:
+    - exit: end the program.
+    - guide: see guides.
+    - help: view all commands again.
+    - settings: customise deck options.
   """)
   
 print("""welcome to minianki!""")
@@ -28,7 +28,7 @@ help()
 
 # console-like env
 while 1:
-  command = input(">>> ")
+  command = input("__________\n>>> ")
   match command:
     case "import":
       minianki.impt()
@@ -49,7 +49,7 @@ while 1:
     case "kiki":
       print("<3")
     case "":
-      pass
+      print("\n")
     case "exit":
       print("thanks for using minianki! bye!")
       break
