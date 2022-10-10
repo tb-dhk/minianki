@@ -2,7 +2,7 @@ import datetime
 import csv
 import os
 import random
-from math import ceil
+import math
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -41,7 +41,7 @@ def impt():
 
   # import new cards into deck
   for row in reader:
-    writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today()])
+    writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
     impted += 1
   writer2.write("")
 
@@ -60,13 +60,14 @@ def impt():
 
 # card structure
 class flashcard:
-  def __init__(self, term, defin, ls, ease, lastint, duedate):
+  def __init__(self, term, defin, ls, ease, lastint, duedate, suspended):
     self.term = term
     self.defin = defin
     self.ls = ls
     self.ease = ease
     self.lastint = lastint
     self.duedate = duedate
+    self.suspended = suspended
 
 # initialisation function
 def init(deck):
@@ -82,7 +83,7 @@ def init(deck):
       if ocard.term == row[0]:
         deck.remove(ocard) # remove old copy of card
         added -= 1
-    deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5]))
+    deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
     added += 1
 
   print(f"    deck initialised and synced. {len(deck)} card(s) in deck ({added} cards added)")
@@ -109,8 +110,8 @@ def learn(deck):
       case 1:
         ints = learnsteps + [easyint]
       case 2:
-        ints = ["10", ceil(card.lastint * hardint), ceil(card.lastint * card.ease), ceil(card.lastint * card.ease * card.easybonus)]
-      case __:
+        ints = ["10", math.ceil(card.lastint * hardint), math.ceil(card.lastint * card.ease), math.ceil(card.lastint * card.ease * card.easybonus)]
+      case _:
         card.ls = 0
         ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
     for x in ints:
@@ -180,12 +181,12 @@ def learn(deck):
   newcount = 0
   revcount = 0
   for card in deck:
-    if card.duedate == str(datetime.date.today()):
+    if card.duedate == str(datetime.date.today()) && card.suspended == False:
       queue[0].append(card)
       match card.ls:
         case 2:
           revcount += 1
-        case __:
+        case _:
           newcount += 1
     if newcount >= variables[0][1] or revcount >= variables[1][1]:
       break
@@ -237,13 +238,13 @@ def settings():
       string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varia.name} ({str(x)}): {str(varia.value)}  \n    {varia.exp } \n" 
     string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
     print(string)
-    comm = input("    enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to exit settings.\n    _______\n    >>> ")
+    comm = input("    enter any number to change the value of its corresponding variable, 'help' to see the list of variables again or 'exit' to save and exit settings.\n    _______\n    >>> ")
     match comm:
       case 'help':
         print("\n    " + string)
       case 'exit':
         break
-      case __:
+      case _:
         try:
           comm = int(comm)
           varia = vars[comm]
@@ -265,7 +266,7 @@ def settings():
                       newval = False
                     case "True":
                       newval = True
-                    case __:
+                    case _:
                       raise TypeError('value could not be converted to bool')
             except:
               print("    invalid. try again")
@@ -292,7 +293,7 @@ def guide():
           print("    " + x + ": " + guidelist[x])
       case "exit":
         break
-      case __:
+      case _:
         try:
           f = open(os.getcwd()+'/.guides/'+comm+'.txt', 'r')
         except:
@@ -303,3 +304,77 @@ def guide():
             print("    " + line)
           f.close()
           print("    ~~~~~~~~~~~~~~~~~~~~")
+
+# BROWSE
+def browse():
+# print out deck
+  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
+  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak'))
+  nocards = 0
+  fulldeck = []
+  
+  def digs(no):
+    if no == 0:
+      return 1
+    else:
+      return math.floor(math.log(no, 10))+1
+
+  for row in reader:
+    nocards += 1
+    if row != []:
+      fulldeck.append(row)
+
+  def printcards():
+    # print out with line numbers
+    cardcount = 0
+    spaceno = digs(nocards)
+    suspend = ""
+
+    for card in fulldeck:
+      if card[6] == "True":
+        suspend = " (suspended)"
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + card[0] + ", " + card[1] + suspend)
+      cardcount += 1
+
+  while 1:
+    comm = input("    enter any number to edit its corresponding card, 'help' to see the full deck again or 'exit' to save and exit the deck.\n    _______\n    >>> ")
+    match comm:
+      case "help":
+        printcards()
+      case "exit":
+        f = open(filename, "w+")
+        f.close()
+        for card in fulldeck:
+          writer.writerow(card)
+      case _:
+        try:
+          int(comm)
+        except:
+          print("    invalid. try again.")
+        else:
+          card = fulldeck[int(comm)]
+          if card[6] == "True":
+            suspend = " (suspended)"
+          else:
+            suspend = ""
+          print("    " + digs(nocards) * " " + card[0] + ", " + card[1] + suspend)
+          while 1:
+            toedit = input("    enter value you would like to change (term, def or suspension): ")
+            match toedit:
+              case "term":
+                card[0] = input("    enter new value: ")
+              case "def":
+                card[1] = input("    enter new value: ")
+              case "suspension":
+                while 1:  
+                  match input("    enter new value: "):
+                    case "True":
+                      card[6] == "False"
+                      print("    suspend toggled.")
+                      break
+                    case "False":
+                      card[6] == "True"
+                      print("    suspend toggled.")
+                      break
+                    case _:
+                      print("    invalid. try again.") 
