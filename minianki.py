@@ -22,8 +22,20 @@ variables = []
 
 readvari = csv.reader(open(os.getcwd()+'/.userdata/learnvars.csv', 'r'))
 for x in readvari:
-  vars.append(vari(x[0], x[1], x[2], x[3]))
-  variables.append([x[0], x[1], x[2], x[3]])
+  match x[2]: 
+    case "float":
+      vars.append(vari(x[0], float(x[1]), x[2], x[3]))
+      variables.append([x[0], float(x[1]), x[2], x[3]])
+    case "int": 
+      vars.append(vari(x[0], int(x[1]), x[2], x[3]))
+      variables.append([x[0], int(x[1]), x[2], x[3]])
+    case "bool":
+      if x[1] == "True":
+        vars.append(vari(x[0], True, x[2], x[3]))
+        variables.append([x[0], True, x[2], x[3]])  
+      if x[1] == "False":
+        vars.append(vari(x[0], False, x[2], x[3]))
+        variables.append([x[0], False, x[2], x[3]])  
 
 # IMPT
 
@@ -37,7 +49,7 @@ def impt():
   # import new cards into deck
   for row in reader:
     writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
-    writer2.write(row.strip().split("    "))
+    writer2.write(row.strip().split("    ") + "\n")
     impted += 1
 
   if impted == 0:
@@ -67,28 +79,49 @@ class flashcard:
 # initialisation function
 def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
-
   # import csv into deck
   for row in reader:
     if row == [] or row[0] == "" or len(row) != 7:
       continue
-    for card in deck:
-      if card.term == row[0]:
-        deck.remove(card)
-    deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
+    else:
+      for card in deck:
+        if card.term == row[0]:
+          deck.remove(card)
+      deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
+       
+#IMPT
+
+def impt(deck):
+  # make a deck
+  reader = open('import.txt', 'r').readlines()
+  writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
+  writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+  impted = 0
+
+  # import new cards into deck
+  for row in reader:
+    if row.strip() != "" and row[0].strip() != "":
+      writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
+      writer2.write(str(row.strip().split("    ")) + "\n")
+      impted += 1
+
+  if impted == 0:
+    print("    no cards imported. maybe check import.txt?")
+  else:
+    print(f"    {impted} card(s) imported.")
 
 # LEARN
 
 def learn(deck):
   # variables:
   # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-  learnsteps = [str(variables[2][1]), str(variables[3][1]), int(variables[4][1])]
+  learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
   # easy interval (time between picking easy and reviewing the card for the first time)
-  easyint = int(variables[5][1])
+  easyint = variables[5][1]
   # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-  easybonus = float(variables[8][1])
+  easybonus = variables[8][1]
   # hard bonus (multiplier from last value, default 1.2)
-  hardint = float(variables[9][1])
+  hardint = variables[9][1]
   
   # FUNCTIONS
   # function to generate intervals
@@ -104,8 +137,8 @@ def learn(deck):
         card.ls = 0
         ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
     for x in ints:
-      if type(x) == int and x > int(variables[6][1]):
-        x = int(variables[6][1])
+      if type(x) == int and x > variables[6][1]:
+        x = variables[6][1]
     return ints
   
   # function to print out intervals
@@ -133,7 +166,7 @@ def learn(deck):
       except:
         print("    invalid. try again.")
       else:
-        if option < 0 or option > 3:
+        if option < 1 or option > 4:
           print("    invalid. try again.")
         else:
           print("\n    card delayed by:", printno(genints(card)[option]), "\n")
@@ -176,10 +209,9 @@ def learn(deck):
     for x in queue:
       count += len(x)
     return count
-  init(deck)
+
   # SESSION
   # making queue
-  init(deck)
   queue = [[]]
   newcount = 0
   revcount = 0
@@ -191,8 +223,10 @@ def learn(deck):
           revcount += 1
         case _:
           newcount += 1
-    if newcount >= int(variables[0][1]) or revcount >= int(variables[1][1]):
+    if newcount >= variables[0][1] or revcount >= variables[1][1]:
       break
+  if variables[10][1] == True:
+    random.shuffle(queue[0])
   
   # begin!
   print(f"    hello! welcome to your learning session.")
@@ -224,7 +258,7 @@ def save(deck):
   # save to 
   for x in deck:
     writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended])
-    writetxt.write(x.term + "    " + x.defin)
+    writetxt.write(x.term + "    " + x.defin + "\n")
     saved += 1
 
   print(f"    {saved} card(s) saved.")
@@ -254,7 +288,19 @@ def settings():
           while 1:
             newval = input("    enter new value: ")
             try:
-              newval = float(newval)
+              match varia.format:
+                case "float":
+                  newval = float(newval)
+                case "int":
+                  newval = int(newval)
+                case "bool":
+                  match newval:
+                    case "False":
+                      newval = False
+                    case "True":
+                      newval = True
+                    case _:
+                      raise TypeError('value could not be converted to bool')
             except:
               print("    invalid. try again")
             else:
@@ -291,3 +337,87 @@ def guide():
             print("    " + line)
           f.close()
           print("    ~~~~~~~~~~~~~~~~~~~~")
+
+# BROWSE
+def browse():
+  # print out deck
+  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
+  nocards = 0
+  fulldeck = []
+  
+  def digs(no):
+    if no == 0:
+      return 1
+    else:
+      return math.floor(math.log(no, 10))+1
+
+  for row in reader:
+    nocards += 1
+    if row != []:
+      fulldeck.append(row)
+
+  def printcards():
+    # print out with line numbers
+    cardcount = 0
+    spaceno = digs(nocards)
+    suspend = ""
+
+    for card in fulldeck:
+      if card[6] == "True":
+        suspend = " (suspended)"
+      else:
+        suspend = ""
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card[0] + ", " + card[1] + ", " + card[5] + suspend)
+      cardcount += 1
+
+  while 1:
+    print("    ~~~~~~~~~~~~~~~~~~~~")
+    printcards()
+    print("    ~~~~~~~~~~~~~~~~~~~~")
+
+
+    comm = input("\n    enter any number to edit its corresponding card or 'exit' to save and exit the deck.\n    ______\n    >>> ")
+    match comm:
+      case "exit":
+        writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
+        for card in fulldeck:
+          writer.writerow(card)
+        break
+      case _:
+        try:
+          int(comm)
+        except:
+          print("    invalid. try again.")
+        else:
+          card = fulldeck[int(comm)]
+          if card[6] == "True":
+            suspend = " (suspended)"
+          else:
+            suspend = ""
+          print("    (" + comm + ") "  + card[0] + ", " + card[1] + ", " + card[5] + suspend)
+          while 1:
+            toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' to delete this card or 'exit' to cancel: ")
+            match toedit:
+              case "term":
+                card[0] = input("    enter new value: ")
+                break
+              case "def":
+                card[1] = input("    enter new value: ")
+                break
+              case "suspension":
+                match card[6]:
+                  case "True":
+                    card[6] = "False"
+                  case "False":
+                    card[6] = "True"
+                  case _:
+                    card[6] = "True"
+                print("\n    suspension toggled to", card[6])
+                break
+              case 'delete':
+                fulldeck.remove(card)
+                break
+              case 'exit':
+                break
+              case _:
+                print("    invalid. try again")
