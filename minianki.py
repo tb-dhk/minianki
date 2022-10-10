@@ -22,16 +22,8 @@ variables = []
 
 readvari = csv.reader(open(os.getcwd()+'/.userdata/learnvars.csv', 'r'))
 for x in readvari:
-  match x[2]: 
-    case "float":
-      vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-      variables.append([x[0], float(x[1]), x[2], x[3]])
-    case "int": 
-      vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-      variables.append([x[0], int(x[1]), x[2], x[3]])
-    case "bool": 
-      vars.append(vari(x[0], bool(x[1]), x[2], x[3]))
-      variables.append([x[0], bool(x[1]), x[2], x[3]])  
+  vars.append(vari(x[0], x[1], x[2], x[3]))
+  variables.append([x[0], x[1], x[2], x[3]])
 
 # IMPT
 
@@ -79,26 +71,24 @@ def init(deck):
   # import csv into deck
   for row in reader:
     if row == [] or row[0] == "" or len(row) != 7:
-      print("empty card")
       continue
     for card in deck:
       if card.term == row[0]:
         deck.remove(card)
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
-       
+
 # LEARN
 
 def learn(deck):
-  init(deck)
   # variables:
   # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-  learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
+  learnsteps = [str(variables[2][1]), str(variables[3][1]), int(variables[4][1])]
   # easy interval (time between picking easy and reviewing the card for the first time)
-  easyint = variables[5][1]
+  easyint = int(variables[5][1])
   # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-  easybonus = variables[8][1]
+  easybonus = float(variables[8][1])
   # hard bonus (multiplier from last value, default 1.2)
-  hardint = variables[9][1]
+  hardint = float(variables[9][1])
   
   # FUNCTIONS
   # function to generate intervals
@@ -114,8 +104,8 @@ def learn(deck):
         card.ls = 0
         ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
     for x in ints:
-      if type(x) == int and x > variables[6][1]:
-        x = variables[6][1]
+      if type(x) == int and x > int(variables[6][1]):
+        x = int(variables[6][1])
     return ints
   
   # function to print out intervals
@@ -143,7 +133,7 @@ def learn(deck):
       except:
         print("    invalid. try again.")
       else:
-        if option < 1 or option > 4:
+        if option < 0 or option > 3:
           print("    invalid. try again.")
         else:
           print("\n    card delayed by:", printno(genints(card)[option]), "\n")
@@ -186,7 +176,7 @@ def learn(deck):
     for x in queue:
       count += len(x)
     return count
-
+  init(deck)
   # SESSION
   # making queue
   init(deck)
@@ -201,10 +191,8 @@ def learn(deck):
           revcount += 1
         case _:
           newcount += 1
-    if newcount >= variables[0][1] or revcount >= variables[1][1]:
+    if newcount >= int(variables[0][1]) or revcount >= int(variables[1][1]):
       break
-  if variables[10][1] == "True":
-    random.shuffle(queue[0])
   
   # begin!
   print(f"    hello! welcome to your learning session.")
@@ -229,7 +217,6 @@ def learn(deck):
 # SAVE
 
 def save(deck):
-  init(deck)
   writecsv = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'w'))
   writetxt = open(os.getcwd()+'/.userdata/nsched.mnak', 'w')
   saved = 0
@@ -267,19 +254,7 @@ def settings():
           while 1:
             newval = input("    enter new value: ")
             try:
-              match varia.format:
-                case "float":
-                  newval = float(newval)
-                case "int":
-                  newval = int(newval)
-                case "bool":
-                  match newval:
-                    case "False":
-                      newval = False
-                    case "True":
-                      newval = True
-                    case _:
-                      raise TypeError('value could not be converted to bool')
+              newval = float(newval)
             except:
               print("    invalid. try again")
             else:
