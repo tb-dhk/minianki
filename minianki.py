@@ -85,7 +85,7 @@ def init(deck):
       if card.term == row[0]:
         deck.remove(card)
     deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
-       
+
 # LEARN
 
 def learn(deck):
