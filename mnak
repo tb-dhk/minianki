@@ -6,6 +6,8 @@ deck = []
 
 def help():
   print("""
+    minianki v0.2.0
+    
     list of commands:
 
     importing/exporting:
@@ -21,6 +23,8 @@ def help():
     - guide: see guides.
     - help: view all commands again.
     - settings: customise deck options.
+    
+    for any emails or support, please email joshuasoh2008@gmail.com.
   """)
   
 print("""welcome to minianki!""")
