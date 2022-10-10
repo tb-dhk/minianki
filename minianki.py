@@ -133,7 +133,7 @@ def learn(deck):
       except:
         print("    invalid. try again.")
       else:
-        if option < 1 or option > 4:
+        if option < 0 or option > 3:
           print("    invalid. try again.")
         else:
           print("\n    card delayed by:", printno(genints(card)[option]), "\n")
@@ -191,7 +191,7 @@ def learn(deck):
           revcount += 1
         case _:
           newcount += 1
-    if newcount >= variables[0][1] or revcount >= variables[1][1]:
+    if newcount >= int(variables[0][1]) or revcount >= int(variables[1][1]):
       break
   
   # begin!
