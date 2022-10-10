@@ -89,7 +89,6 @@ def init(deck):
 # LEARN
 
 def learn(deck):
-  init(deck)
   # variables:
   # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
   learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
@@ -186,7 +185,7 @@ def learn(deck):
     for x in queue:
       count += len(x)
     return count
-
+  init(deck)
   # SESSION
   # making queue
   init(deck)
@@ -229,7 +228,6 @@ def learn(deck):
 # SAVE
 
 def save(deck):
-  init(deck)
   writecsv = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'w'))
   writetxt = open(os.getcwd()+'/.userdata/nsched.mnak', 'w')
   saved = 0
@@ -316,84 +314,3 @@ def guide():
             print("    " + line)
           f.close()
           print("    ~~~~~~~~~~~~~~~~~~~~")
-
-# BROWSE
-def browse():
-  # print out deck
-  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
-  nocards = 0
-  fulldeck = []
-  
-  def digs(no):
-    if no == 0:
-      return 1
-    else:
-      return math.floor(math.log(no, 10))+1
-
-  for row in reader:
-    nocards += 1
-    if row != []:
-      fulldeck.append(row)
-
-  def printcards():
-    # print out with line numbers
-    cardcount = 0
-    spaceno = digs(nocards)
-    suspend = ""
-
-    for card in fulldeck:
-      if card[6] == "True":
-        suspend = " (suspended)"
-      else:
-        suspend = ""
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card[0] + ", " + card[1] + ", " + card[5] + suspend)
-      cardcount += 1
-
-  while 1:
-    print("    ~~~~~~~~~~~~~~~~~~~~")
-    printcards()
-    print("    ~~~~~~~~~~~~~~~~~~~~")
-
-
-    comm = input("\n    enter any number to edit its corresponding card or 'exit' to save and exit the deck.\n    ______\n    >>> ")
-    match comm:
-      case "exit":
-        writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
-        for card in fulldeck:
-          writer.writerow(card)
-        break
-      case _:
-        try:
-          int(comm)
-        except:
-          print("    invalid. try again.")
-        else:
-          card = fulldeck[int(comm)]
-          if card[6] == "True":
-            suspend = " (suspended)"
-          else:
-            suspend = ""
-          print("    (" + comm + ") "  + card[0] + ", " + card[1] + ", " + card[5] + suspend)
-          while 1:
-            toedit = input("    enter value you would like to change (term, def or suspension) or 'exit' to cancel: ")
-            match toedit:
-              case "term":
-                card[0] = input("    enter new value: ")
-                break
-              case "def":
-                card[1] = input("    enter new value: ")
-                break
-              case "suspension":
-                match card[6]:
-                  case "True":
-                    card[6] = "False"
-                  case "False":
-                    card[6] = "True"
-                  case _:
-                    card[6] = "True"
-                print("\n    suspension toggled to", card[6])
-                break
-              case 'exit':
-                break
-              case _:
-                print("    invalid. try again")
