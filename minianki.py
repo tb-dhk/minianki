@@ -375,7 +375,7 @@ def browse():
             suspend = ""
           print("    (" + comm + ") "  + card[0] + ", " + card[1] + ", " + card[5] + suspend)
           while 1:
-            toedit = input("    enter value you would like to change (term, def or suspension) or 'exit' to cancel: ")
+            toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' to delete this card or 'exit' to cancel: ")
             match toedit:
               case "term":
                 card[0] = input("    enter new value: ")
@@ -393,6 +393,8 @@ def browse():
                     card[6] = "True"
                 print("\n    suspension toggled to", card[6])
                 break
+              case 'delete':
+                fulldeck.remove(card)
               case 'exit':
                 break
               case _:
