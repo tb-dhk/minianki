@@ -31,13 +31,13 @@ def impt():
   # make a deck
   reader = open('import.txt', 'r').readlines()
   writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-  writer2 = csv.writer(open(os.getcwd()+'/.userdata/nsched.mnak', 'a'))
+  writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
   impted = 0
 
   # import new cards into deck
   for row in reader:
     writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
-    writer2.writerow(row.strip().split("    "))
+    writer2.write(row.strip().split("    "))
     impted += 1
 
   if impted == 0:
