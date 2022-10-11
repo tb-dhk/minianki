@@ -47,7 +47,7 @@ for x in readvari:
 
 # card structure
 class flashcard:
-  def __init__(self, term, defin, ls, ease, lastint, duedate, suspended):
+  def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount):
     self.term = term
     self.defin = defin
     self.ls = ls
@@ -55,6 +55,7 @@ class flashcard:
     self.lastint = lastint
     self.duedate = duedate
     self.suspended = suspended
+    self.againcount = againcount
 
 # initialisation function
 def init(deck):
@@ -404,11 +405,11 @@ def browse():
               case "suspension":
                 match card[6]:
                   case "True":
-                    card[6] = "False"
+                    card[6] = False
                   case "False":
-                    card[6] = "True"
+                    card[6] = True
                   case _:
-                    card[6] = "True"
+                    card[6] = True
                 print("\n    suspension toggled to", card[6])
                 break
               case 'delete':

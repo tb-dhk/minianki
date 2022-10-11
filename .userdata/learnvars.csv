@@ -9,3 +9,4 @@ starting ease,2.5,float,starting ease multiplier of every card. the interval of 
 easy bonus,1.3,float,extra multipler to a review card's interval when the 'easy' option is selected.
 hard bonus,1.2,float,multiplier multiplied to last interval of the card to obtain its 'hard' option's interval.
 random insertion order?,True,bool,whether new cards show up in random order or by order of the main database.
+leech threshold,8,int,number of times you select the 'again' option on a card before it is considered a leech and auto-suspended.
