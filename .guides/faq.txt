@@ -1,5 +1,5 @@
 how does the algorithm work in minianki?
-the minianki algorithm is similar to anki's algorithm without the use of leeches, timers and certain other features. for more information, see https://docs.ankiweb.net/deck-options.html.
+the minianki algorithm is similar to anki's algorithm without certain features. however, we aim to implement most if not all features of anki in minianki (other than features that the terminal does not support) by v1. see the wiki (https://github.com/shuu-wasseo/minianki/wiki) for more information.
 
 can i have subdecks in minianki?
 minianki currently does not support subdecks, but we are currently working to implement these in upcoming versions.
