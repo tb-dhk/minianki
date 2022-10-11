@@ -23,17 +23,16 @@ now, you are able to use minianki! enter "mnak" in your terminal to begin!
 ## commands
 importing/exporting:
 - import: import cards in import.txt to the main database.
-- init: synchronise the program with the database to intialise the in-program deck.
-- save: save your progress/scheduling and cards to the database.
 
-review/learning sessions:
+manage/use deck:
+- browse: see all your cards and edit, suspend or delete them.
 - learn: an anki-esque learning session.
 
 settings and help:
-- settings: customise deck options.
+- exit: end the program.
 - guide: see guides.
 - help: view this message again.
-- exit: end the program.
+- settings: customise deck options.
 
 ## directory
 ### main directory
