@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 
 import minianki
+import requests
 
 deck = []
 
 def help():
+  verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"]
+  print("\n    you are using minianki " + verno + ".")
   print("""
     list of commands:
 

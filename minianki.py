@@ -216,16 +216,30 @@ def learn(deck):
   queue = [[]]
   newcount = 0
   revcount = 0
-  for card in deck:
-    if card.duedate == str(datetime.date.today()) and not card.suspended:
-      queue[0].append(card)
-      match card.ls:
-        case 2:
-          revcount += 1
-        case _:
-          newcount += 1
-    if newcount >= variables[0][1] or revcount >= variables[1][1]:
-      break
+  if variables[12][1]:
+    for card in deck:
+      if card.duedate == str(datetime.date.today()) and not card.suspended and card.ls == 2:
+        queue[0].append(card)
+        revcount += 1
+      if revcount >= variables[1][1]:
+        break
+    for card in deck:
+      if card.duedate == str(datetime.date.today()) and not card.suspended and card.ls != 2:
+        queue[0].append(card)
+        newcount += 1
+      if revcount + newcount >= variables[1][1]:
+        break
+  else:
+    for card in deck:
+      if card.duedate == str(datetime.date.today()) and not card.suspended:
+        queue[0].append(card)
+        match card.ls:
+          case 2:
+            revcount += 1
+          case _:
+            newcount += 1
+      if newcount >= variables[0][1] or revcount >= variables[1][1]:
+        break
   if variables[10][1] == True:
     random.shuffle(queue[0])
   
