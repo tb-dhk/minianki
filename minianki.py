@@ -85,16 +85,21 @@ def impt(deck):
   writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
   writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
   impted = 0
+  
+  separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
+
+  separator = separator.replace(r"\t", "\t")
+  separator = separator.replace(r"\n", "\n")
 
   # import new cards into deck
   for row in reader:
     if row.strip() != "" and row[0].strip() != "":
-      writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False,0])
-      writer2.write(str(row.strip().split("    ")) + "\n")
+      writer.writerow(row.strip().split(separator) + [0,variables[7][1],0,datetime.date.today(),False,0])
+      writer2.write(str(row.strip().split(separator)) + "\n")
       impted += 1
 
   if impted == 0:
-    print("    no cards imported. maybe check impt.txt?")
+    print("    no cards imported. maybe enter a separator or check impt.txt?")
   else:
     print(f"    {impted} card(s) imported.")
 
