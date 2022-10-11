@@ -400,7 +400,7 @@ def deck(deck):
             suspend = ""
           print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + suspend)
           while 1:
-            toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' to delete this card or 'exit' to cancel: ")
+            toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' or 'bury' to delete or bury this card or 'exit' to cancel: ")
             match toedit:
               case "term":
                 card.term = input("    enter new value: ")
@@ -417,6 +417,9 @@ def deck(deck):
                   case _:
                     card.suspended = True
                 print("\n    suspension toggled to", card[6])
+                break
+              case 'bury':
+                card.duedate += datetime.timedelta(days=1)
                 break
               case 'delete':
                 deck.remove(card)
