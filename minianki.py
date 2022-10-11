@@ -65,15 +65,25 @@ def init(deck):
       continue
     else:
       for card in deck:
-        if card.term == row[0]:
+        if card.term == row[0] and card.duedate <= row[5]:
           deck.remove(card)
+        else:
+          continue
       deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
+  # remove duplicates
+  for card1 in deck:
+    for card2 in deck:
+      if card1.term == card2.term and card1 != card2:
+        if card1.duedate < card2.duedate:
+          deck.remove(card1)
+        else:
+          deck.remove(card2)
        
 #IMPT
 
 def impt(deck):
   # make a deck
-  reader = open('import.txt', 'r').readlines()
+  reader = open('impt.txt', 'r').readlines()
   writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
   writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
   impted = 0
@@ -86,7 +96,7 @@ def impt(deck):
       impted += 1
 
   if impted == 0:
-    print("    no cards imported. maybe check import.txt?")
+    print("    no cards imported. maybe check impt.txt?")
   else:
     print(f"    {impted} card(s) imported.")
 
@@ -167,8 +177,11 @@ def learn(deck):
                 deck.remove(ocard) # remove old copy of card
             card.duedate = str(datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option]))
             card.lastint = genints(card)[option]
+            print("\n    card delayed by:", printno(genints(card)[option]), "\n")
+            print("    new due date:", str(card.duedate)[0:10])
             print("    1 card less!")
             deck.append(card) # add new copy of card
+            print("card with new duedate saved to deck:", card.duedate)
             queue[0].remove(card) # remove card from queue
           match option:
             case 0:
@@ -212,19 +225,25 @@ def learn(deck):
   print(f"    hello! welcome to your learning session.")
   
   if cardnum() == 0:
-    print("    no cards today. maybe check import.txt?")
+    print("    no cards today. maybe check impt.txt?")
   else:
     print(f"    today's card count: {cardnum()}")
+
+  exitlearn = False
 
   while queue != []:
     for card in queue[0]:
       newint(card)
       if cardnum() > 0:
         print("    remaining cards:", cardnum())
-        if input("    continue? (Y/n)") == "n":
+        if input("    continue? (Y/n) ") == "n":
+          print("    exiting learn mode...")
+          exitlearn = True
           break
       else:
         print("    good job! you finished the deck.")
+    if exitlearn:
+      break
     if queue[0] == []:
       queue.pop(0)
 
