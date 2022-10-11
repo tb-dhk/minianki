@@ -48,8 +48,8 @@ settings and help:
   - [sched.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/sched.mnak) - all cards with scheduling.
 
 - [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - guides.
-  - [faq.txt](https://github.com/shuu-wasseo/minianki/blob/main/guides/faq.txt)
-  - [imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/guides/imexportguide.txt) - exporting instructions.
+  - [faq.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/faq.txt)
+  - [imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/imexportguide.txt) - exporting instructions.
 
 ## guides
 the following can also be found in [`./guides/`](https://github.com/shuu-wasseo/minianki/tree/main/export).
