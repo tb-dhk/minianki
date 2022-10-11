@@ -1,8 +1,0 @@
-how does the algorithm work in minianki?
-the minianki algorithm is similar to anki's algorithm without the use of leeches, timers and certain other features. for more information, see https://docs.ankiweb.net/deck-options.html.
-
-can i have subdecks in minianki?
-minianki currently does not support subdecks, but we are currently working to implement these in upcoming versions.
-
-can i have media in my minianki flashcards?
-while this is a prominent feature of anki, minianki does not currently support media and we are not planning to implement media support anytime soon.
