@@ -3,7 +3,6 @@ import csv
 import os
 import random
 import math
-import pandas as pd
 
 deck = []
 
@@ -341,8 +340,8 @@ def guide():
           f.close()
           print("    ~~~~~~~~~~~~~~~~~~~~")
 
-# BROWSE
-def browse():
+# deck
+def deck():
   # print out deck
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
   nocards = 0
