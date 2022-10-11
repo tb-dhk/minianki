@@ -14,9 +14,9 @@ $ git clone https://github.com/shuu-wasseo/minianki
 ```
 secondly, add the minianki directory into your PATH. 
 
-thirdly, make the mnak file executable. for example, if you added minianki into your home directory:
+thirdly, make the mnak file executable with the following code (replace mnak with the path for the mnak file)
 ```
-$ chmod +x /home/uname/minianki/mnak
+$ chmod +x mnak
 ```
 now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
