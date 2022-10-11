@@ -70,7 +70,7 @@ def init(deck):
           deck.remove(card)
         else:
           continue
-      deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6]))
+      deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], row[7]))
   # remove duplicates
   for card1 in deck:
     for card2 in deck:
@@ -187,6 +187,11 @@ def learn(deck):
           match option:
             case 0:
               card.ls = 0
+              card.againcount += 1
+              if card.againcount == variables[11][1]: # autosuspend leech
+                card.suspended = True
+                card.againcount = 0
+                print("    card marked as leech. suspended")
             case 1:
               pass
             case 2:
@@ -210,7 +215,7 @@ def learn(deck):
   newcount = 0
   revcount = 0
   for card in deck:
-    if card.duedate == str(datetime.date.today()) and card.suspended == "False":
+    if card.duedate == str(datetime.date.today()) and not card.suspended:
       queue[0].append(card)
       match card.ls:
         case 2:
@@ -388,7 +393,7 @@ def browse():
           print("    invalid. try again.")
         else:
           card = fulldeck[int(comm)]
-          if card[6] == "True":
+          if card[6] == True:
             suspend = " (suspended)"
           else:
             suspend = ""
