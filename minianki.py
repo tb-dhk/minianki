@@ -375,7 +375,7 @@ def deck(deck):
       case "exit":
         writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
         for card in deck:
-          writer.writerow(card)
+          writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount])
         break
       case "add":
         writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
