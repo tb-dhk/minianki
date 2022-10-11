@@ -9,7 +9,7 @@ def help():
     list of commands:
 
     importing/exporting:
-    - import: import cards in import.txt to the main database.
+    - impt: import cards in import.txt to the main database.
 
     manage/use deck:
     - deck: see all your cards and edit, suspend or delete them.
@@ -32,7 +32,7 @@ minianki.save(deck)
 while 1:
   command = input("__________\n>>> ")
   match command:
-    case "import":
+    case "impt":
       minianki.impt(deck)
     case "learn":
       minianki.learn(deck)
