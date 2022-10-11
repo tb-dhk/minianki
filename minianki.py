@@ -4,8 +4,6 @@ import os
 import random
 import math
 
-deck = []
-
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # import learning variables
@@ -61,7 +59,7 @@ def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
   # import csv into deck
   for row in reader:
-    if row == [] or row[0] == "" or len(row) != 7:
+    if row == [] or row[0] == "" or len(row) != 8:
       continue
     else:
       for card in deck:
@@ -91,7 +89,7 @@ def impt(deck):
   # import new cards into deck
   for row in reader:
     if row.strip() != "" and row[0].strip() != "":
-      writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False])
+      writer.writerow(row.strip().split("    ") + [0,variables[7][1],0,datetime.date.today(),False,0])
       writer2.write(str(row.strip().split("    ")) + "\n")
       impted += 1
 
@@ -261,7 +259,7 @@ def save(deck):
 
   # save to 
   for x in deck:
-    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended])
+    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount])
     writetxt.write(x.term + "    " + x.defin + "\n")
     saved += 1
 
@@ -341,11 +339,10 @@ def guide():
           print("    ~~~~~~~~~~~~~~~~~~~~")
 
 # deck
-def deck():
+def deck(deck):
   # print out deck
-  reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak')) 
   nocards = 0
-  fulldeck = []
+  deck = []
   
   def digs(no):
     if no == 0:
@@ -353,23 +350,18 @@ def deck():
     else:
       return math.floor(math.log(no, 10))+1
 
-  for row in reader:
-    nocards += 1
-    if row != []:
-      fulldeck.append(row)
-
   def printcards():
     # print out with line numbers
     cardcount = 0
     spaceno = digs(nocards)
     suspend = ""
 
-    for card in fulldeck:
-      if card[6] == "True":
+    for card in deck:
+      if card.suspended == "True":
         suspend = " (suspended)"
       else:
         suspend = ""
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card[0] + ", " + card[1] + ", " + card[5] + suspend)
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + suspend)
       cardcount += 1
 
   while 1:
@@ -378,46 +370,56 @@ def deck():
     print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-    comm = input("\n    enter any number to edit its corresponding card or 'exit' to save and exit the deck.\n    ______\n    >>> ")
+    comm = input("\n    enter any number to edit its corresponding card, 'add' or 'exit' to save and exit the deck.\n    ______\n    >>> ")
     match comm:
       case "exit":
         writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
-        for card in fulldeck:
+        for card in deck:
           writer.writerow(card)
         break
+      case "add":
+        writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
+        writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+       
+        term = input("    enter term: ")
+        defin = input("    enter definition: ")
+        
+        writer.writerow([term,defin,0,variables[7][1],0,datetime.date.today(),False,0])
+        writer2.write(str(term + defin + "\n"))
+        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.date.today(),False,0))
       case _:
         try:
           int(comm)
         except:
           print("    invalid. try again.")
         else:
-          card = fulldeck[int(comm)]
-          if card[6] == True:
+          card = deck[int(comm)]
+          if card.suspended == True:
             suspend = " (suspended)"
           else:
             suspend = ""
-          print("    (" + comm + ") "  + card[0] + ", " + card[1] + ", " + card[5] + suspend)
+          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + suspend)
           while 1:
             toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' to delete this card or 'exit' to cancel: ")
             match toedit:
               case "term":
-                card[0] = input("    enter new value: ")
+                card.term = input("    enter new value: ")
                 break
               case "def":
-                card[1] = input("    enter new value: ")
+                card.defin = input("    enter new value: ")
                 break
               case "suspension":
-                match card[6]:
+                match card.suspended:
                   case "True":
-                    card[6] = False
+                    card.suspended = False
                   case "False":
-                    card[6] = True
+                    card.suspended = True
                   case _:
-                    card[6] = True
+                    card.suspended = True
                 print("\n    suspension toggled to", card[6])
                 break
               case 'delete':
-                fulldeck.remove(card)
+                deck.remove(card)
                 break
               case 'exit':
                 break

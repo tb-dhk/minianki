@@ -12,7 +12,7 @@ def help():
     - import: import cards in import.txt to the main database.
 
     manage/use deck:
-    - browse: see all your cards and edit, suspend or delete them.
+    - deck: see all your cards and edit, suspend or delete them.
     - learn: an anki-esque learning session.
   
     settings and help:
@@ -36,8 +36,8 @@ while 1:
       minianki.impt(deck)
     case "learn":
       minianki.learn(deck)
-    case "browse":
-      minianki.browse()
+    case "deck":
+      minianki.deck(deck)
     case "settings":
       minianki.settings()
     case "guide":
