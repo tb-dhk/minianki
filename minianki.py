@@ -178,7 +178,7 @@ def learn(deck):
             for ocard in deck:
               if ocard.term == card.term:
                 deck.remove(ocard) # remove old copy of card
-            card.duedate = str(datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option]))
+            card.duedate = datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option])
             card.lastint = genints(card)[option]
             print("\n    card delayed by:", printno(genints(card)[option]), "\n")
             print("    new due date:", str(card.duedate)[0:10])
@@ -344,10 +344,12 @@ def guide():
           print("    ~~~~~~~~~~~~~~~~~~~~")
 
 # deck
-def deck(deck):
+def bdeck(deck):
+  init(deck)
+  save(deck)
+  
   # print out deck
   nocards = 0
-  deck = []
   
   def digs(no):
     if no == 0:
@@ -355,7 +357,9 @@ def deck(deck):
     else:
       return math.floor(math.log(no, 10))+1
 
-  def printcards():
+  def printcards(deck):
+    
+    print(deck)
     # print out with line numbers
     cardcount = 0
     spaceno = digs(nocards)
@@ -371,7 +375,7 @@ def deck(deck):
 
   while 1:
     print("    ~~~~~~~~~~~~~~~~~~~~")
-    printcards()
+    printcards(deck)
     print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
