@@ -64,3 +64,4 @@ while 1:
         "invalid command. try again!"
   minianki.init(deck)
   minianki.save(deck)
+
