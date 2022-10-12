@@ -5,26 +5,39 @@ import requests
 
 deck = []
 
+def compare_verno(vn1, vn2):
+    one = vn1.split(".")
+    two = vn2.split(".")
+    for x in range(3):
+        if one[x] > two[x]:
+            return vn1
+        if two[x] > one[x]:
+            return vn2
+        if x == 2 and one[x] == two[x]:
+            return vn1
+
 def help():
-    verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"]
-    print("\n    you are using minianki " + verno + ".")
+    github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
+    print("\n    you are using minianki v" + minianki.verno + ".")
+    if compare_verno(github_verno, minianki.verno) != minianki.verno:
+        print("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use 'git pull' in the minianki directory.")
     print("""
-        list of commands:
+    list of commands:
 
-        importing:
-        - impt: import cards in import.txt to the main database.
+    importing:
+    - impt: import cards in import.txt to the main database.
 
-        manage/use deck:
-        - deck: see all your cards and edit, suspend or delete them.
-        - learn: an anki-esque learning session.
+    manage/use deck:
+    - deck: see all your cards and edit, suspend or delete them.
+    - learn: an anki-esque learning session.
     
-        settings and help:
-        - exit: end the program.
-        - guide: see guides.
-        - help: view all commands again.
-        - settings: customise deck options.
+    settings and help:
+    - exit: end the program.
+    - guide: see guides.
+    - help: view all commands again.
+    - settings: customise deck options.
 
-        for support, please contact joshuasoh2008@gmail.com.
+    for support, please contact joshuasoh2008@gmail.com.
     """)
     
 print("""welcome to minianki!""")

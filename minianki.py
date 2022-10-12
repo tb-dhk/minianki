@@ -6,6 +6,8 @@ import math
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+verno =  "0.4.0"
+
 # import learning variables
 class vari:
     def __init__(self, name, value, format, exp):
