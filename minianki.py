@@ -44,7 +44,7 @@ for x in readvari:
 
 # card structure
 class flashcard:
-  def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount):
+  def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status):
     self.term = term
     self.defin = defin
     self.ls = ls
@@ -53,13 +53,14 @@ class flashcard:
     self.duedate = duedate
     self.suspended = suspended
     self.againcount = againcount
+    self.status = status
 
 # initialisation function
 def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
   # import csv into deck
   for row in reader:
-    if row == [] or row[0] == "" or len(row) != 8:
+    if row == [] or row[0] == "" or len(row) != 9:
       continue
     else:
       for card in deck:
@@ -67,7 +68,7 @@ def init(deck):
           deck.remove(card)
         else:
           continue
-      deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], row[7]))
+      deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], row[7], row[8]))
   # remove duplicates
   for card1 in deck:
     for card2 in deck:
@@ -94,7 +95,7 @@ def impt(deck):
   # import new cards into deck
   for row in reader:
     if row.strip() != "" and row[0].strip() != "":
-      writer.writerow(row.strip().split(separator) + [0,variables[7][1],0,datetime.date.today(),False,0])
+      writer.writerow(row.strip().split(separator) + [0,variables[7][1],0,datetime.date.today(),False,0,"new"])
       writer2.write(str(row.strip().split(separator)) + "\n")
       impted += 1
 
@@ -164,6 +165,7 @@ def learn(deck):
         else:
           print("\n    card delayed by:", printno(genints(card)[option]), "\n")
           if type(genints(card)[option]) == str:
+            card.status = "learn"
             # rescheduling card
             try:
               queue[int(genints(card)[option])].append(card)
@@ -174,6 +176,7 @@ def learn(deck):
             finally:
                queue[0].remove(card)
           else:
+            card.status = "rev"
             # change data in deck
             for ocard in deck:
               if ocard.term == card.term:
@@ -278,7 +281,7 @@ def save(deck):
 
   # save to 
   for x in deck:
-    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount])
+    writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status])
     writetxt.write(x.term + "    " + x.defin + "\n")
     saved += 1
 
@@ -380,7 +383,7 @@ def deck(deck):
         suspend = " (suspended)"
       else:
         suspend = ""
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + suspend)
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + suspend)
       cardcount += 1
 
   while 1:
@@ -394,7 +397,7 @@ def deck(deck):
       case "exit":
         writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
         for card in deck:
-          writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount])
+          writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status])
         break
       case "add":
         writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
@@ -403,9 +406,9 @@ def deck(deck):
         term = input("    enter term: ")
         defin = input("    enter definition: ")
         
-        writer.writerow([term,defin,0,variables[7][1],0,datetime.date.today(),False,0])
+        writer.writerow([term,defin,0,variables[7][1],0,datetime.date.today(),False,0,"new"])
         writer2.write(str(term + defin + "\n"))
-        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.date.today(),False,0))
+        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.date.today(),False,0,"new"))
       case _:
         try:
           int(comm)
@@ -417,7 +420,7 @@ def deck(deck):
             suspend = " (suspended)"
           else:
             suspend = ""
-          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + suspend)
+          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + suspend)
           while 1:
             toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' or 'bury' to delete or bury this card or 'exit' to cancel: ")
             match toedit:
