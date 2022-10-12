@@ -3,6 +3,7 @@ import csv
 import os
 import random
 import math
+import subprocess
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -497,3 +498,7 @@ def deck(deck):
                                 break
                             case _:
                                 print("    invalid. try again")
+
+def update():
+    print("\n    ")
+    subprocess.call(["git", "-C", os.getcwd(), "fetch"]) 

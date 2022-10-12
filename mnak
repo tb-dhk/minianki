@@ -6,21 +6,24 @@ import requests
 deck = []
 
 def compare_verno(vn1, vn2):
-    one = vn1.split(".")
-    two = vn2.split(".")
+    vnone = vn1.split("-")[0]
+    vntwo = vn2.split("-")[0]
+    one = vnone.split(".")
+    two = vntwo.split(".")
     for x in range(3):
         if one[x] > two[x]:
-            return vn1
+            return vnone
         if two[x] > one[x]:
-            return vn2
+            return vntwo
         if x == 2 and one[x] == two[x]:
-            return vn1
+            return vnone
 
+github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
+    
 def help():
-    github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
     print("\n    you are using minianki v" + minianki.verno + ".")
     if compare_verno(github_verno, minianki.verno) != minianki.verno:
-        print("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use 'git pull' in the minianki directory.")
+        print("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use the 'update' command.")
     print("""
     list of commands:
 
@@ -32,10 +35,13 @@ def help():
     - learn: an anki-esque learning session.
     
     settings and help:
-    - exit: end the program.
     - guide: see guides.
     - help: view all commands again.
     - settings: customise deck options.
+
+    misc:
+    - exit: leave minianki.
+    - update: update minianki.
 
     for support, please contact joshuasoh2008@gmail.com.
     """)
@@ -62,6 +68,9 @@ while 1:
             minianki.guide()
         case "help":
             help()
+        case "update":
+            minianki.update()
+            print("minianki has been updated to v" + github_verno + ".")
         case "shua":
             print("hewwo :>")
         case "kiki":
@@ -82,4 +91,3 @@ while 1:
                 "invalid command. try again!"
     minianki.init(deck)
     minianki.save(deck)
-
