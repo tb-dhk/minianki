@@ -11,7 +11,7 @@ def help():
   print("""
     list of commands:
 
-    importing/exporting:
+    importing:
     - impt: import cards in import.txt to the main database.
 
     manage/use deck:
@@ -40,7 +40,7 @@ while 1:
     case "learn":
       minianki.learn(deck)
     case "deck":
-      minianki.deck(deck)
+      minianki.bdeck(deck)
     case "settings":
       minianki.settings()
     case "guide":
