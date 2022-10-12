@@ -21,8 +21,8 @@ $ chmod +x mnak
 now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
 ## commands
-importing/exporting:
-- import: import cards in import.txt to the main database.
+importing:
+- impt: import cards in import.txt to the main database.
 
 manage/use deck:
 - browse: see all your cards and edit, suspend or delete them.
