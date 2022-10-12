@@ -59,6 +59,7 @@ def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
   # import csv into deck
   for row in reader:
+    row[5] = datetime.datetime.fromisoformat(row[5]) 
     if row == [] or row[0] == "" or len(row) != 8:
       continue
     else:
@@ -178,7 +179,7 @@ def learn(deck):
             for ocard in deck:
               if ocard.term == card.term:
                 deck.remove(ocard) # remove old copy of card
-            card.duedate = datetime.datetime(int(card.duedate[0:4]), int(card.duedate[5:7]), int(card.duedate[8:10])) + datetime.timedelta(days=genints(card)[option])
+            card.duedate = datetime.datetime.fromisoformat(card.duedate) + datetime.timedelta(days=genints(card)[option])
             card.lastint = genints(card)[option]
             print("\n    card delayed by:", printno(genints(card)[option]), "\n")
             print("    new due date:", str(card.duedate)[0:10])
