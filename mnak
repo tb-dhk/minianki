@@ -6,25 +6,27 @@ import requests
 deck = []
 
 def help():
-  verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"]
-  print("\n    you are using minianki " + verno + ".")
-  print("""
-    list of commands:
+    verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"]
+    print("\n    you are using minianki " + verno + ".")
+    print("""
+        list of commands:
 
-    importing:
-    - impt: import cards in import.txt to the main database.
+        importing:
+        - impt: import cards in import.txt to the main database.
 
-    manage/use deck:
-    - deck: see all your cards and edit, suspend or delete them.
-    - learn: an anki-esque learning session.
-  
-    settings and help:
-    - exit: end the program.
-    - guide: see guides.
-    - help: view all commands again.
-    - settings: customise deck options.
-  """)
-  
+        manage/use deck:
+        - deck: see all your cards and edit, suspend or delete them.
+        - learn: an anki-esque learning session.
+    
+        settings and help:
+        - exit: end the program.
+        - guide: see guides.
+        - help: view all commands again.
+        - settings: customise deck options.
+
+        for support, please contact joshuasoh2008@gmail.com.
+    """)
+    
 print("""welcome to minianki!""")
 help()
 
@@ -33,38 +35,38 @@ minianki.save(deck)
 
 # console-like env
 while 1:
-  command = input("__________\n>>> ")
-  match command:
-    case "impt":
-      minianki.impt(deck)
-    case "learn":
-      minianki.learn(deck)
-    case "deck":
-      minianki.deck(deck)
-    case "settings":
-      minianki.settings()
-    case "guide":
-      minianki.guide()
-    case "help":
-      help()
-    case "shua":
-      print("hewwo :>")
-    case "kiki":
-      print("<3")
-    case "":
-      print("\n")
-    case "exit":
-      print("thanks for using minianki! bye!")
-      break
-    case "bye":
-      print("see you soon! and thanks for using minianki!")
-    case __:
-      if command[0] == ":" and "q" in command:
-        print("oh my GOD I KNEW IT I KNEW YOU WERE A VIM USER")
-        print("but yes bye and thanks for using minianki!")
-        break
-      else:
-        "invalid command. try again!"
-  minianki.init(deck)
-  minianki.save(deck)
+    command = input("__________\n>>> ")
+    match command:
+        case "impt":
+            minianki.impt(deck)
+        case "learn":
+            minianki.learn(deck)
+        case "deck":
+            minianki.deck(deck)
+        case "settings":
+            minianki.settings()
+        case "guide":
+            minianki.guide()
+        case "help":
+            help()
+        case "shua":
+            print("hewwo :>")
+        case "kiki":
+            print("<3")
+        case "":
+            print("\n")
+        case "exit":
+            print("thanks for using minianki! bye!")
+            break
+        case "bye":
+            print("see you soon! and thanks for using minianki!")
+        case __:
+            if command[0] == ":" and "q" in command:
+                print("oh my GOD I KNEW IT I KNEW YOU WERE A VIM USER")
+                print("but yes bye and thanks for using minianki!")
+                break
+            else:
+                "invalid command. try again!"
+    minianki.init(deck)
+    minianki.save(deck)
 
