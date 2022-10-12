@@ -221,20 +221,20 @@ def learn(deck):
   revcount = 0
   if variables[12][1]:
     for card in deck:
-      if card.duedate == str(datetime.date.today()) and not card.suspended and card.ls == 2:
+      if card.duedate == datetime.date.today() and not card.suspended and card.ls == 2:
         queue[0].append(card)
         revcount += 1
       if revcount >= variables[1][1]:
         break
     for card in deck:
-      if card.duedate == str(datetime.date.today()) and not card.suspended and card.ls != 2:
+      if card.duedate == datetime.date.today() and not card.suspended and card.ls != 2:
         queue[0].append(card)
         newcount += 1
       if revcount + newcount >= variables[1][1]:
         break
   else:
     for card in deck:
-      if card.duedate == str(datetime.date.today()) and not card.suspended:
+      if card.duedate == datetime.date.today() and not card.suspended:
         queue[0].append(card)
         match card.ls:
           case 2:
@@ -243,7 +243,7 @@ def learn(deck):
             newcount += 1
       if newcount >= variables[0][1] or revcount >= variables[1][1]:
         break
-  if variables[10][1] == True:
+  if variables[10][1]:
     random.shuffle(queue[0])
   
   # begin!
@@ -256,6 +256,25 @@ def learn(deck):
 
   exitlearn = False
 
+  def countcards(queue):
+    new = 0
+    learn0 = 0
+    learn1 = 0
+    rev = 0
+    for x in queue:
+      for card in x:
+        match card.status:
+          case "new":
+            new += 1
+          case "learn":
+            if card.ls == 0:
+              learn0 += 1
+            elif card.ls == 1:
+              learn1 += 1
+          case "rev":
+            rev += 1
+    print(str(new) + " + " + str(learn0) + " + " + str(learn1) + " + " + str(rev))
+          
   while queue != []:
     for card in queue[0]:
       newint(card)
