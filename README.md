@@ -1,6 +1,6 @@
 # minianki
 
-emulates an anki session in the terminal.
+unofficial CLI version of anki. (still in development)
 
 ## requirements
 - python 3 (3.10 and up)
