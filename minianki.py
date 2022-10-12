@@ -65,7 +65,7 @@ def init(deck):
       continue
     else:
       for card in deck:
-        if card.term == row[0] and card.duedate <= row[5]:
+        if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= row[5]:
           deck.remove(card)
         else:
           continue
@@ -182,13 +182,13 @@ def learn(deck):
             for ocard in deck:
               if ocard.term == card.term:
                 deck.remove(ocard) # remove old copy of card
-            card.duedate = datetime.datetime.fromisoformat(card.duedate) + datetime.timedelta(days=genints(card)[option])
+            card.duedate = card.duedate + datetime.timedelta(days=genints(card)[option])
             card.lastint = genints(card)[option]
             print("\n    card delayed by:", printno(genints(card)[option]), "\n")
             print("    new due date:", str(card.duedate)[0:10])
             print("    1 card less!")
             deck.append(card) # add new copy of card
-            print("card with new duedate saved to deck:", card.duedate)
+            print("    card with new duedate saved to deck:", card.duedate)
             queue[0].remove(card) # remove card from queue
           match option:
             case 0:
@@ -220,6 +220,7 @@ def learn(deck):
   queue = [[]]
   newcount = 0
   revcount = 0
+
   if variables[12][1]:
     for card in deck:
       if card.duedate == datetime.date.today() and not card.suspended and card.ls == 2:
@@ -394,19 +395,25 @@ def bdeck(deck):
     else:
       return math.floor(math.log(no, 10))+1
 
+  def susstr(card):
+    if card.suspended == "True":
+      return " (suspended)"
+    else:
+      return ""
+
+
   def printcards(deck):
     
     # print out with line numbers
     cardcount = 0
     spaceno = digs(nocards)
-    suspend = ""
 
     for card in deck:
       if card.suspended == "True":
         suspend = " (suspended)"
       else:
         suspend = ""
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + suspend)
+      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
       cardcount += 1
 
   while 1:
@@ -428,10 +435,10 @@ def bdeck(deck):
        
         term = input("    enter term: ")
         defin = input("    enter definition: ")
-        
-        writer.writerow([term,defin,0,variables[7][1],0,datetime.date.today(),False,0,"new"])
+
+        writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.now(),False,0,"new"])
         writer2.write(str(term + defin + "\n"))
-        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.date.today(),False,0,"new"))
+        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.now(),False,0,"new"))
       case _:
         try:
           int(comm)
@@ -439,11 +446,7 @@ def bdeck(deck):
           print("    invalid. try again.")
         else:
           card = deck[int(comm)]
-          if card.suspended == True:
-            suspend = " (suspended)"
-          else:
-            suspend = ""
-          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + suspend)
+          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
           while 1:
             toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' or 'bury' to delete or bury this card or 'exit' to cancel: ")
             match toedit:
@@ -461,7 +464,7 @@ def bdeck(deck):
                     card.suspended = True
                   case _:
                     card.suspended = True
-                print("\n    suspension toggled to", card[6])
+                print("\n    suspension toggled to", card.suspended)
                 break
               case 'bury':
                 card.duedate += datetime.timedelta(days=1)
