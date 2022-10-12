@@ -21,18 +21,22 @@ $ chmod +x mnak
 now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
 ## commands
+
 importing:
 - impt: import cards in import.txt to the main database.
 
 manage/use deck:
-- browse: see all your cards and edit, suspend or delete them.
+- deck: see all your cards and edit, suspend or delete them.
 - learn: an anki-esque learning session.
 
 settings and help:
-- exit: end the program.
 - guide: see guides.
-- help: view this message again.
+- help: view all commands again.
 - settings: customise deck options.
+
+misc:
+- exit: leave minianki.
+- update: update minianki.
 
 ## directory
 ### main directory
