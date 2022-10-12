@@ -40,7 +40,7 @@ while 1:
     case "learn":
       minianki.learn(deck)
     case "deck":
-      minianki.bdeck(deck)
+      minianki.deck(deck)
     case "settings":
       minianki.settings()
     case "guide":

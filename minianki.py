@@ -60,12 +60,17 @@ def init(deck):
   reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
   # import csv into deck
   for row in reader:
-    row[5] = datetime.datetime.fromisoformat(row[5]) 
-    if row == [] or row[0] == "" or len(row) != 8:
+    if row == [] or row[0] == "" or len(row) != 9:
       continue
     else:
       for card in deck:
-        if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= row[5]:
+        if type(card.duedate) == str:
+          card.duedate = datetime.datetime.fromisoformat(card.duedate)
+        try:
+          card.duedate = card.duedate.date()
+        except:
+          pass
+        if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
           deck.remove(card)
         else:
           continue
@@ -223,20 +228,20 @@ def learn(deck):
 
   if variables[12][1]:
     for card in deck:
-      if card.duedate == datetime.date.today() and not card.suspended and card.ls == 2:
+      if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls == 2:
         queue[0].append(card)
         revcount += 1
       if revcount >= variables[1][1]:
         break
     for card in deck:
-      if card.duedate == datetime.date.today() and not card.suspended and card.ls != 2:
+      if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls != 2:
         queue[0].append(card)
         newcount += 1
       if revcount + newcount >= variables[1][1]:
         break
   else:
     for card in deck:
-      if card.duedate == datetime.date.today() and not card.suspended:
+      if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False":
         queue[0].append(card)
         match card.ls:
           case 2:
@@ -302,6 +307,10 @@ def save(deck):
 
   # save to 
   for x in deck:
+    try:
+      x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
+    except:
+      x.duedate = x.duedate  
     writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status])
     writetxt.write(x.term + "    " + x.defin + "\n")
     saved += 1
@@ -382,7 +391,7 @@ def guide():
           print("    ~~~~~~~~~~~~~~~~~~~~")
 
 # deck
-def bdeck(deck):
+def deck(deck):
   init(deck)
   save(deck)
   
@@ -403,17 +412,15 @@ def bdeck(deck):
 
 
   def printcards(deck):
-    
     # print out with line numbers
     cardcount = 0
     spaceno = digs(nocards)
 
     for card in deck:
-      if card.suspended == "True":
-        suspend = " (suspended)"
-      else:
-        suspend = ""
-      print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
+      try:
+        print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + susstr(card))
+      except:
+        print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
       cardcount += 1
 
   while 1:
@@ -436,17 +443,20 @@ def bdeck(deck):
         term = input("    enter term: ")
         defin = input("    enter definition: ")
 
-        writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.now(),False,0,"new"])
+        writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"])
         writer2.write(str(term + defin + "\n"))
-        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.now(),False,0,"new"))
+        deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"))
       case _:
         try:
-          int(comm)
+          deck[int(comm)]
         except:
           print("    invalid. try again.")
         else:
           card = deck[int(comm)]
-          print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
+          try:
+            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + susstr(card))
+          except:
+            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
           while 1:
             toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' or 'bury' to delete or bury this card or 'exit' to cancel: ")
             match toedit:
