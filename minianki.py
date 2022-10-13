@@ -13,7 +13,7 @@ subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=s
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "0.5.0"
+verno =  "0.6.0"
 
 # import learning variables
 class vari:
