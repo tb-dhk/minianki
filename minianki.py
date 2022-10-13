@@ -470,7 +470,7 @@ def deck(deck):
                     except:
                         print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
                     while 1:
-                        toedit = input("    enter value you would like to change (term, def, or suspension), 'delete' or 'bury' to delete or bury this card or 'exit' to cancel: ")
+                        toedit = input("    enter value you would like to change (term, def, or suspension), any card action ('delete', 'bury' or 'forget') or 'exit' to cancel: ")
                         match toedit:
                             case "term":
                                 card.term = input("    enter new value: ")
@@ -494,11 +494,19 @@ def deck(deck):
                             case 'delete':
                                 deck.remove(card)
                                 break
+                            case 'forget':
+                                deck.remove(card)
+                                writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
+                                writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+                             
+                                writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"])
+                                writer2.write(str(card.term + card.defin + "\n"))
+                                deck.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"))
+                                break
                             case 'exit':
                                 break
                             case _:
                                 print("    invalid. try again")
-
 def update():
     print("\n    ")
     subprocess.call(["git", "-C", os.getcwd(), "fetch"]) 
