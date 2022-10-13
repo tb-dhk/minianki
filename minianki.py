@@ -514,10 +514,10 @@ def deck(deck):
                             case _:
                                 print("    invalid. try again")
 def update():
-    print("recloning minianki...")
+    print("    recloning minianki...")
     subprocess.run(["git", "-C", os.path.abspath(os.path.join(os.getcwd(), os.pardir)), "clone", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print("cleaning up the mess...")
+    print("    cleaning up the mess...")
     subprocess.run(["git", "clean", "-f", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print("repulling minianki...")
+    print("    repulling minianki...")
     subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print("done!")
+    print("    done!")
