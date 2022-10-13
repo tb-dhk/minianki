@@ -7,8 +7,8 @@ import subprocess
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-subprocess.run(["git", "init"])
-subprocess.run(["git", "branch", "-m", "main"])
+subprocess.run(["git", "init"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
@@ -514,5 +514,5 @@ def deck(deck):
                                 print("    invalid. try again")
 def update():
     subprocess.run(["git", "-C", os.path.abspath(os.path.join(os.getcwd(), os.pardir)), "clone", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    subprocess.run(["git", "clean", "-f", "-d"])
-    subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"])
+    subprocess.run(["git", "clean", "-f", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
