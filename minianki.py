@@ -7,7 +7,7 @@ import subprocess
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-verno =  "0.4.0"
+verno =  "0.5.0"
 
 # import learning variables
 class vari:

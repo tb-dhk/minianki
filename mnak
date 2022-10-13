@@ -2,6 +2,8 @@
 
 import minianki
 import requests
+import sys
+import time
 
 deck = []
 
@@ -21,10 +23,10 @@ def compare_verno(vn1, vn2):
 github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
     
 def help():
-    print("\n    you are using minianki v" + minianki.verno + ".")
+    string = ("\n    you are using minianki v" + minianki.verno + ".")
     if compare_verno(github_verno, minianki.verno) != minianki.verno:
-        print("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use the 'update' command.")
-    print("""
+        string = string + ("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use the 'update' command.")
+    string = string + ("""
     list of commands:
 
     importing:
@@ -43,11 +45,27 @@ def help():
     - exit: leave minianki.
     - update: update minianki.
 
-    for support, please contact joshuasoh2008@gmail.com.
-    """)
+    for support, please contact joshuasoh2008@gmail.com.\n""")
+    return string
     
-print("""welcome to minianki!""")
-help()
+welc = """welcome to minianki! :> \n"""
+
+if minianki.variables[13][1] == True:
+    for ind in range(len(welc)):
+        if ind < len(welc)-3:
+            time.sleep(0.1)
+        else:
+            time.sleep(0.5)
+        sys.stdout.write(welc[ind])
+        sys.stdout.flush()
+
+    for char in help():
+        time.sleep(0.001)
+        sys.stdout.write(char)
+        sys.stdout.flush()
+else:
+    print(welc)
+    print(help())
 
 minianki.init(deck)
 minianki.save(deck)
@@ -67,7 +85,7 @@ while 1:
         case "guide":
             minianki.guide()
         case "help":
-            help()
+            print(help)
         case "update":
             minianki.update()
             print("minianki has been updated to v" + github_verno + ".")
