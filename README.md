@@ -2,11 +2,19 @@
 
 unofficial CLI version of anki. (still in development)
 
+## table of contents
+1. [requirements](#requirements)
+2. [installation](#installation)
+3. [updation/upgradation](#updation-and-upgradation)
+4. [commands](#commands)
+5. [directory](#directory)
+6. [guides](#guides)
+
 ## requirements
 - python 3 (3.10 and up)
 - any working command line / terminal
 
-## installation instructions
+## installation
 firstly, clone this repository.
 
 ```
@@ -20,8 +28,10 @@ $ chmod +x mnak
 ```
 now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
-## commands
+## updation and upgradation
+simply enter "update" into your mini-console and minianki will instantly update/upgrade itself for you.
 
+## commands 
 list of commands:
 
 importing:
