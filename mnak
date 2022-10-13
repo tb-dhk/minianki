@@ -49,18 +49,23 @@ def help():
     return string
     
 welc = """welcome to minianki! :> \n"""
-for ind in range(len(welc)):
-    if ind < len(welc)-3:
-        time.sleep(0.1)
-    else:
-        time.sleep(0.5)
-    sys.stdout.write(welc[ind])
-    sys.stdout.flush()
 
-for char in help():
-    time.sleep(0.001)
-    sys.stdout.write(char)
-    sys.stdout.flush()
+if minianki.variables[13][1] == True:
+    for ind in range(len(welc)):
+        if ind < len(welc)-3:
+            time.sleep(0.1)
+        else:
+            time.sleep(0.5)
+        sys.stdout.write(welc[ind])
+        sys.stdout.flush()
+
+    for char in help():
+        time.sleep(0.001)
+        sys.stdout.write(char)
+        sys.stdout.flush()
+else:
+    print(welc)
+    print(help())
 
 minianki.init(deck)
 minianki.save(deck)
