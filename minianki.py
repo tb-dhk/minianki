@@ -13,7 +13,7 @@ subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=s
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "0.6.0"
+verno =  "1.0.0"
 
 # import learning variables
 class vari:
@@ -521,6 +521,4 @@ def update():
     print("    repulling minianki...")
     subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("    done!")
-    print("    minianki has been updated and will now restart.")
-    print("    restarting...")
-    subprocess.run(["mnak"])
+    print("    minianki has been updated. please restart minianki to see changes take effect.")

@@ -4,6 +4,7 @@ import minianki
 import requests
 import sys
 import time
+import datetime
 
 deck = []
 
@@ -21,12 +22,16 @@ def compare_verno(vn1, vn2):
             return vnone
 
 github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
+new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
     
 def help():
     string = ("\n    you are using minianki v" + minianki.verno + ".")
     if compare_verno(github_verno, minianki.verno) != minianki.verno:
-        string = string + ("    note: your version of minianki (v" + minianki.verno + ") is not the latest version (v" + github_verno + "). if you would like to update, please use the 'update' command.")
-    string = string + ("""
+        if (datetime.datetime.fromisoformat(new_release_date).date() - datetime.datetime.today().date()).days <= 14:
+            string = string + (f"    a new version of minianki ({github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date).date()}! if you would like to update, please use the 'update' command.")
+        else:
+            string = string + (f"    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
+    string = string + ("""\n
     list of commands:
 
     importing:
@@ -58,14 +63,10 @@ if minianki.variables[13][1] == True:
             time.sleep(0.5)
         sys.stdout.write(welc[ind])
         sys.stdout.flush()
-
-    for char in help():
-        time.sleep(0.001)
-        sys.stdout.write(char)
-        sys.stdout.flush()
 else:
     print(welc)
-    print(help())
+    
+print(help())
 
 minianki.init(deck)
 minianki.save(deck)
@@ -88,7 +89,6 @@ while 1:
             print(help)
         case "update":
             minianki.update()
-            break
         case "shua":
             print("    hewwo :>")
         case "kiki":
