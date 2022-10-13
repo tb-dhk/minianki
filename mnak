@@ -45,14 +45,20 @@ def help():
     - exit: leave minianki.
     - update: update minianki.
 
-    for support, please contact joshuasoh2008@gmail.com.
-    """)
+    for support, please contact joshuasoh2008@gmail.com.\n""")
     return string
     
-# IMPORTANT: VARIABLE TO BE ADDED LATER
-print("""welcome to minianki!""")
-for char in string:
-    sleep(0.08)
+welc = """welcome to minianki! :> \n"""
+for ind in range(len(welc)):
+    if ind < len(welc)-3:
+        time.sleep(0.1)
+    else:
+        time.sleep(0.5)
+    sys.stdout.write(welc[ind])
+    sys.stdout.flush()
+
+for char in help():
+    time.sleep(0.001)
     sys.stdout.write(char)
     sys.stdout.flush()
 
@@ -74,7 +80,7 @@ while 1:
         case "guide":
             minianki.guide()
         case "help":
-            print("help)
+            print(help)
         case "update":
             minianki.update()
             print("minianki has been updated to v" + github_verno + ".")
