@@ -513,6 +513,7 @@ def deck(deck):
                                 break
                             case _:
                                 print("    invalid. try again")
+
 def update():
     print("    recloning minianki...")
     subprocess.run(["git", "-C", os.path.abspath(os.path.join(os.getcwd(), os.pardir)), "clone", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
