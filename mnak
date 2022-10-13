@@ -88,11 +88,11 @@ while 1:
             print(help)
         case "update":
             minianki.update()
-            print("minianki has been updated to v" + github_verno + ".")
+            print("    minianki has been updated to v" + github_verno + ".")
         case "shua":
-            print("hewwo :>")
+            print("    hewwo :>")
         case "kiki":
-            print("<3")
+            print("    <3")
         case "":
             print("\n")
         case "exit":
