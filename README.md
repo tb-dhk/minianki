@@ -22,6 +22,8 @@ now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
 ## commands
 
+list of commands:
+
 importing:
 - impt: import cards in import.txt to the main database.
 
@@ -36,7 +38,7 @@ settings and help:
 
 misc:
 - exit: leave minianki.
-- update: update minianki.
+- update: update and restart minianki.
 
 ## directory
 ### main directory
