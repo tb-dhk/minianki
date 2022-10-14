@@ -417,7 +417,7 @@ def guide():
     for x in guidelist:
         print("    " + x + ": " + guidelist[x])
     while 1:
-        comm = input("""\n    enter: \n    - the name of the guide you want to see\n    - 'help' to see the list of guides again\n    - 'exit' to exit guides.\n    ______\n    >>> """)
+        comm = input("""\n    enter: \n    - the name of the guide you want to see\n    - 'help' to see the list of guides again\n    - 'exit' to exit guides\n    ______\n    >>> """)
         match comm:
             case "help":
                 for x in guidelist:
@@ -474,7 +474,7 @@ def deck(deck):
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'exit' to save and exit the deck.\n    ______\n    >>> """)
+        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
