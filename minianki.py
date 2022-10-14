@@ -458,7 +458,7 @@ def deck(deck):
                 break
             case "add":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-                ewriter2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+                writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
              
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
@@ -520,6 +520,7 @@ def update():
     print("\n    recloning minianki...")
     subprocess.run(["git", "-C", os.path.abspath(os.path.join(os.getcwd(), os.pardir)), "clone", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("    cleaning up the mess...")
+    subprocess.run(["git", "restore", "."])
     subprocess.run(["git", "clean", "-f", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("    repulling minianki...")
     subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
