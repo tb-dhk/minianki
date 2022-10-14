@@ -1,6 +1,6 @@
 # minianki
 
-unofficial CLI version of anki. (still in development)
+an unofficial CLI version of anki.
 
 ## table of contents
 1. [requirements](#requirements)
