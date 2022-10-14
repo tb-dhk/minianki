@@ -617,4 +617,4 @@ def nobackup():
     print("")
 
 def load():
-    subprocess.run(["cp", "-r", "~/.config/.minianki", ".userdata"])
+    subprocess.run(["cp", "-r", os.path.expanduser('~') + "/.config/.minianki", ".userdata"])
