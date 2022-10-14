@@ -10,6 +10,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 print("\ninitialising minianki...")
 subprocess.run(["git", "init"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(["git", "update-index", "--assume-unchanged", ".userdata/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
