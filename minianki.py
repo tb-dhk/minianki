@@ -430,6 +430,7 @@ def deck(deck):
 
 
     def printcards(deck):
+        print("\n")
         # print out with line numbers
         cardcount = 0
         spaceno = digs(nocards)
