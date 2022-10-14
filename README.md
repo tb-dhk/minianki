@@ -52,7 +52,8 @@ settings and help:
 
 misc:
 - exit: leave minianki.
-- update: update minianki.
+- load: load backup.
+- update: update and restart minianki.
 
 ## directory
 ### main directory
