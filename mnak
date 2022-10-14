@@ -58,9 +58,9 @@ welc = """welcome to minianki! :> \n"""
 if minianki.variables[13][1] == True:
     for ind in range(len(welc)):
         if ind < len(welc)-3:
-            time.sleep(0.1)
+            time.sleep(0.05)
         else:
-            time.sleep(0.5)
+            time.sleep(0.25)
         sys.stdout.write(welc[ind])
         sys.stdout.flush()
 else:
@@ -76,7 +76,7 @@ while 1:
     command = input("__________\n>>> ")
     match command:
         case "impt":
-            minianki.impt(deck)
+            minianki.impt()
         case "learn":
             minianki.learn(deck)
         case "deck":

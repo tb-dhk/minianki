@@ -54,7 +54,7 @@ for x in readvari:
 
 # card structure
 class flashcard:
-    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status):
+    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status, tags, flags):
         self.term = term
         self.defin = defin
         self.ls = ls
@@ -64,27 +64,46 @@ class flashcard:
         self.suspended = suspended
         self.againcount = againcount
         self.status = status
+        self.tags = tags
+        self.flags = flags
 
 # initialisation function
 def init(deck):
     reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
     # import csv into deck
+    defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
     for row in reader:
-        if row == [] or row[0] == "" or len(row) != 9:
+        if row == [] or row[0] == "":
             continue
         else:
-            for card in deck:
-                if type(card.duedate) == str:
-                    card.duedate = datetime.datetime.fromisoformat(card.duedate)
-                try:
-                    card.duedate = card.duedate.date()
-                except:
-                    pass
-                if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
-                    deck.remove(card)
+            if len(row) < len(defaultcard):
+                row = row + defaultcard[len(row):] 
+            else:
+                for card in deck:
+                    if type(card.duedate) == str:
+                        card.duedate = datetime.datetime.fromisoformat(card.duedate)
+                    try:
+                        card.duedate = card.duedate.date()
+                    except:
+                        pass
+                    if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
+                        deck.remove(card)
+                    else:
+                        continue
+            # format tags and flags
+            tags = row[9][1:-1].split("'")
+            flags = row[10][1:-1].split("'")
+            for x in tags:
+                if x in ["'", '"', ", "]:
+                    tags.remove(x)
                 else:
-                    continue
-            deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], int(row[7]), row[8]))
+                    x = x[1:-1]
+            for x in flags:
+                if x in ["'", '"', ", "]:
+                    flags.remove(x)
+                else:
+                    x = x[1:-1]
+            deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], int(row[7]), row[8], tags, flags))
     # remove duplicates
     for card in deck:
         if type(card.duedate) == str:
@@ -103,7 +122,7 @@ def init(deck):
  
 #IMPT
 
-def impt(deck):
+def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
@@ -331,8 +350,14 @@ def save(deck):
         try:
             x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
         except:
-            x.duedate = x.duedate  
-        writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status])
+            x.duedate = x.duedate
+        for tag in x.tags:
+            if tag == "":
+                x.tags.remove(tag)
+        for flag in x.flags:
+            if flag == "":
+                x.flags.remove(flag)
+        writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags])
         writetxt.write(x.term + "    " + x.defin + "\n")
         saved += 1
 
@@ -392,7 +417,7 @@ def guide():
     for x in guidelist:
         print("    " + x + ": " + guidelist[x])
     while 1:
-        comm = input("\n    enter the name of the guide you want to see, 'help' to see the list of guides again or 'exit' to exit guides.\n    ______\n    >>> ")
+        comm = input("""\n    enter: \n    - the name of the guide you want to see\n    - 'help' to see the list of guides again\n    - 'exit' to exit guides.\n    ______\n    >>> """)
         match comm:
             case "help":
                 for x in guidelist:
@@ -430,8 +455,7 @@ def deck(deck):
             return " (suspended)"
         else:
             return ""
-
-
+    
     def printcards(deck):
         # print out with line numbers
         cardcount = 0
@@ -439,9 +463,9 @@ def deck(deck):
 
         for card in deck:
             try:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
             except:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
             cardcount += 1
 
     while 1:
@@ -450,12 +474,12 @@ def deck(deck):
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-        comm = input("\n    enter any number to edit its corresponding card, 'add' to add a card, 'sort' to sort the deck or 'exit' to save and exit the deck.\n    ______\n    >>> ")
+        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'exit' to save and exit the deck.\n    ______\n    >>> """)
         match comm:
             case "exit":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
                 for card in deck:
-                    writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status])
+                    writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags])
                 break
             case "add":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
@@ -464,9 +488,9 @@ def deck(deck):
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
 
-                writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"])
+                writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]])
                 writer2.write(str(term + defin + "\n"))
-                deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"))
+                deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]))
             case "sort":
                 sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                 ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -487,11 +511,11 @@ def deck(deck):
                 else:
                     card = deck[int(comm)]
                     try:
-                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + susstr(card))
+                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
                     except:
-                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + susstr(card))
+                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
                     while 1:
-                        toedit = input("    enter value you would like to change (term, def, or suspension), any card action ('delete', 'bury' or 'forget') or 'exit' to cancel: ")
+                        toedit = input("""\n    enter:\n    - any value you would like to change (term, def, suspension, tags or flags)\n    - any card action ('delete', 'bury' or 'forget')\n    - 'exit' to cancel\n    ______\n    >>> """)
                         match toedit:
                             case "term":
                                 card.term = input("    enter new value: ")
@@ -509,6 +533,41 @@ def deck(deck):
                                         card.suspended = True
                                 print("\n    suspension toggled to", card.suspended)
                                 break
+                            case "tags":
+                                while 1:
+                                    print("    " + str(card.tags))
+                                    addrm = input("    enter 'add/rm <tag>' to add or remove a tag. enter 'exit' to exit: ")
+                                    match addrm:
+                                        case "exit":
+                                            break
+                                        case _:
+                                            if addrm[0:4] == "add ":
+                                                card.tags.append(addrm[4:])
+                                            elif addrm[0:3] == "rm ":
+                                                try:
+                                                    card.tags.remove(addrm[3:])
+                                                except:
+                                                    print("    not an existing tag. try again.")
+                                            else:
+                                                print("    invalid. try again.")
+                            case "flags":
+                                while 1:
+                                    print("    " + str(card.flags))
+                                    addrm = input("    enter 'add/rm <tag>' to add or remove a flag. enter 'exit' to exit: ").strip()
+                                    match addrm:
+                                        case "exit":
+                                            break
+                                        case _:
+                                            if addrm[0:4] == "add ":
+                                                card.flags.append(addrm[4:])
+                                            elif addrm[0:3] == "rm ":
+                                                try:
+                                                    card.flags.remove(addrm[3:])
+                                                except:
+                                                    print("    not an existing flag. try again.")
+                                            else:
+                                                print("    invalid. try again.")
+
                             case 'bury':
                                 card.duedate += datetime.timedelta(days=1)
                                 break
@@ -520,9 +579,9 @@ def deck(deck):
                                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
                                 writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
                              
-                                writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"])
+                                writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []])
                                 writer2.write(str(card.term + card.defin + "\n"))
-                                deck.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"))
+                                deck.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []))
                                 break
                             case 'exit':
                                 break
