@@ -8,7 +8,11 @@ unofficial CLI version of anki. (still in development)
 3. [updation/upgradation](#updation-and-upgradation)
 4. [commands](#commands)
 5. [directory](#directory)
-6. [guides](#guides)
+	- [main directory](#main-directory)
+	- [subdirectories](#subdirectories)
+7. [guides](#guides)
+	- [import and export](#import-and-export)
+	- [faq](#faq)
 
 ## requirements
 - python 3 (3.10 and up)
@@ -70,7 +74,7 @@ misc:
 ## guides
 the following can also be found in [`./guides/`](https://github.com/shuu-wasseo/minianki/tree/main/export).
 
-### import/export 
+### import and export 
 *(also found in [.guides/imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/imexportguide.txt))*
 
 **importing new cards:**
