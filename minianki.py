@@ -103,6 +103,7 @@ def init(deck):
 #IMPT
 
 def impt(deck):
+    print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
     writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
@@ -129,6 +130,7 @@ def impt(deck):
 # LEARN
 
 def learn(deck):
+    print("")
     # variables:
     # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
     learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
