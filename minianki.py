@@ -14,7 +14,7 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".userdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.0.0"
+verno =  "1.1.0"
 
 # import learning variables
 class vari:
@@ -450,7 +450,7 @@ def deck(deck):
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-        comm = input("\n    enter any number to edit its corresponding card, 'add' or 'exit' to save and exit the deck.\n    ______\n    >>> ")
+        comm = input("\n    enter any number to edit its corresponding card, 'add' to add a card, 'sort' to sort the deck or 'exit' to save and exit the deck.\n    ______\n    >>> ")
         match comm:
             case "exit":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
@@ -467,6 +467,18 @@ def deck(deck):
                 writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"])
                 writer2.write(str(term + defin + "\n"))
                 deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new"))
+            case "sort":
+                sortby = input("    enter value by which you would like to sort by (term or duedate): ")
+                ascdesc = input("    would you like to sort in descending order? (y/N) ")
+                rev = False
+
+                if ascdesc == "y":
+                    rev = True
+                match sortby:
+                    case "term":
+                        deck.sort(key = lambda x: x.term, reverse = rev)
+                    case "duedate":
+                        deck.sort(key = lambda x: x.duedate, reverse = rev)
             case _:
                 try:
                     deck[int(comm)]
