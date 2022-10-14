@@ -6,6 +6,9 @@ import sys
 import time
 import datetime
 
+minianki.backup()
+minianki.nobackup()
+
 deck = []
 
 def compare_verno(vn1, vn2):
@@ -48,6 +51,7 @@ def help():
 
     misc:
     - exit: leave minianki.
+    - load: load backup.
     - update: update and restart minianki.
 
     for support, please contact joshuasoh2008@gmail.com.\n""")
@@ -88,7 +92,13 @@ while 1:
         case "help":
             print(help)
         case "update":
-            minianki.update()
+            cnfm = input("are you sure you would like to update? (y/N) ")
+            if cnfm == "y":
+                minianki.update()
+            else:
+                print("update cancelled.")
+        case "load":
+            minianki.load()
         case "shua":
             print("    hewwo :>")
         case "kiki":
@@ -109,3 +119,4 @@ while 1:
                 "invalid command. try again!"
     minianki.init(deck)
     minianki.save(deck)
+    minianki.backup()

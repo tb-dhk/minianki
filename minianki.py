@@ -598,3 +598,23 @@ def update():
     subprocess.run(["git", "pull", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("    done!")
     print("    minianki has been updated. please restart minianki to see changes take effect.")
+
+def backup():
+    # os.mkdir("~/.config/.minianki")
+    subprocess.run(["mkdir", "-p", os.path.expanduser('~') + "/.config/.minianki"])
+    subprocess.run(["cp", "-r", ".userdata", os.path.expanduser('~') + "/.config/.minianki"])
+
+def nobackup():
+    reader = open(os.getcwd()+'/.userdata/nsched.mnak', 'r').readlines()
+    rows = []
+    for x in reader:
+        rows.append(x)
+    if len(rows) == 0:
+        print("before we begin:")
+        loadyn = input("you have no user data. would you like to load from a backup? (Y/n) ")
+        if loadyn != "n":
+            load()
+    print("")
+
+def load():
+    subprocess.run(["cp", "-r", "~/.config/.minianki", ".userdata"])
