@@ -300,7 +300,7 @@ def learn(deck):
                     case "rev":
                         rev += 1
         return str(new) + " + " + str(learn0) + " + " + str(learn1) + " + " + str(rev)
-    e
+    
     while queue != []:
         for card in queue[0]:
             newint(card)
