@@ -300,7 +300,7 @@ def learn(deck):
                     case "rev":
                         rev += 1
         return str(new) + " + " + str(learn0) + " + " + str(learn1) + " + " + str(rev)
-    
+    e
     while queue != []:
         for card in queue[0]:
             newint(card)
@@ -458,7 +458,7 @@ def deck(deck):
                 break
             case "add":
                 writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-                writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+                ewriter2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
              
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
@@ -517,7 +517,7 @@ def deck(deck):
                                 print("    invalid. try again")
 
 def update():
-    print("    recloning minianki...")
+    print("\n    recloning minianki...")
     subprocess.run(["git", "-C", os.path.abspath(os.path.join(os.getcwd(), os.pardir)), "clone", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("    cleaning up the mess...")
     subprocess.run(["git", "clean", "-f", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
