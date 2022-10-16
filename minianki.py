@@ -42,7 +42,8 @@ for x in readvari:
                 variables.append([x[0], True, x[2], x[3]])  
             if x[1] == "False":
                 vars.append(vari(x[0], False, x[2], x[3]))
-                variables.append([x[0], False, x[2], x[3]])  
+                variables.append([x[0], False, x[2], x[3]])
+
 
 # INIT
 
@@ -407,6 +408,10 @@ def settings():
                     writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
+
+def pref():
+    while 1:
+        string = "\n    variables: \n"
 
 # GUIDE
 def guide():

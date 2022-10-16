@@ -16,13 +16,18 @@ def compare_verno(vn1, vn2):
     vntwo = vn2.split("-")[0]
     one = vnone.split(".")
     two = vntwo.split(".")
-    for x in range(3):
+    vn = []
+    if len(one) > len(two):
+        vn = len(two)
+    else:
+        vn = len(one)
+    for x in range(vn):
+        if x == vn-1 and one[x] == two[x]:
+            return vntwo
         if one[x] > two[x]:
             return vnone
         if two[x] > one[x]:
             return vntwo
-        if x == 2 and one[x] == two[x]:
-            return vnone
 
 github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
 new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
@@ -30,10 +35,10 @@ new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minian
 def help():
     string = ("\n    you are using minianki v" + minianki.verno + ".")
     if compare_verno(github_verno, minianki.verno) != minianki.verno:
-        if (datetime.datetime.fromisoformat(new_release_date).date() - datetime.datetime.today().date()).days <= 14:
-            string = string + (f"    a new version of minianki ({github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date).date()}! if you would like to update, please use the 'update' command.")
+        if (datetime.datetime.fromisoformat(new_release_date[:-1]).date() - datetime.datetime.today().date()).days <= 14:
+            string = string + (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
         else:
-            string = string + (f"    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
+            string = string + (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
     string = string + ("""\n
     list of commands:
 
