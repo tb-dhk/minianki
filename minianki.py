@@ -11,7 +11,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 print("\ninitialising minianki...")
 subprocess.run(["git", "init"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-subprocess.run(["git", "update-index", "--assume-unchanged", ".userdata/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
@@ -28,7 +28,7 @@ class vari:
 vars = []
 variables = []
 
-readvari = csv.reader(open(os.getcwd()+'/.userdata/learnvars.csv', 'r'))
+readvari = csv.reader(open(os.getcwd()+'/.mnakdata/learnvars.csv', 'r'))
 for x in readvari:
     match x[2]: 
         case "float":
@@ -47,7 +47,7 @@ for x in readvari:
 
 prefs = {}
 
-readprefs = csv.reader(open(os.getcwd()+'/.userdata/prefs.csv'))
+readprefs = csv.reader(open(os.getcwd()+'/.mnakdata/prefs.csv'))
 for x in readprefs:
     prefs[x[0]] = x[1]
 
@@ -76,7 +76,7 @@ class flashcard:
 
 # initialisation function
 def init(deck):
-    reader = csv.reader(open(os.getcwd()+'/.userdata/sched.mnak', 'r'))  
+    reader = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))  
     # import csv into deck
     defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
     for row in reader:
@@ -133,8 +133,8 @@ def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-    writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+    writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
+    writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
     impted = 0 
     
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
@@ -348,8 +348,8 @@ def learn(deck):
 # SAVE
 
 def save(deck):
-    writecsv = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'w'))
-    writetxt = open(os.getcwd()+'/.userdata/nsched.mnak', 'w')
+    writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'w'))
+    writetxt = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'w')
     saved = 0
 
     # save to 
@@ -411,7 +411,7 @@ def settings():
                         else:
                             varia.value = newval
                             break
-                    writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
+                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/learnvars.csv', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
 
@@ -440,7 +440,7 @@ def preferences():
                     while 1:
                         prefs[cpref] = input("    enter new value: ")
                         break
-                    writeprefs = csv.writer(open(os.getcwd()+'/.userdata/prefs.csv', 'w'))
+                    writeprefs = csv.writer(open(os.getcwd()+'/.mnakdata/prefs.csv', 'w'))
                     for x in prefs:
                         writeprefs.writerow([x, prefs[x]])
 
@@ -513,13 +513,13 @@ def deck(deck):
         comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
-                writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', "w+"))
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', "w+"))
                 for card in deck:
                     writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags])
                 break
             case "add":
-                writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-                writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
+                writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
              
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
@@ -612,8 +612,8 @@ def deck(deck):
                                 break
                             case 'forget':
                                 deck.remove(card)
-                                writer = csv.writer(open(os.getcwd()+'/.userdata/sched.mnak', 'a'))
-                                writer2 = open(os.getcwd()+'/.userdata/nsched.mnak', 'a')
+                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
+                                writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
                              
                                 writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []])
                                 writer2.write(str(card.term + card.defin + "\n"))
@@ -637,11 +637,11 @@ def update():
 
 def backup():
     # os.mkdir("~/.config/.minianki")
-    subprocess.run(["mkdir", "-p", backuppath()])
-    subprocess.run(["cp", "-r", ".userdata", backuppath()])
+    subprocess.run(["rm", "-r", backuppath()+"/.mnakdata"])
+    subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()])
 
 def nobackup():
-    reader = open(os.getcwd()+'/.userdata/nsched.mnak', 'r').readlines()
+    reader = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'r').readlines()
     rows = []
     for x in reader:
         rows.append(x)
@@ -653,7 +653,8 @@ def nobackup():
     print("")
 
 def load():
-    subprocess.run(["cp", "-r", backuppath(), ".userdata"])
+    subprocess.run(["rm", "-r", os.getcwd()+"/.mnakdata"])
+    subprocess.run(["cp", "-r", backuppath()+"/.mnakdata", os.getcwd()])
 
 def backuppath():
     open = prefs["backup location"][0]
