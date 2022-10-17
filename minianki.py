@@ -378,7 +378,7 @@ def settings():
             string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varia.name} ({str(x)}): {str(varia.value)}  \n    {varia.exp } \n" 
         string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
         print("    " + string)
-        comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit settings.\n    _______\n    >>> ")
+        comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit this menu.\n    _______\n    >>> ")
         match comm:
             case 'exit':
                 break
@@ -414,6 +414,35 @@ def settings():
                     writevari = csv.writer(open(os.getcwd()+'/.userdata/learnvars.csv', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
+
+def preferences():
+    while 1: 
+        count = 0
+        string = "\n    options/preferences: \n"
+        for x in prefs:
+            pref = prefs[x]
+            string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {x} ({str(count)}): {pref}  \n" 
+            count += 1
+        string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
+        print("    " + string)
+        comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit this menu.\n    _______\n    >>> ")
+        match comm:
+            case 'exit':
+                break
+            case _:
+                try:
+                    comm = int(comm)
+                    cpref = list(prefs)[comm]
+                except:
+                    print("    invalid command. try again!")
+                else:
+                    print("    " + cpref + " (" + str(int(comm)) + ")" + "\n    current value: " + str(prefs[cpref]))
+                    while 1:
+                        prefs[cpref] = input("    enter new value: ")
+                        break
+                    writeprefs = csv.writer(open(os.getcwd()+'/.userdata/prefs.csv', 'w'))
+                    for x in prefs:
+                        writeprefs.writerow([x, prefs[x]])
 
 # GUIDE
 def guide():
