@@ -28,7 +28,7 @@ class vari:
 vars = []
 variables = []
 
-readvari = csv.reader(open(os.getcwd()+'/.mnakdata/learnvars.csv', 'r'))
+readvari = csv.reader(open(os.getcwd()+'/.mnakdata/config.csv', 'r'))
 for x in readvari:
     match x[2]: 
         case "float":
@@ -411,7 +411,7 @@ def settings():
                         else:
                             varia.value = newval
                             break
-                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/learnvars.csv', 'w'))
+                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/config.csv', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
 
