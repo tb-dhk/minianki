@@ -24,12 +24,21 @@ firstly, clone this repository.
 ```
 $ git clone https://github.com/shuu-wasseo/minianki
 ```
+
 secondly, add the minianki directory into your PATH. 
 
 thirdly, make the mnak file executable with the following code (replace 'mnak' below with the path for the mnak file)
+
 ```
 $ chmod +x mnak
 ```
+
+lastly, enter the following in your browser to install all relevant and necessary packages.
+
+```
+$ make install
+```
+
 now, you are able to use minianki! enter "mnak" in your terminal to begin!
 
 ## updation and upgradation
