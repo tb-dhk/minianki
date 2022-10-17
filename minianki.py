@@ -14,7 +14,7 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".userdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.1.0"
+verno =  "1.1"
 
 # import learning variables
 class vari:
