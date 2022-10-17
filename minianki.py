@@ -235,11 +235,9 @@ def learn(deck):
                                 deck.remove(ocard) # remove old copy of card
                         card.duedate = card.duedate + datetime.timedelta(days=genints(card)[option])
                         card.lastint = genints(card)[option]
-                        print("\n    card delayed by:", printno(genints(card)[option]), "\n")
                         print("    new due date:", str(card.duedate)[0:10])
                         print("    1 card less!")
                         deck.append(card) # add new copy of card
-                        print("    card with new duedate saved to deck:", card.duedate)
                         queue[0].remove(card) # remove card from queue
                     match option:
                         case 0:
