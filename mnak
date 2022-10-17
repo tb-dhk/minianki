@@ -16,13 +16,18 @@ def compare_verno(vn1, vn2):
     vntwo = vn2.split("-")[0]
     one = vnone.split(".")
     two = vntwo.split(".")
-    for x in range(3):
+    vn = []
+    if len(one) > len(two):
+        vn = len(two)
+    else:
+        vn = len(one)
+    for x in range(vn):
+        if x == vn-1 and one[x] == two[x]:
+            return vntwo
         if one[x] > two[x]:
             return vnone
         if two[x] > one[x]:
             return vntwo
-        if x == 2 and one[x] == two[x]:
-            return vnone
 
 github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
 new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
