@@ -48,7 +48,8 @@ manage/use deck:
 settings and help:
 - guide: see guides.
 - help: view all commands again.
-- settings: customise deck options.
+- prefs: configure general preferences.
+- settings: configure deck options.
 
 misc:
 - exit: leave minianki.
