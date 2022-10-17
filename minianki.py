@@ -15,7 +15,7 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.1"
+verno =  "1.2"
 
 # import learning variables
 class vari:
@@ -416,11 +416,6 @@ def settings():
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
 
-<<<<<<< HEAD
-def pref():
-    while 1:
-        string = "\n    variables: \n"
-=======
 def preferences():
     while 1: 
         count = 0
@@ -449,7 +444,6 @@ def preferences():
                     writeprefs = csv.writer(open(os.getcwd()+'/.mnakdata/prefs.csv', 'w'))
                     for x in prefs:
                         writeprefs.writerow([x, prefs[x]])
->>>>>>> 1.2
 
 # GUIDE
 def guide():
