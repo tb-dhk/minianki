@@ -4,6 +4,7 @@ import os
 import random
 import math
 import subprocess
+import colors
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -325,7 +326,7 @@ def learn(deck):
                             learn1 += 1
                     case "rev":
                         rev += 1
-        return str(new) + " + " + str(learn0) + " + " + str(learn1) + " + " + str(rev)
+        return colors.color(new, prefs["cardcountnew"]) + " + " + colors.color(learn0, prefs["cardcountlearn"]) + " + " + colors.color(learn1, prefs["cardcountlearn"]) + " + " + colors.color(rev, prefs["cardcountrev"])
     
     while queue != []:
         for card in queue[0]:
@@ -469,9 +470,9 @@ def deck(deck):
 
         for card in deck:
             try:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
             except:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + " " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
             cardcount += 1
 
     while 1:
