@@ -44,6 +44,12 @@ for x in readvari:
                 vars.append(vari(x[0], False, x[2], x[3]))
                 variables.append([x[0], False, x[2], x[3]])  
 
+prefs = {}
+
+readprefs = csv.reader(open(os.getcwd()+'/.userdata/prefs.csv'))
+for x in readprefs:
+    prefs[x[0]] = x[1]
+
 # INIT
 
 # variables:
@@ -601,8 +607,8 @@ def update():
 
 def backup():
     # os.mkdir("~/.config/.minianki")
-    subprocess.run(["mkdir", "-p", os.path.expanduser('~') + "/.config/.minianki"])
-    subprocess.run(["cp", "-r", ".userdata", os.path.expanduser('~') + "/.config/.minianki"])
+    subprocess.run(["mkdir", "-p", backuppath()])
+    subprocess.run(["cp", "-r", ".userdata", backuppath()])
 
 def nobackup():
     reader = open(os.getcwd()+'/.userdata/nsched.mnak', 'r').readlines()
@@ -617,4 +623,15 @@ def nobackup():
     print("")
 
 def load():
-    subprocess.run(["cp", "-r", os.path.expanduser('~') + "/.config/.minianki", ".userdata"])
+    subprocess.run(["cp", "-r", backuppath(), ".userdata"])
+
+def backuppath():
+    open = prefs["backup location"][0]
+    path = prefs["backup location"][1:]
+    match open:
+        case ".":
+            return os.getcwd() + path
+        case "~":
+            return os.path.expanduser('~')+ path
+        case _:
+            return path
