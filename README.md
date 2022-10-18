@@ -53,6 +53,7 @@ importing:
 manage/use deck:
 - deck: see all your cards and edit, suspend or delete them.
 - learn: an anki-esque learning session.
+- stats: see your stats for the deck.
 
 settings and help:
 - guide: see guides.
@@ -109,12 +110,8 @@ the .userdata subdirectory contains data such as cards (with or without scheduli
 
 **how does the algorithm work in minianki?**
 
-the minianki algorithm is similar to anki's algorithm without certain features. however, we aim to implement most if not all features of anki in minianki (other than features that the terminal does not support) by v1. see the [wiki](https://github.com/shuu-wasseo/minianki/wiki) for more information.
+the minianki algorithm is similar to anki's algorithm without certain features. however, we aim to implement most if not all features of anki in minianki (other than features that the terminal does not support) by v1. see the wiki (https://github.com/shuu-wasseo/minianki/wiki) for more information.
 
-**can i have subdecks in minianki?**
+**can i have subdecks/media in minianki?**
 
-minianki currently does not support subdecks, but we are currently working to implement these in upcoming versions.
-
-**can i have media in my minianki flashcards?**
-
-while this is a prominent feature of anki, minianki does not currently support media and we are not planning to implement media support anytime soon.
+we are planning to implement subdecks and media in minianki 1.4 and 2 respectively. see the wiki (https://github.com/shuu-wasseo/minianki/wiki/future-extensions) for more information.
