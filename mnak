@@ -69,9 +69,9 @@ welc = """welcome to minianki! :> \n"""
 if minianki.variables[13][1] == True:
     for ind in range(len(welc)):
         if ind < len(welc)-3:
-            time.sleep(0.05)
+            time.sleep(0.01)
         else:
-            time.sleep(0.25)
+            time.sleep(0.01)
         sys.stdout.write(welc[ind])
         sys.stdout.flush()
 else:
