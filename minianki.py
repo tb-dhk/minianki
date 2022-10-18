@@ -4,7 +4,8 @@ import os
 import random
 import math
 import subprocess
-import colors
+from colors import color
+import plotext as plt
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -28,7 +29,7 @@ class vari:
 vars = []
 variables = []
 
-readvari = csv.reader(open(os.getcwd()+'/.mnakdata/config.csv', 'r'))
+readvari = csv.reader(open(os.getcwd()+'/.mnakdata/config.mnak', 'r'))
 for x in readvari:
     match x[2]: 
         case "float":
@@ -48,7 +49,7 @@ for x in readvari:
 
 prefs = {}
 
-readprefs = csv.reader(open(os.getcwd()+'/.mnakdata/prefs.csv'))
+readprefs = csv.reader(open(os.getcwd()+'/.mnakdata/prefs.mnak'))
 for x in readprefs:
     prefs[x[0]] = x[1]
 
@@ -76,11 +77,14 @@ class flashcard:
         self.flags = flags
 
 # initialisation function
+stat = []
+
 def init(deck):
-    reader = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))  
+    readdeck = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))
+    readstats = csv.reader(open(os.getcwd()+'/.mnakdata/stats.mnak', 'r'))
     # import csv into deck
     defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
-    for row in reader:
+    for row in readdeck:
         if row == [] or row[0] == "":
             continue
         else:
@@ -127,7 +131,29 @@ def init(deck):
                     deck.remove(card1)
                 else:
                     deck.remove(card2)
- 
+    # import and update stats   
+    for row in readstats:
+        stat.append(row)
+    
+    # first row: number of reviews in last 30 days
+    for x in range(len(stat[0])):
+        if x != 0:
+            stat[0][x] = int(stat[0][x])
+    form30da = datetime.datetime.fromisoformat(stat[0][0]).date()
+    tdy = datetime.datetime.today().date()
+    th30d = datetime.timedelta(days=30)
+    newstats0 = [(tdy - th30d).isoformat()]
+        
+    if form30da != tdy - th30d:
+        if (tdy - form30da).days > 60:            
+            for x in range(31):
+                newstats0.append(0)
+        else:
+            newstats0 = newstats0 + stat[0][(tdy - form30da).days - 30:]
+            while len(newstats0) < 32:
+                newstats0.append(0)
+        stat[0] = newstats0
+
 #IMPT
 
 def impt():
@@ -201,10 +227,10 @@ def learn(deck):
         input(f"    term: {card.term}\n    ")
         print(f"    definition: {card.defin}\n")
         print("    enter 1-4 for:" + 
-        f"\n    1. again ({printno(genints(card)[0])})" + 
-        f"\n    2. hard ({printno(genints(card)[1])})" +
-        f"\n    3. good ({printno(genints(card)[2])})" +
-        f"\n    4. easy ({printno(genints(card)[3])})\n")
+        color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
+        color(f"\n    2. hard ({printno(genints(card)[1])})", prefs["hard"]) +
+        color(f"\n    3. good ({printno(genints(card)[2])})", prefs["good"]) +
+        color(f"\n    4. easy ({printno(genints(card)[3])})", prefs["easy"]) + "\n")
 
         while 1:
             try:
@@ -325,7 +351,7 @@ def learn(deck):
                             learn1 += 1
                     case "rev":
                         rev += 1
-        return colors.color(new, prefs["cardcountnew"]) + " + " + colors.color(learn0, prefs["cardcountlearn"]) + " + " + colors.color(learn1, prefs["cardcountlearn"]) + " + " + colors.color(rev, prefs["cardcountrev"])
+        return color(new, prefs["cardcountnew"]) + " + " + color(learn0, prefs["cardcountlearn"]) + " + " + color(learn1, prefs["cardcountlearn"]) + " + " + color(rev, prefs["cardcountrev"])
     
     while queue != []:
         for card in queue[0]:
@@ -349,6 +375,7 @@ def learn(deck):
 def save(deck):
     writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'w'))
     writetxt = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'w')
+    writestats = csv.writer(open(os.getcwd()+'/.mnakdata/stats.mnak', 'w'))
     saved = 0
 
     # save to 
@@ -366,6 +393,10 @@ def save(deck):
         writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags])
         writetxt.write(x.term + "    " + x.defin + "\n")
         saved += 1
+
+    # also save stats
+    for x in stat:
+        writestats.writerow(x)
 
 # SETTINGS
 
@@ -410,7 +441,7 @@ def settings():
                         else:
                             varia.value = newval
                             break
-                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/config.csv', 'w'))
+                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/config.mnak', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
 
@@ -665,3 +696,42 @@ def backuppath():
             return os.path.expanduser('~')+ path
         case _:
             return path
+
+def stats(deck):
+    # bar graph function
+    def plotgraph(axes, data, title):
+        plt.clf()
+        plt.bar(axes, data)
+        plt.title("# " + title)
+        plt.plot_size(plt.tw(), plt.th() / 2)
+        plt.canvas_color("black")
+        plt.axes_color("black")
+        plt.ticks_color("white")
+        plt.show()
+
+    # future due
+    futdues = []
+    futstats = []
+    num = []
+    for x in deck:
+        futdues.append((x.duedate - datetime.datetime.today().date()).days)
+    for x in futdues:
+        try:
+            futstats[x] += 1
+        except IndexError:
+            while len(futstats) < x + 1:
+                futstats.append(0)
+            futstats[x] += 1
+    for x in range(len(futstats)):
+        num.append(x)
+    plotgraph(num, futstats, "future due")
+
+    # calendar heatmap
+    print("# calendar heatmap \ncoming soon!")
+
+    # reviews per day
+    l30d = [datetime.datetime.today()]
+    for x in range(30):
+        l30d.append((l30d[0] - datetime.timedelta(days=x+1)).date().isoformat())
+    l30d.reverse()
+    plotgraph(l30d, stat[0][1:], "reviews per day")

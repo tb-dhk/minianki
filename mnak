@@ -48,6 +48,7 @@ def help():
     manage/use deck:
     - deck: see all your cards and edit, suspend or delete them.
     - learn: an anki-esque learning session.
+    - stats: see your stats for the deck.
     
     settings and help:
     - guide: see guides.
@@ -91,6 +92,8 @@ while 1:
             minianki.learn(deck)
         case "deck":
             minianki.deck(deck)
+        case "stats":
+            minianki.stats(deck)
         case "settings":
             minianki.settings()
         case "prefs":
