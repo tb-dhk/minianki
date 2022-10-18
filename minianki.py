@@ -751,6 +751,13 @@ def stats(deck):
 
     # calendar heatmap
     print("    # calendar heatmap \ncoming soon!\n")
+    # start from january 1 this year
+    # sun-sat week
+    # need data from the entire year (12 rows + extra for january in new year)
+    # list of 7 rows, depending on each day - 31 dec (prev year), add day of 31 dec and find remainder when div by 7
+    # find maximum value
+    # add to row based on percentage of max value (5 diff values for 0/25/50/75/100%)
+    # print rows
 
     # reviews per day
     l30d = [datetime.datetime.today()]
@@ -802,3 +809,23 @@ def stats(deck):
     for x in range(len(revstats)):
         num.append(x)
     plotgraph(num, revstats, "review intervals")
+
+    # card ease
+    eases = []    
+    easerounds = []
+    easestats = []
+    num = []
+    for x in deck:
+        eases.append(x.ease)
+    for x in eases:
+        easerounds.append(round(x*0.05,2)/0.05)
+    for x in easerounds:
+        try:
+            easestats[int(x*20)] += 1
+        except IndexError:
+            while len(easestats) < x*20 + 1:
+                easestats.append(0)
+            easestats[int(x*20)] += 1
+    for x in range(len(easestats)):
+        num.append(x/20)
+    plotgraph(num, easestats, "card ease")
