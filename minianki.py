@@ -277,6 +277,8 @@ def learn(deck):
                         print("    1 card less!")
                         deck.append(card) # add new copy of card
                         queue[0].remove(card) # remove card from queue
+                    if card.status == "rev":
+                        stat[0][-1] += 1
                     match option:
                         case 0:
                             if card.status == "rev":
@@ -748,7 +750,7 @@ def stats(deck):
     plotgraph(num, futstats, "future due")
 
     # calendar heatmap
-    print("# calendar heatmap \ncoming soon!")
+    print("    # calendar heatmap \ncoming soon!\n")
 
     # reviews per day
     l30d = [datetime.datetime.today()]
@@ -757,8 +759,8 @@ def stats(deck):
     l30d.reverse()
     plotgraph(l30d, stat[0][1:], "reviews per day")
 
-# cardcount
-    print("card stats:")
+    # cardcount
+    print("    card stats:")
     titles = ["new", "learning", "relearning", "young", "mature", "suspended"]
     ccer = [0, 0, 0, 0, 0, 0]
     for card in deck:
@@ -777,8 +779,26 @@ def stats(deck):
                 else:
                     ccer[4] += 1
     if sum(ccer) == 0:
-        print("you have 0 cards.")
+        print("    you have 0 cards.")
     else:
-        print(f"you have {sum(ccer)} cards.")
+        print(f"    you have {sum(ccer)} cards.")
         for x in range(6):
-            print(f"{titles[x]}: {ccer[x]} ({round(ccer[x]/sum(ccer)*100,2)}%)")
+            print(f"    {titles[x]}: {ccer[x]} ({round(ccer[x]/sum(ccer)*100,2)}%)")
+    print("")
+
+    # review intervals
+    revdues = []
+    revstats = []
+    num = []
+    for x in deck:
+        revdues.append(x.lastint)
+    for x in revdues:
+        try:
+            revstats[int(x)] += 1
+        except IndexError:
+            while len(revstats) < x + 1:
+                revstats.append(0)
+            revstats[int(x)] += 1
+    for x in range(len(revstats)):
+        num.append(x)
+    plotgraph(num, revstats, "review intervals")
