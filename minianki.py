@@ -4,7 +4,7 @@ import os
 import random
 import math
 import subprocess
-import colors
+from colors import color
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -129,7 +129,6 @@ def init(deck):
                     deck.remove(card2)
  
 #IMPT
-
 def impt():
     print("")
     # make a deck
@@ -156,7 +155,6 @@ def impt():
         print(f"    {impted} card(s) imported.")
 
 # LEARN
-
 def learn(deck):
     print("")
     # variables:
@@ -201,10 +199,10 @@ def learn(deck):
         input(f"    term: {card.term}\n    ")
         print(f"    definition: {card.defin}\n")
         print("    enter 1-4 for:" + 
-        f"\n    1. again ({printno(genints(card)[0])})" + 
-        f"\n    2. hard ({printno(genints(card)[1])})" +
-        f"\n    3. good ({printno(genints(card)[2])})" +
-        f"\n    4. easy ({printno(genints(card)[3])})\n")
+        color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
+        color(f"\n    2. hard ({printno(genints(card)[1])})", prefs["hard"]) +
+        color(f"\n    3. good ({printno(genints(card)[2])})", prefs["good"]) +
+        color(f"\n    4. easy ({printno(genints(card)[3])})\n", prefs["easy"]))
 
         while 1:
             try:
@@ -325,7 +323,7 @@ def learn(deck):
                             learn1 += 1
                     case "rev":
                         rev += 1
-        return colors.color(new, prefs["cardcountnew"]) + " + " + colors.color(learn0, prefs["cardcountlearn"]) + " + " + colors.color(learn1, prefs["cardcountlearn"]) + " + " + colors.color(rev, prefs["cardcountrev"])
+        return color(new, prefs["cardcountnew"]) + " + " + color(learn0, prefs["cardcountlearn"]) + " + " + color(learn1, prefs["cardcountlearn"]) + " + " + color(rev, prefs["cardcountrev"])
     
     while queue != []:
         for card in queue[0]:
@@ -345,7 +343,6 @@ def learn(deck):
             queue.pop(0)
 
 # SAVE
-
 def save(deck):
     writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'w'))
     writetxt = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'w')
@@ -368,7 +365,6 @@ def save(deck):
         saved += 1
 
 # SETTINGS
-
 def settings():
     while 1: 
         string = "\n    variables: \n"
@@ -665,3 +661,15 @@ def backuppath():
             return os.path.expanduser('~')+ path
         case _:
             return path
+
+def stats():
+    pass
+# future due
+# calendar (7x53 grid)
+# reviews per day
+# pie chart with all cards
+# review intervals
+# card ease
+# hourly breakdown
+# answer buttons
+# added cards

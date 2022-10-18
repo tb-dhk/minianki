@@ -6,6 +6,7 @@ import sys
 import time
 import datetime
 
+minianki.load()
 minianki.backup()
 minianki.nobackup()
 
