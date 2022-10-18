@@ -1,0 +1,8 @@
+backup location,~/.config
+cardcountnew,#0000FF
+cardcountlearn,#FF0000
+cardcountrev,#00FF00
+again,#FF0000
+hard,#FFFFFF
+good,#00FF00
+easy,#0000FF
