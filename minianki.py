@@ -79,10 +79,16 @@ class flashcard:
 # initialisation function
 stat = []
 
+# import and update stats 
+readstats = csv.reader(open(os.getcwd()+'/.mnakdata/stats.mnak', 'r'))    
+for row in readstats:
+    stat.append(row)
+
 def init(deck):
+    print()
     readdeck = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))
-    readstats = csv.reader(open(os.getcwd()+'/.mnakdata/stats.mnak', 'r'))
-    # import csv into deck
+
+# import csv into deck
     defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
     for row in readdeck:
         if row == [] or row[0] == "":
@@ -131,19 +137,25 @@ def init(deck):
                     deck.remove(card1)
                 else:
                     deck.remove(card2)
-    # import and update stats   
-    for row in readstats:
-        stat.append(row)
-    
+
     # first row: number of reviews in last 30 days
-    for x in range(len(stat[0])):
-        if x != 0:
-            stat[0][x] = int(stat[0][x])
-    form30da = datetime.datetime.fromisoformat(stat[0][0]).date()
     tdy = datetime.datetime.today().date()
     th30d = datetime.timedelta(days=30)
     newstats0 = [(tdy - th30d).isoformat()]
-        
+ 
+    try:
+        stat[0][0]
+    except:
+        stat[0] = [(tdy - th30d).isoformat()]
+        for x in range(31):
+             stat[0].append(0)
+    else:
+        for x in range(len(stat[0])):
+            if x != 0:
+                stat[0][x] = int(stat[0][x])
+
+    form30da = datetime.datetime.fromisoformat(stat[0][0]).date()
+
     if form30da != tdy - th30d:
         if (tdy - form30da).days > 60:            
             for x in range(31):
@@ -267,7 +279,10 @@ def learn(deck):
                         queue[0].remove(card) # remove card from queue
                     match option:
                         case 0:
-                            card.status = "learn"
+                            if card.status == "rev":
+                                card.status = "learn"
+                            else:
+                                card.status = "relearn"
                             card.ls = 0
                             card.againcount += 1
                             if card.againcount == variables[11][1]: # autosuspend leech
@@ -345,6 +360,11 @@ def learn(deck):
                     case "new":
                         new += 1
                     case "learn":
+                        if card.ls == 0:
+                            learn0 += 1
+                        elif card.ls == 1:
+                            learn1 += 1
+                    case "relearn":
                         if card.ls == 0:
                             learn0 += 1
                         elif card.ls == 1:
@@ -708,6 +728,7 @@ def stats(deck):
         plt.axes_color("black")
         plt.ticks_color("white")
         plt.show()
+        print("")
 
     # future due
     futdues = []
@@ -735,3 +756,29 @@ def stats(deck):
         l30d.append((l30d[0] - datetime.timedelta(days=x+1)).date().isoformat())
     l30d.reverse()
     plotgraph(l30d, stat[0][1:], "reviews per day")
+
+# cardcount
+    print("card stats:")
+    titles = ["new", "learning", "relearning", "young", "mature", "suspended"]
+    ccer = [0, 0, 0, 0, 0, 0]
+    for card in deck:
+        if card.suspended == "True":
+            ccer[5] += 1
+        match card.status:
+            case "new":
+                ccer[0] += 1
+            case "learn":
+                ccer[1] += 1
+            case "relearn":
+                ccer[2] += 1
+            case "rev":
+                if card.lastint < 21:
+                    ccer[3] += 1
+                else:
+                    ccer[4] += 1
+    if sum(ccer) == 0:
+        print("you have 0 cards.")
+    else:
+        print(f"you have {sum(ccer)} cards.")
+        for x in range(6):
+            print(f"{titles[x]}: {ccer[x]} ({round(ccer[x]/sum(ccer)*100,2)}%)")
