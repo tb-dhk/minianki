@@ -84,6 +84,13 @@ readstats = csv.reader(open(os.getcwd()+'/.mnakdata/stats.mnak', 'r'))
 for row in readstats:
     stat.append(row)
 
+for row in stat:
+    for el in row:
+        try:
+            el = int(el)
+        except:
+            pass
+
 def init(deck):
     print()
     readdeck = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))
@@ -136,35 +143,49 @@ def init(deck):
                 if card1.duedate < card2.duedate:
                     deck.remove(card1)
                 else:
-                    deck.remove(card2)
+                    deck.remove(card2) 
 
-    # first row: number of reviews in last 30 days
-    tdy = datetime.datetime.today().date()
-    th30d = datetime.timedelta(days=30)
-    newstats0 = [(tdy - th30d).isoformat()]
- 
-    try:
-        stat[0][0]
-    except:
-        stat[0] = [(tdy - th30d).isoformat()]
-        for x in range(31):
-             stat[0].append(0)
+    # importing stats
+    # checking for year
+    thisyear = datetime.datetime.today().year
+    lod = []
+    if (thisyear % 4 == 0 and thisyear % 100 != 0) or thisyear % 400 == 0:
+        lod = [31, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     else:
-        for x in range(len(stat[0])):
-            if x != 0:
-                stat[0][x] = int(stat[0][x])
+        lod = [31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    form30da = datetime.datetime.fromisoformat(stat[0][0]).date()
-
-    if form30da != tdy - th30d:
-        if (tdy - form30da).days > 60:            
-            for x in range(31):
-                newstats0.append(0)
+    for x in range(13):
+        try:
+            stat[x]
+        except:
+            stat.append([])
+            for y in range(lod[x]):
+                stat[x].append(0)
         else:
-            newstats0 = newstats0 + stat[0][(tdy - form30da).days - 30:]
-            while len(newstats0) < 32:
-                newstats0.append(0)
-        stat[0] = newstats0
+            if stat[x] == [] or stat[x] == "":
+                for y in range(lod[x]):
+                    stat[x].append(0) 
+            else:
+                while len(stat[x]) < lod[x]:
+                    stat[x].append(0)
+
+    # hourly stats
+    for x in range(14, 16):
+        try:
+            stat[x]
+        except:
+            while len(stat) < x+1:
+                stat.append([])
+            for y in range(24):
+                stat[x].append(0)
+        else:
+            if stat[x] == [] or stat[x] == "":
+                for y in range(24):
+                    stat[x].append(0)
+            else:
+                while len(stat[x]) < 24:
+                    stat[x].append(0)
+
 
 #IMPT
 
@@ -278,7 +299,8 @@ def learn(deck):
                         deck.append(card) # add new copy of card
                         queue[0].remove(card) # remove card from queue
                     if card.status == "rev":
-                        stat[0][-1] += 1
+                        stat[datetime.datetime.today().month] = [int(i) for i in stat[datetime.datetime.today().month]]
+                        stat[datetime.datetime.today().month][datetime.datetime.today().day-1] += 1
                     match option:
                         case 0:
                             if card.status == "rev":
@@ -720,6 +742,9 @@ def backuppath():
             return path
 
 def stats(deck):
+    print("    before we begin:")
+    print("    you might want to zoom out as much as possible in your terminal before viewing the stats as this will allow us to display the graphs and charts more clearly.")
+    input("    press enter to continue")
     # bar graph function
     def plotgraph(axes, data, title):
         plt.clf()
@@ -750,21 +775,75 @@ def stats(deck):
     plotgraph(num, futstats, "future due")
 
     # calendar heatmap
-    print("    # calendar heatmap \ncoming soon!\n")
-    # start from january 1 this year
-    # sun-sat week
-    # need data from the entire year (12 rows + extra for january in new year)
-    # list of 7 rows, depending on each day - 31 dec (prev year), add day of 31 dec and find remainder when div by 7
-    # find maximum value
-    # add to row based on percentage of max value (5 diff values for 0/25/50/75/100%)
-    # print rows
+    print("    # calendar heatmap\n")
+    yearindow = [[], [], [], [], [], [], []]
+    strings = []
+    months = [0]
+    max = 0
+    weekcount = 0
+    def twkd(date):
+        if date.weekday() == 6:
+            return 0
+        else:
+            return date.weekday() + 1
+    for x in range(twkd(datetime.date(datetime.datetime.today().year,1,1))):
+        yearindow[x].append(0)
+    for x in range(12):
+        for y in range(len(stat[x+1])):
+            yearindow[twkd(datetime.date(datetime.datetime.today().year,x+1,y+1))].append(int(stat[x+1][y]))
+            if twkd(datetime.date(datetime.datetime.today().year,x+1,y+1)) == 6:
+                weekcount += 1
+            if int(stat[x+1][y]) > max:
+                max = int(stat[x+1][y])
+        months.append(weekcount)
 
+    months = months[:-1]
+    monstr = "        "
+    for x in range(len(months)):
+        while len(monstr) < months[x] * 2 + 8:
+            monstr = monstr + ("  ")
+        if x+1 < 10:
+            monstr = monstr + ("0" + str(x+1))
+        else:
+            monstr = monstr + (str(x+1))
+    strings.append(monstr)
+
+    for x in range(len(yearindow)):
+        days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
+        string = "    " + days[x] + " "
+        for y in yearindow[x]:
+            try:
+                data = round((y/max)*4)/4
+            except:
+                string = string + color("  ", "blue")
+            else:
+                match data:
+                    case 0:
+                        string = string + color("  ", "blue")
+                    case 0.25:
+                        string = string + color("░░", "blue")
+                    case 0.5:
+                        string = string + color("▒▒", "blue")
+                    case 0.75:
+                        string = string + color("▓▓", "blue")
+                    case 1:
+                        string = string + color("██", "blue")
+        strings.append(string)
+    for x in strings:
+        print(x)
+    print("")
+    
     # reviews per day
-    l30d = [datetime.datetime.today()]
+    l30d = [datetime.datetime.today().date()]
+    stats = []
     for x in range(30):
-        l30d.append((l30d[0] - datetime.timedelta(days=x+1)).date().isoformat())
+        l30d.append((l30d[0] - datetime.timedelta(days=x+1)).isoformat())
     l30d.reverse()
-    plotgraph(l30d, stat[0][1:], "reviews per day")
+    tdydate = datetime.datetime.today().day
+    tdymonth = datetime.datetime.today().month
+    stats = stat[tdymonth-1][(tdydate-31):] + stat[tdymonth][:tdydate]
+    stats = [int(i) for i in stats]
+    plotgraph(l30d, stats, "reviews per day (past 30 days)")
 
     # cardcount
     print("    card stats:")
@@ -829,3 +908,10 @@ def stats(deck):
     for x in range(len(easestats)):
         num.append(x/20)
     plotgraph(num, easestats, "card ease")
+
+    # hourly productivity
+    hours = []
+    for x in range(23):
+        hours.append(str(x) + ":00-" + str(x+1) + ":00")
+    stat[13] = [int(i) for i in stat[13]]
+    plotgraph(hours,stat[13],"cards done per hour")
