@@ -999,6 +999,4 @@ def stats(deck):
 
     # added
     stat[16] = [stat[16][0]] + [int(stat[16][i]) for i in range(len(stat[16])) if i != 0] 
-    print(l30d)
-    print(stat[16])
     plotgraph(l30d, stat[16][1:], "cards added per day (past 30 days)")
