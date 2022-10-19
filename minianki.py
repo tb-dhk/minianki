@@ -186,6 +186,45 @@ def init(deck):
                 while len(stat[x]) < 24:
                     stat[x].append(0)
 
+    # button stats
+    try:
+        stat[15]
+    except:
+        while len(stat) < 16:
+            stat.append([])
+        for y in range(12):
+            stat[15].append(0)
+    else:
+        if stat[15] == [] or stat[15] == "":
+            for y in range(12):
+                stat[15].append(0)
+        else:
+            while len(stat[15]) < 12:
+                stat[15].append(0)
+
+    # cards added
+    try:
+        stat[16]
+    except:
+        while len(stat) < 17:
+            stat.append([])
+        stat[16].append(datetime.date.today().isoformat())
+        for y in range(31):
+            stat[16].append(0)
+    else:
+        if stat[16] == [] or stat[16] == "":
+            stat[16].append(datetime.date.today())
+            for y in range(31):
+                stat[16].append(0)
+        elif len(stat[16]) < 32:
+            while len(stat[16]) < 32:
+                stat[16].append(0)
+        else:
+            tdy = datetime.date.today()
+            daysp = tdy - datetime.date.fromisoformat(stat[16][0])
+            stat[16] = [stat[16][0]] + stat[16][daysp.days+1:]
+            while len(stat[16]) < 32:
+                stat[16].append(0)
 
 #IMPT
 
@@ -275,6 +314,16 @@ def learn(deck):
                     print("    invalid. try again.")
                 else:
                     print("\n    card delayed by:", printno(genints(card)[option]), "\n")
+                    stat[13] = [int(i) for i in stat[13]]
+                    stat[14] = [int(i) for i in stat[14]]
+                    stat[15] = [int(i) for i in stat[15]]
+                    if card.status == "learn" or card.status == "new":
+                        stat[15][option] += 1
+                    elif card.status == "rev":
+                        if card.lastint < 21:
+                            stat[15][4+option] += 1
+                        else:
+                            stat[15][8+option] += 1
                     if type(genints(card)[option]) == str:
                         card.status = "learn"
                         # rescheduling card
@@ -320,12 +369,11 @@ def learn(deck):
                                 card.ls += 1
                         case 3:
                             card.ls = 2
-                            card.ease *= easybonus
-                    stat[13] = [int(i) for i in stat[13]]
-                    stat[14] = [int(i) for i in stat[14]]
+                            card.ease *= easybonus 
                     if option != 0:
                         stat[14][datetime.datetime.now().hour] += 1
                     stat[13][datetime.datetime.now().hour] += 1
+                    
                 break
 
 # count cards
@@ -843,6 +891,7 @@ def stats(deck):
     stats = []
     for x in range(30):
         l30d.append((l30d[0] - datetime.timedelta(days=x+1)).isoformat())
+    l30d[0] = l30d[0].isoformat()
     l30d.reverse()
     tdydate = datetime.datetime.today().day
     tdymonth = datetime.datetime.today().month
@@ -938,3 +987,18 @@ def stats(deck):
         except:
             succrate.append(0)
     plotgraph(hours,succrate,"success rate per hour (%)")
+
+    # buttons
+    revbutts = []
+    cats = ["learning", "young", "mature"]
+    stat[15] = [int(i) for i in stat[15]]
+    for x in range(3):
+        revbutts.append(stat[15][4*x:4*x+4])
+    for x in range(3):
+        plotgraph(["again","hard","good","easy"],revbutts[x],"answer buttons: "+cats[x])
+
+    # added
+    stat[16] = [stat[16][0]] + [int(stat[16][i]) for i in range(len(stat[16])) if i != 0] 
+    print(l30d)
+    print(stat[16])
+    plotgraph(l30d, stat[16][1:], "cards added per day (past 30 days)")
