@@ -170,7 +170,7 @@ def init(deck):
                     stat[x].append(0)
 
     # hourly stats
-    for x in range(14, 16):
+    for x in range(13, 15):
         try:
             stat[x]
         except:
@@ -321,6 +321,11 @@ def learn(deck):
                         case 3:
                             card.ls = 2
                             card.ease *= easybonus
+                    stat[13] = [int(i) for i in stat[13]]
+                    stat[14] = [int(i) for i in stat[14]]
+                    if option != 0:
+                        stat[14][datetime.datetime.now().hour] += 1
+                    stat[13][datetime.datetime.now().hour] += 1
                 break
 
 # count cards
@@ -911,7 +916,25 @@ def stats(deck):
 
     # hourly productivity
     hours = []
-    for x in range(23):
-        hours.append(str(x) + ":00-" + str(x+1) + ":00")
+    def strtime(num):
+        if num < 10:
+            return "0" + str(num)
+        elif num == 24:
+            return "0"
+        else:
+            return str(num)
+
+    for x in range(24):
+        hours.append(strtime(x) + ":00-" + strtime(x+1) + ":00")
     stat[13] = [int(i) for i in stat[13]]
-    plotgraph(hours,stat[13],"cards done per hour")
+    plotgraph(hours,stat[13],"success count per hour")
+
+    # hourly success rate
+    succrate = []
+    stat[14] = [int(i) for i in stat[14]]
+    for x in range(24):
+        try:
+            succrate.append(stat[14][x] / stat[13][x] * 100)
+        except:
+            succrate.append(0)
+    plotgraph(hours,succrate,"success rate per hour (%)")
