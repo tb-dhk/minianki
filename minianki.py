@@ -688,7 +688,7 @@ def update():
     print("    minianki has been updated. please restart minianki to see changes take effect.")
 
 def backup():
-    # os.mkdir("~/.config/.minianki")
+    # backs up old file 
     subprocess.run(["rm", "-r", backuppath()+"/.mnakdata"])
     subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()])
 
