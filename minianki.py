@@ -16,7 +16,7 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.2"
+verno =  "1.3"
 
 # import learning variables
 class vari:
@@ -632,7 +632,7 @@ def deck(deck):
             cardcount += 1
 
     while 1:
-        print("\n    ~~~~~~~~~~~~~~~~~~~~")
+        print("    ~~~~~~~~~~~~~~~~~~~~")
         printcards(deck)
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
@@ -668,20 +668,22 @@ def deck(deck):
                         deck.sort(key = lambda x: x.duedate, reverse = rev)
             case "search":
                 searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
-                searchkey = input("    enter what you would like to search for: "
+                searchkey = input("    enter what you would like to search for: ")
                 found = []
                 
                 match searchby:
                     case "term":
-                        found = [card.term for card in deck if searchkey in card.term]
+                        found = [card for card in deck if searchkey in card.term]
                     case "def":
-                        found = [card.def for card in deck if searchkey in card.def]
+                        found = [card for card in deck if searchkey in card.defin]
                     case "tags":
-                        found = [card.tags for card in deck if searchkey in card.tags]
+                        found = [card for card in deck if searchkey in card.tags]
                     case "flags":
-                        found = [card.flags for card in deck if searchkey in card.flags]
+                        found = [card for card in deck if searchkey in card.flags]
                 
+                print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
                 printcards(found)
+                print("    ~~~~~~~~~~~~~~~~~~~~")
             case _:
                 try:
                     deck[int(comm)]
