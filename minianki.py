@@ -221,7 +221,10 @@ def init(deck):
                 stat[16].append(0)
         else:
             tdy = datetime.date.today()
-            daysp = tdy - datetime.date.fromisoformat(stat[16][0])
+            try:
+                daysp = tdy - datetime.date.fromisoformat(stat[16][0])
+            except:
+                daysp = datetime.timedelta(days=0)
             stat[16] = [stat[16][0]] + stat[16][daysp.days+1:]
             while len(stat[16]) < 32:
                 stat[16].append(0)
