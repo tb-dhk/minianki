@@ -6,9 +6,8 @@ import sys
 import time
 import datetime
 
-minianki.load()
-minianki.backup()
 minianki.nobackup()
+minianki.backup()
 
 deck = []
 
@@ -30,16 +29,16 @@ def compare_verno(vn1, vn2):
         if two[x] > one[x]:
             return vntwo
 
-github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
-new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
+# github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
+# new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
     
 def help():
     string = ("\n    you are using minianki v" + minianki.verno + ".")
-    if compare_verno(github_verno, minianki.verno) != minianki.verno:
-        if (datetime.datetime.fromisoformat(new_release_date[:-1]).date() - datetime.datetime.today().date()).days <= 14:
-            string = string + (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
-        else:
-            string = string + (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
+    # if compare_verno(github_verno, minianki.verno) != minianki.verno:
+    #    if (datetime.datetime.fromisoformat(new_release_date[:-1]).date() - datetime.datetime.today().date()).days <= 14:
+    #        string = string + (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
+    #    else:
+    #        string = string + (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
     string = string + ("""\n
     list of commands:
 
@@ -49,6 +48,7 @@ def help():
     manage/use deck:
     - deck: see all your cards and edit, suspend or delete them.
     - learn: an anki-esque learning session.
+    - stats: see your stats for the deck.
     
     settings and help:
     - guide: see guides.
@@ -69,9 +69,9 @@ welc = """welcome to minianki! :> \n"""
 if minianki.variables[13][1] == True:
     for ind in range(len(welc)):
         if ind < len(welc)-3:
-            time.sleep(0.05)
+            time.sleep(0.01)
         else:
-            time.sleep(0.25)
+            time.sleep(0.01)
         sys.stdout.write(welc[ind])
         sys.stdout.flush()
 else:
@@ -92,6 +92,8 @@ while 1:
             minianki.learn(deck)
         case "deck":
             minianki.deck(deck)
+        case "stats":
+            minianki.stats(deck)
         case "settings":
             minianki.settings()
         case "prefs":
