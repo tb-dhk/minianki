@@ -6,6 +6,8 @@ import math
 import subprocess
 from colors import color
 import plotext as plt
+import requests
+import json
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -1017,3 +1019,16 @@ def stats(deck):
     # added
     stat[16] = [stat[16][0]] + [int(stat[16][i]) for i in range(len(stat[16])) if i != 0] 
     plotgraph(l30d, stat[16][1:], "cards added per day (past 30 days)")
+
+def changelog():
+    tags = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/tags").json()
+    print(tags)
+    relbt = "https://api.github.com/repos/shuu-wasseo/minianki/releases/tags/"
+    taglist = [tag["name"] for tag in tags]
+    tagdict = {}
+    for entry in taglist:
+        get = requests.get(relbt + entry).json()
+        tagdict[get["tag_name"]] = get["body"]
+    for entry in tagdict:
+        print(entry)
+        print(tagdict[entry] + "\n")
