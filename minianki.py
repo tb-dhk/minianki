@@ -636,7 +636,7 @@ def deck(deck):
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
+        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
                 writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', "w+"))
@@ -1017,4 +1017,3 @@ def stats(deck):
     # added
     stat[16] = [stat[16][0]] + [int(stat[16][i]) for i in range(len(stat[16])) if i != 0] 
     plotgraph(l30d, stat[16][1:], "cards added per day (past 30 days)")
-
