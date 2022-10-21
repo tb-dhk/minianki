@@ -59,9 +59,10 @@ settings and help:
 - guide: see guides.
 - help: view all commands again.
 - prefs: configure general preferences.
-- settings: configure deck options.
+- sett: configure deck options.
 
 misc:
+- clog: see changelog.
 - exit: leave minianki.
 - load: load backup.
 - update: update and restart minianki.

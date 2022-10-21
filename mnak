@@ -54,9 +54,10 @@ def help():
     - guide: see guides.
     - help: view all commands again.
     - prefs: configure general preferences.
-    - settings: configure deck options.
+    - sett: configure deck options.
 
     misc:
+    - clog: see changelog.
     - exit: leave minianki.
     - load: load backup.
     - update: update and restart minianki.
@@ -94,7 +95,7 @@ while 1:
             minianki.deck(deck)
         case "stats":
             minianki.stats(deck)
-        case "settings":
+        case "sett":
             minianki.settings()
         case "prefs":
             minianki.preferences()
@@ -110,7 +111,7 @@ while 1:
                 print("update cancelled.")
         case "load":
             minianki.load()
-        case "changelog":
+        case "clog":
             minianki.changelog()
         case "shua":
             print("    hewwo :>")
