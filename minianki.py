@@ -534,22 +534,6 @@ def deck(deck):
                         deck.sort(key = lambda x: x.term, reverse = rev)
                     case "duedate":
                         deck.sort(key = lambda x: x.duedate, reverse = rev)
-            case "search":
-                searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
-                searchkey = input("    enter what you would like to search for: "
-                found = []
-                
-                match searchby:
-                    case "term":
-                        found = [card.term for card in deck if searchkey in card.term]
-                    case "def":
-                        found = [card.def for card in deck if searchkey in card.def]
-                    case "tags":
-                        found = [card.tags for card in deck if searchkey in card.tags]
-                    case "flags":
-                        found = [card.flags for card in deck if searchkey in card.flags]
-                
-                printcards(found)
             case _:
                 try:
                     deck[int(comm)]
