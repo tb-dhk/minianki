@@ -18,7 +18,9 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.3"
+verno =  "1.4"
+
+deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 
 # import learning variables
 class vari:
@@ -27,27 +29,6 @@ class vari:
         self.value = value
         self.format = format
         self.exp = exp
-
-vars = []
-variables = []
-
-readvari = csv.reader(open(os.getcwd()+'/.mnakdata/config.mnak', 'r'))
-for x in readvari:
-    match x[2]: 
-        case "float":
-            vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-            variables.append([x[0], float(x[1]), x[2], x[3]])
-        case "int": 
-            vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-            variables.append([x[0], int(x[1]), x[2], x[3]])
-        case "bool":
-            if x[1] == "True":
-                vars.append(vari(x[0], True, x[2], x[3]))
-                variables.append([x[0], True, x[2], x[3]])  
-            if x[1] == "False":
-                vars.append(vari(x[0], False, x[2], x[3]))
-                variables.append([x[0], False, x[2], x[3]])
-
 
 prefs = {}
 
@@ -93,13 +74,31 @@ for row in stat:
         except:
             pass
 
-def init(deck):
-    print()
-    readdeck = csv.reader(open(os.getcwd()+'/.mnakdata/sched.mnak', 'r'))
+def init():
+    vars = []
+    variables = []
 
-# import csv into deck
+    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
+    for x in deck:
+        match x[2]: 
+            case "float":
+                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
+                variables.append([x[0], float(x[1]), x[2], x[3]])
+            case "int": 
+                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
+                variables.append([x[0], int(x[1]), x[2], x[3]])
+            case "bool":
+                if x[1] == "True":
+                    vars.append(vari(x[0], True, x[2], x[3]))
+                    variables.append([x[0], True, x[2], x[3]])  
+                if x[1] == "False":
+                    vars.append(vari(x[0], False, x[2], x[3]))
+                    variables.append([x[0], False, x[2], x[3]])
+    print() 
+    
+    # import csv into deck
     defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
-    for row in readdeck:
+    for row in deck:
         if row == [] or row[0] == "":
             continue
         else:
@@ -236,8 +235,7 @@ def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
-    writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
+    writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
     impted = 0 
     
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
@@ -249,7 +247,6 @@ def impt():
     for row in reader:
         if row.strip() != "" and row[0].strip() != "":
             writer.writerow(row.strip().split(separator) + [0,variables[7][1],0,datetime.date.today(),False,0,"new"])
-            writer2.write(str(row.strip().split(separator)) + "\n")
             impted += 1
 
     if impted == 0:
@@ -259,6 +256,27 @@ def impt():
 
 # LEARN
 def learn(deck):
+    # initialise vars
+    vars = []
+    variables = []
+
+    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
+    for x in deck:
+        match x[2]: 
+            case "float":
+                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
+                variables.append([x[0], float(x[1]), x[2], x[3]])
+            case "int": 
+                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
+                variables.append([x[0], int(x[1]), x[2], x[3]])
+            case "bool":
+                if x[1] == "True":
+                    vars.append(vari(x[0], True, x[2], x[3]))
+                    variables.append([x[0], True, x[2], x[3]])  
+                if x[1] == "False":
+                    vars.append(vari(x[0], False, x[2], x[3]))
+                    variables.append([x[0], False, x[2], x[3]])
+
     print("")
     # variables:
     # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
@@ -472,8 +490,7 @@ def learn(deck):
 
 # SAVE
 def save(deck):
-    writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'w'))
-    writetxt = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'w')
+    writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'w'))
     writestats = csv.writer(open(os.getcwd()+'/.mnakdata/stats.mnak', 'w'))
     saved = 0
 
@@ -499,6 +516,25 @@ def save(deck):
 
 # SETTINGS
 def settings():
+    vars = []
+    variables = []
+
+    readvari = csv.reader(open(os.getcwd()+'/.mnakdata/deck.mnak', 'r'))
+    for x in readvari:
+        match x[2]: 
+            case "float":
+                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
+                variables.append([x[0], float(x[1]), x[2], x[3]])
+            case "int": 
+                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
+                variables.append([x[0], int(x[1]), x[2], x[3]])
+            case "bool":
+                if x[1] == "True":
+                    vars.append(vari(x[0], True, x[2], x[3]))
+                    variables.append([x[0], True, x[2], x[3]])  
+                if x[1] == "False":
+                    vars.append(vari(x[0], False, x[2], x[3]))
+                    variables.append([x[0], False, x[2], x[3]])
     while 1: 
         string = "\n    variables: \n"
         for x in range(len(vars)):
@@ -539,7 +575,7 @@ def settings():
                         else:
                             varia.value = newval
                             break
-                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/config.mnak', 'w'))
+                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'w'))
                     for x in vars:
                         writevari.writerow([x.name, x.value, x.format, x.exp])
 
@@ -602,8 +638,27 @@ def guide():
 
 # deck
 def deck(deck):
-    init(deck)
+    init()
     save(deck)
+    vars = []
+    variables = []
+
+    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
+    for x in deck:
+        match x[2]: 
+            case "float":
+                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
+                variables.append([x[0], float(x[1]), x[2], x[3]])
+            case "int": 
+                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
+                variables.append([x[0], int(x[1]), x[2], x[3]])
+            case "bool":
+                if x[1] == "True":
+                    vars.append(vari(x[0], True, x[2], x[3]))
+                    variables.append([x[0], True, x[2], x[3]])  
+                if x[1] == "False":
+                    vars.append(vari(x[0], False, x[2], x[3]))
+                    variables.append([x[0], False, x[2], x[3]])
     
     # print out deck
     nocards = 0
@@ -641,13 +696,13 @@ def deck(deck):
         comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', "w+"))
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', "w+"))
                 for card in deck:
                     writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags])
                 break
             case "add":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
-                writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
+                writer2 = open(os.getcwd()+'/.mnakdata/deck.mnak', 'a')
              
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
@@ -758,11 +813,9 @@ def deck(deck):
                                 break
                             case 'forget':
                                 deck.remove(card)
-                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sched.mnak', 'a'))
-                                writer2 = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'a')
-                             
+                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
+                                
                                 writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []])
-                                writer2.write(str(card.term + card.defin + "\n"))
                                 deck.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []))
                                 break
                             case 'exit':
@@ -787,7 +840,7 @@ def backup():
     subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()])
 
 def nobackup():
-    reader = open(os.getcwd()+'/.mnakdata/nsched.mnak', 'r').readlines()
+    reader = open(os.getcwd()+'/.mnakdata/deck.mnak', 'r').readlines()
     rows = []
     for x in reader:
         rows.append(x)

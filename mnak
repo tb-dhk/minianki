@@ -5,11 +5,12 @@ import requests
 import sys
 import time
 import datetime
+import json
 
 minianki.nobackup()
 minianki.backup()
 
-deck = []
+deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 
 def compare_verno(vn1, vn2):
     vnone = vn1.split("-")[0]
