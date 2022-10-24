@@ -23,18 +23,40 @@ verno =  "1.4"
 deck = {}
 
 # import learning variables
-class vari:
-    def __init__(self, name, value, format, exp):
-        self.name = name
-        self.value = value
-        self.format = format
-        self.exp = exp
+vari = {
+    "new cards/day" : "maximum number of new cards to introduce in a day if available. recommended to be 10x smaller than review limit.",
+    "maximum reviews/day" : "maximum number of cards to review in a day if available.",
+    "first learning step" : "interval (in minutes) of the 'again' option on a new or half-learned card.",
+    "second learning step" : "interval (in minutes) of the 'good' option on a new card and the 'hard' option on a half-learned card.",
+    "graduating interval" : "number of days before a card is reviewed after it first becomes learned.",
+    "easy interval" : "number of days before a new card is reviewed after the 'easy' option is selected.",
+    "maximum interval" : "maximum possible interval on any option on any card.",
+    "starting ease" : "starting ease multiplier of every card. the interval of the card's 'good' option will multiply by this multipler everytime it is selected.",
+    "easy bonus" : "extra multipler to a review card's interval when the 'easy' option is selected.",
+    "hard bonus" : "multiplier multiplied to last interval of the card to obtain its 'hard' option's interval.",
+    "random insertion order?" : "whether new cards show up in random order or by order of the main database.",
+    "leech threshold" : "number of times you select the 'again' option on a card before it is considered a leech and auto-suspended.",
+    "review limit caps new card limit" : "whether the review limit now limits the new card limit. (e.g. if the maximum reviews are 200 and you have 190 reviews due you'll only be able to learn 10 new cards)",
+    "funky intro" : "enable the funky intro.",
+    "timer limit" : "number of seconds the timer can run for per card.",
+    "timer for every card" : "whether to show time taken for every card."
+}
 
 prefs = {}
 
 readprefs = csv.reader(open(os.getcwd()+'/.mnakdata/prefs.mnak'))
 for x in readprefs:
     prefs[x[0]] = x[1]
+
+def ppath():
+    while 1:
+        impd = strip(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. ")).split(":")
+        try: 
+            deck[impd[0]][impd[1]]
+        except:
+            print("    invalid. try again.")
+        else:
+            return impd
 
 # INIT
 
@@ -46,7 +68,7 @@ for x in readprefs:
 
 # card structure
 class flashcard:
-    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status, tags, flags):
+    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status, tags, flags, location):
         self.term = term
         self.defin = defin
         self.ls = ls
@@ -58,6 +80,7 @@ class flashcard:
         self.status = status
         self.tags = tags
         self.flags = flags
+        self.location = location
 
 # initialisation function
 stat = []
@@ -82,15 +105,17 @@ def init():
     print() 
     
     # import csv into deck
-    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[]] 
+    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[], ""] 
     for dk in dict:
         dict[dk] = []
         for subd in dk:
+            if subd == "options":
+                deck[dk]["options"] = dict[dk]["options"]
             if type(dict[subd]) == "dict":
                 deck[dk][subd] = []
                 for card in subd:
                     if card == "options":
-                        deck[dk][subd].append(subd[card])
+                        deck[dk][subd]["options"] = dict[dk][subd]["options"]
                     elif subd[card][0] == "" or card == "": # if term/def are empty + ignore options
                         continue
                     else:
@@ -123,7 +148,7 @@ def init():
                                 flags.remove(x)
                             else:
                                 x = x[1:-1]
-                        deck[dk][subd].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags))
+                        deck[dk][subd].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10])
     # remove duplicates
     for dk in deck:
         for subd in dk:
@@ -234,15 +259,22 @@ def impt():
     writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
     impted = 0 
     
+    impd = ppath()
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
 
     separator = separator.replace(r"\t", "\t")
     separator = separator.replace(r"\n", "\n")
 
+    termdef = row.strip().split(separator)
+
     # import new cards into deck
+    vars = deck[path[0]][path[1]]["options"]
     for row in reader:
         if row.strip() != "" and row[0].strip() != "":
-            writer.writerow(row.strip().split(separator) + [0,variables[7][1],0,datetime.date.today(),False,0,"new"])
+            if len(impd) == 1:
+                deck[impd[0]]["misc"].append(flashcard(termdef[0],termdef[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]))
+            else:
+                deck[impd[0]][impd[1]].append(flashcard(termdef[0],termdef[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
             impted += 1
 
     if impted == 0:
@@ -253,36 +285,19 @@ def impt():
 # LEARN
 def learn(deck):
     # initialise vars
-    vars = []
-    variables = []
-
-    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
-    for x in deck:
-        match x[2]: 
-            case "float":
-                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-                variables.append([x[0], float(x[1]), x[2], x[3]])
-            case "int": 
-                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-                variables.append([x[0], int(x[1]), x[2], x[3]])
-            case "bool":
-                if x[1] == "True":
-                    vars.append(vari(x[0], True, x[2], x[3]))
-                    variables.append([x[0], True, x[2], x[3]])  
-                if x[1] == "False":
-                    vars.append(vari(x[0], False, x[2], x[3]))
-                    variables.append([x[0], False, x[2], x[3]])
+    path = ppath()
+    vars = deck[path[0]][path[1]]["options"]
 
     print("")
     # variables:
     # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-    learnsteps = [str(variables[2][1]), str(variables[3][1]), variables[4][1]]
+    learnsteps = [str(vars[2][1]), str(vars[3][1]), vars[4][1]]
     # easy interval (time between picking easy and reviewing the card for the first time)
-    easyint = variables[5][1]
+    easyint = vars[5][1]
     # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-    easybonus = variables[8][1]
+    easybonus = vars[8][1]
     # hard bonus (multiplier from last value, default 1.2)
-    hardint = variables[9][1]
+    hardint = vars[9][1]
     
     # FUNCTIONS
     # function to generate intervals
@@ -298,8 +313,8 @@ def learn(deck):
                 card.ls = 0
                 ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
         for x in ints:
-            if type(x) == int and x > variables[6][1]:
-                x = variables[6][1]
+            if type(x) == int and x > vars[6][1]:
+                x = varis[6][1]
         return ints
     
     # function to print out intervals
@@ -375,7 +390,7 @@ def learn(deck):
                                 card.status = "relearn"
                             card.ls = 0
                             card.againcount += 1
-                            if card.againcount == variables[11][1]: # autosuspend leech
+                            if card.againcount == vars[11][1]: # autosuspend leech
                                 card.suspended = True
                                 card.againcount = 0
                                 print("    card marked as leech. suspended")
@@ -393,7 +408,7 @@ def learn(deck):
                     
                 break
 
-# count cards
+    # count cards
     def cardnum():
         count = 0
         for x in queue:
@@ -406,21 +421,21 @@ def learn(deck):
     newcount = 0
     revcount = 0
 
-    if variables[12][1]:
-        for card in deck:
+    if vars[12][1]:
+        for card in cdeck:
             if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls == 2:
                 queue[0].append(card)
                 revcount += 1
-            if revcount >= variables[1][1]:
+            if revcount >= vars[1][1]:
                 break
-        for card in deck:
+        for card in cdeck:
             if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls != 2:
                 queue[0].append(card)
                 newcount += 1
-            if revcount + newcount >= variables[1][1]:
+            if revcount + newcount >= vars[1][1]:
                 break
     else:
-        for card in deck:
+        for card in cdeck:
             if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False":
                 queue[0].append(card)
                 match card.ls:
@@ -428,9 +443,9 @@ def learn(deck):
                         revcount += 1
                     case _:
                         newcount += 1
-            if newcount >= variables[0][1] or revcount >= variables[1][1]:
+            if newcount >= vars[0][1] or revcount >= vars[1][1]:
                 break
-    if variables[10][1]:
+    if vars[10][1]:
         random.shuffle(queue[0])
     
     # begin!
