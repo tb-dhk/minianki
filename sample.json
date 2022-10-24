@@ -1,0 +1,14 @@
+{
+    "cards" : {
+        "deck1" : {
+            "options" : ["options"],
+            "subdeck1" : {
+                "options" : ["options"], 
+                "card1" : ["card details"]
+            },
+            "misc" : {
+                "misc1" : ["card details"]
+            }
+        }
+    }
+}

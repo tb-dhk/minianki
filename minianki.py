@@ -20,7 +20,7 @@ print("")
 
 verno =  "1.4"
 
-deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
+deck = {}
 
 # import learning variables
 class vari:
@@ -78,73 +78,69 @@ def init():
     vars = []
     variables = []
 
-    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
-    for x in deck:
-        match x[2]: 
-            case "float":
-                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-                variables.append([x[0], float(x[1]), x[2], x[3]])
-            case "int": 
-                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-                variables.append([x[0], int(x[1]), x[2], x[3]])
-            case "bool":
-                if x[1] == "True":
-                    vars.append(vari(x[0], True, x[2], x[3]))
-                    variables.append([x[0], True, x[2], x[3]])  
-                if x[1] == "False":
-                    vars.append(vari(x[0], False, x[2], x[3]))
-                    variables.append([x[0], False, x[2], x[3]])
+    dict = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))["cards"]
     print() 
     
     # import csv into deck
-    defaultcard = ["","",0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]] 
-    for row in deck:
-        if row == [] or row[0] == "":
-            continue
-        else:
-            if len(row) < len(defaultcard):
-                row = row + defaultcard[len(row):] 
-            else:
-                for card in deck:
-                    if type(card.duedate) == str:
-                        card.duedate = datetime.datetime.fromisoformat(card.duedate)
-                    try:
-                        card.duedate = card.duedate.date()
-                    except:
-                        pass
-                    if card.term == row[0] and datetime.datetime.combine(card.duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
-                        deck.remove(card)
-                    else:
+    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[]] 
+    for dk in dict:
+        dict[dk] = []
+        for subd in dk:
+            if type(dict[subd]) == "dict":
+                deck[dk][subd] = []
+                for card in subd:
+                    if card == "options":
+                        deck[dk][subd].append(subd[card])
+                    elif subd[card][0] == "" or card == "": # if term/def are empty + ignore options
                         continue
-            # format tags and flags
-            tags = row[9][1:-1].split("'")
-            flags = row[10][1:-1].split("'")
-            for x in tags:
-                if x in ["'", '"', ", "]:
-                    tags.remove(x)
-                else:
-                    x = x[1:-1]
-            for x in flags:
-                if x in ["'", '"', ", "]:
-                    flags.remove(x)
-                else:
-                    x = x[1:-1]
-            deck.append(flashcard(row[0], row[1], int(row[2]), float(row[3]), float(row[4]), row[5], row[6], int(row[7]), row[8], tags, flags))
+                    else:
+                        deck.append()
+                        if len(card) < len(defaultcard)-1:
+                            card = card + defaultcard[len(card)+1:] 
+                        else:
+                            for card in subd:
+                                duedate = subd[card][4]
+                                if type(duedate) == str:
+                                    duedate = datetime.datetime.fromisoformat(duedate)
+                                try:
+                                    duedate = duedate.date()
+                                except:
+                                    pass
+                                if card.term == row[0] and datetime.datetime.combine(duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
+                                    deck.remove(card)
+                                else:
+                                    continue
+                        # format tags and flags
+                        tags = subd[card][8][1:-1].split("'")
+                        flags = subd[card][9][1:-1].split("'")
+                        for x in tags:
+                            if x in ["'", '"', ", "]:
+                                tags.remove(x)
+                            else:
+                                x = x[1:-1]
+                        for x in flags:
+                            if x in ["'", '"', ", "]:
+                                flags.remove(x)
+                            else:
+                                x = x[1:-1]
+                        deck[dk][subd].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags))
     # remove duplicates
-    for card in deck:
-        if type(card.duedate) == str:
-            card.duedate = datetime.datetime.fromisoformat(card.duedate)
-        try:
-            card.duedate = card.duedate.date()
-        except:
-            pass
-    for card1 in deck:
-        for card2 in deck:
-            if card1.term == card2.term and card1 != card2:
-                if card1.duedate < card2.duedate:
-                    deck.remove(card1)
-                else:
-                    deck.remove(card2) 
+    for dk in deck:
+        for subd in dk:
+            for card in subd:
+                if type(card.duedate) == str:
+                    card.duedate = datetime.datetime.fromisoformat(card.duedate)
+                try:
+                    card.duedate = card.duedate.date()
+                except:
+                    pass
+            for card1 in subd:
+                for card2 in subd:
+                    if card1.term == card2.term and card1 != card2:
+                        if card1.duedate < card2.duedate:
+                            subd.remove(card1)
+                        else:
+                            subd.remove(card2) 
 
     # importing stats
     # checking for year
