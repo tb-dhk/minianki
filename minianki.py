@@ -48,15 +48,27 @@ readprefs = csv.reader(open(os.getcwd()+'/.mnakdata/prefs.mnak'))
 for x in readprefs:
     prefs[x[0]] = x[1]
 
-def ppath():
+def ppath(path):
     while 1:
-        impd = strip(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. ")).split(":")
+        impd = strip(path).split(":")
         try: 
             deck[impd[0]][impd[1]]
         except:
             print("    invalid. try again.")
         else:
             return impd
+
+def qpath():
+    return ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. "))
+
+def indeck(card, deck): # takes a card (location string form) and a deck (list form)
+    loc = ppath(card.location) # converts card to list
+    if len(impd) == 1:
+        if loc[0] = impd[0]:
+            return True
+    elif len(impd == 2):
+        if loc = impd:
+            return True
 
 # INIT
 
@@ -101,25 +113,24 @@ def init():
     vars = []
     variables = []
 
-    dict = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))["cards"]
+    dict = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))["cards"]
     print() 
     
     # import csv into deck
-    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[], ""] 
+    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[],""] 
     for dk in dict:
         dict[dk] = []
-        for subd in dk:
+        for subd in deck[dk]:
             if subd == "options":
                 deck[dk]["options"] = dict[dk]["options"]
             if type(dict[subd]) == "dict":
                 deck[dk][subd] = []
-                for card in subd:
+                for card in deck[dk][subd]:
                     if card == "options":
                         deck[dk][subd]["options"] = dict[dk][subd]["options"]
                     elif subd[card][0] == "" or card == "": # if term/def are empty + ignore options
                         continue
                     else:
-                        deck.append()
                         if len(card) < len(defaultcard)-1:
                             card = card + defaultcard[len(card)+1:] 
                         else:
@@ -132,7 +143,7 @@ def init():
                                 except:
                                     pass
                                 if card.term == row[0] and datetime.datetime.combine(duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
-                                    deck.remove(card)
+                                    deck[dk][subd]["misc"].remove(card)
                                 else:
                                     continue
                         # format tags and flags
@@ -148,24 +159,24 @@ def init():
                                 flags.remove(x)
                             else:
                                 x = x[1:-1]
-                        deck[dk][subd].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10])
+                        deck[dk][subd]["misc"].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10])
     # remove duplicates
     for dk in deck:
-        for subd in dk:
-            for card in subd:
+        for subd in deck[dk]:
+            for card in deck[dk][subd]:
                 if type(card.duedate) == str:
                     card.duedate = datetime.datetime.fromisoformat(card.duedate)
                 try:
                     card.duedate = card.duedate.date()
                 except:
                     pass
-            for card1 in subd:
-                for card2 in subd:
+            for card1 in deck[dk][subd]:
+                for card2 in deck[dk][subd]:
                     if card1.term == card2.term and card1 != card2:
                         if card1.duedate < card2.duedate:
-                            subd.remove(card1)
+                            deck[dk][subd].remove(card1)
                         else:
-                            subd.remove(card2) 
+                            deck[dk][subd].remove(card2) 
 
     # importing stats
     # checking for year
@@ -256,7 +267,7 @@ def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
+    writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
     impted = 0 
     
     impd = ppath()
@@ -285,7 +296,7 @@ def impt():
 # LEARN
 def learn(deck):
     # initialise vars
-    path = ppath()
+    path = qpath()
     vars = deck[path[0]][path[1]]["options"]
 
     print("")
@@ -377,7 +388,11 @@ def learn(deck):
                         card.lastint = genints(card)[option]
                         print("    new due date:", str(card.duedate)[0:10])
                         print("    1 card less!")
-                        deck.append(card) # add new copy of card
+                        loc = ppath(card.location)
+                        if len(loc) == 1:
+                            deck[loc[0]]["misc"].append(card)
+                        elif len(loc) == 2:
+                            deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
                         queue[0].remove(card) # remove card from queue
                     if card.status == "rev":
                         stat[datetime.datetime.today().month] = [int(i) for i in stat[datetime.datetime.today().month]]
@@ -420,6 +435,8 @@ def learn(deck):
     queue = [[]]
     newcount = 0
     revcount = 0
+
+    cdeck = [card for card in subd if indeck(card, path) for subd in dk for dk in deck]
 
     if vars[12][1]:
         for card in cdeck:
@@ -501,51 +518,37 @@ def learn(deck):
 
 # SAVE
 def save(deck):
-    writecsv = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'w'))
+    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
     writestats = csv.writer(open(os.getcwd()+'/.mnakdata/stats.mnak', 'w'))
     saved = 0
 
     # save to 
-    for x in deck:
-        try:
-            x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
-        except:
-            x.duedate = x.duedate
-        for tag in x.tags:
-            if tag == "":
-                x.tags.remove(tag)
-        for flag in x.flags:
-            if flag == "":
-                x.flags.remove(flag)
-        writecsv.writerow([x.term, x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags])
-        writetxt.write(x.term + "    " + x.defin + "\n")
-        saved += 1
+    for dk in deck:
+        for subd in dk:
+            if subd != "options":
+                try:
+                    x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
+                except:
+                    pass
+                for tag in x.tags:
+                    if tag == "":
+                        x.tags.remove(tag)
+                for flag in x.flags:
+                    if flag == "":
+                        x.flags.remove(flag)
+                dict[dk][subd][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags]
 
+    f.write(json.dumps(dict))
+    
     # also save stats
     for x in stat:
         writestats.writerow(x)
 
 # SETTINGS
 def settings():
-    vars = []
-    variables = []
+    path = qpath()
+    vars = deck[path[0]][path[1]]["options"]
 
-    readvari = csv.reader(open(os.getcwd()+'/.mnakdata/deck.mnak', 'r'))
-    for x in readvari:
-        match x[2]: 
-            case "float":
-                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-                variables.append([x[0], float(x[1]), x[2], x[3]])
-            case "int": 
-                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-                variables.append([x[0], int(x[1]), x[2], x[3]])
-            case "bool":
-                if x[1] == "True":
-                    vars.append(vari(x[0], True, x[2], x[3]))
-                    variables.append([x[0], True, x[2], x[3]])  
-                if x[1] == "False":
-                    vars.append(vari(x[0], False, x[2], x[3]))
-                    variables.append([x[0], False, x[2], x[3]])
     while 1: 
         string = "\n    variables: \n"
         for x in range(len(vars)):
@@ -586,9 +589,9 @@ def settings():
                         else:
                             varia.value = newval
                             break
-                    writevari = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'w'))
-                    for x in vars:
-                        writevari.writerow([x.name, x.value, x.format, x.exp])
+
+                    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
+                    f.write(json.dumps(dict))
 
 def preferences():
     while 1: 
@@ -615,7 +618,7 @@ def preferences():
                     while 1:
                         prefs[cpref] = input("    enter new value: ")
                         break
-                    writeprefs = csv.writer(open(os.getcwd()+'/.mnakdata/prefs.csv', 'w'))
+                    writeprefs = csv.writer(open(os.getcwd()+'/.mnakdata/prefs.mnak', 'w'))
                     for x in prefs:
                         writeprefs.writerow([x, prefs[x]])
 
@@ -651,25 +654,10 @@ def guide():
 def deck(deck):
     init()
     save(deck)
-    vars = []
-    variables = []
+    path = qpath()
+    vars = deck[path[0]][path[1]]["options"]
 
-    deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
-    for x in deck:
-        match x[2]: 
-            case "float":
-                vars.append(vari(x[0], float(x[1]), x[2], x[3]))
-                variables.append([x[0], float(x[1]), x[2], x[3]])
-            case "int": 
-                vars.append(vari(x[0], int(x[1]), x[2], x[3]))
-                variables.append([x[0], int(x[1]), x[2], x[3]])
-            case "bool":
-                if x[1] == "True":
-                    vars.append(vari(x[0], True, x[2], x[3]))
-                    variables.append([x[0], True, x[2], x[3]])  
-                if x[1] == "False":
-                    vars.append(vari(x[0], False, x[2], x[3]))
-                    variables.append([x[0], False, x[2], x[3]])
+    dk = [x for x in deck[path[0]][path[1]]["misc"]]
     
     # print out deck
     nocards = 0
@@ -686,12 +674,12 @@ def deck(deck):
         else:
             return ""
     
-    def printcards(deck):
+    def printcards(dk):
         # print out with line numbers
         cardcount = 0
         spaceno = digs(nocards)
 
-        for card in deck:
+        for card in dk:
             try:
                 print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
             except:
@@ -700,27 +688,27 @@ def deck(deck):
 
     while 1:
         print("    ~~~~~~~~~~~~~~~~~~~~")
-        printcards(deck)
+        printcards(dk)
         print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
         comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', "w+"))
-                for card in deck:
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', "w+"))
+                for card in dk:
                     writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags])
                 break
             case "add":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
-                writer2 = open(os.getcwd()+'/.mnakdata/deck.mnak', 'a')
+                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
+                writer2 = open(os.getcwd()+'/.mnakdata/sample.json', 'a')
              
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
 
                 writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]])
                 writer2.write(str(term + defin + "\n"))
-                deck.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]))
+                dk.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]))
             case "sort":
                 sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                 ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -730,9 +718,9 @@ def deck(deck):
                     rev = True
                 match sortby:
                     case "term":
-                        deck.sort(key = lambda x: x.term, reverse = rev)
+                        dk.sort(key = lambda x: x.term, reverse = rev)
                     case "duedate":
-                        deck.sort(key = lambda x: x.duedate, reverse = rev)
+                        dk.sort(key = lambda x: x.duedate, reverse = rev)
             case "search":
                 searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
                 searchkey = input("    enter what you would like to search for: ")
@@ -740,24 +728,24 @@ def deck(deck):
                 
                 match searchby:
                     case "term":
-                        found = [card for card in deck if searchkey in card.term]
+                        found = [card for card in dk if searchkey in card.term]
                     case "def":
-                        found = [card for card in deck if searchkey in card.defin]
+                        found = [card for card in dk if searchkey in card.defin]
                     case "tags":
-                        found = [card for card in deck if searchkey in card.tags]
+                        found = [card for card in dk if searchkey in card.tags]
                     case "flags":
-                        found = [card for card in deck if searchkey in card.flags]
+                        found = [card for card in dk if searchkey in card.flags]
                 
                 print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
                 printcards(found)
                 print("    ~~~~~~~~~~~~~~~~~~~~")
             case _:
                 try:
-                    deck[int(comm)]
+                    dk[int(comm)]
                 except:
                     print("    invalid. try again.")
                 else:
-                    card = deck[int(comm)]
+                    card = dk[int(comm)]
                     try:
                         print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
                     except:
@@ -820,14 +808,14 @@ def deck(deck):
                                 card.duedate += datetime.timedelta(days=1)
                                 break
                             case 'delete':
-                                deck.remove(card)
+                                dk.remove(card)
                                 break
                             case 'forget':
-                                deck.remove(card)
-                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
+                                dk.remove(card)
+                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
                                 
                                 writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []])
-                                deck.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []))
+                                dk.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []))
                                 break
                             case 'exit':
                                 break
@@ -851,7 +839,7 @@ def backup():
     subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()])
 
 def nobackup():
-    reader = open(os.getcwd()+'/.mnakdata/deck.mnak', 'r').readlines()
+    reader = open(os.getcwd()+'/.mnakdata/sample.json', 'r').readlines()
     rows = []
     for x in reader:
         rows.append(x)
