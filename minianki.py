@@ -18,9 +18,10 @@ subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdo
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("")
 
-verno =  "1.4"
+verno =  "0.9"
 
 deck = {}
+dict = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
 
 # import learning variables
 vari = {
@@ -49,26 +50,36 @@ for x in readprefs:
     prefs[x[0]] = x[1]
 
 def ppath(path):
+    return path.strip().split(":")
+
+def qpath():
     while 1:
-        impd = strip(path).split(":")
         try: 
-            deck[impd[0]][impd[1]]
+            impd = ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. "))
+            impd[0]
+            if len(impd) == 1:
+                dict[impd[0]]
+            elif len(impd) == 2:
+                dict[impd[0]][impd[1]]
         except:
             print("    invalid. try again.")
         else:
             return impd
 
-def qpath():
-    return ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. "))
-
 def indeck(card, deck): # takes a card (location string form) and a deck (list form)
     loc = ppath(card.location) # converts card to list
     if len(impd) == 1:
-        if loc[0] = impd[0]:
+        if loc[0] == impd[0]:
             return True
+        else:
+            return False
     elif len(impd == 2):
-        if loc = impd:
+        if loc == impd:
             return True
+        else:
+            return False
+    else:
+        return False
 
 # INIT
 
@@ -113,21 +124,30 @@ def init():
     vars = []
     variables = []
 
-    dict = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))["cards"]
     print() 
     
     # import csv into deck
     defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[],""] 
+    defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
+
     for dk in dict:
-        dict[dk] = []
-        for subd in deck[dk]:
+        deck[dk] = {
+                "options" : [],
+                "misc" : []
+                } #function object does not support??? what the fuck
+        for subd in dict[dk]:
             if subd == "options":
-                deck[dk]["options"] = dict[dk]["options"]
-            if type(dict[subd]) == "dict":
-                deck[dk][subd] = []
+                deck[dk]["options"] = dict[dk]["options"] + defaultopt[len(dict[dk]["options"]):]
+                print(deck[dk]["options"])
+            if type(dict[dk][subd]) == "dict":
+                deck[dk][subd] = {
+                    "options" : [],
+                    "misc" : []
+                } 
                 for card in deck[dk][subd]:
                     if card == "options":
-                        deck[dk][subd]["options"] = dict[dk][subd]["options"]
+                        deck[dk][subd]["options"] = dict[dk][subd]["options"] + defaultopt[len(dict[dk][subd]["options"]):]
+                        print(deck[dk][subd]["options"])
                     elif subd[card][0] == "" or card == "": # if term/def are empty + ignore options
                         continue
                     else:
@@ -159,24 +179,25 @@ def init():
                                 flags.remove(x)
                             else:
                                 x = x[1:-1]
-                        deck[dk][subd]["misc"].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10])
+                        deck[dk][subd]["misc"].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10]))
     # remove duplicates
     for dk in deck:
         for subd in deck[dk]:
-            for card in deck[dk][subd]:
-                if type(card.duedate) == str:
-                    card.duedate = datetime.datetime.fromisoformat(card.duedate)
-                try:
-                    card.duedate = card.duedate.date()
-                except:
-                    pass
-            for card1 in deck[dk][subd]:
-                for card2 in deck[dk][subd]:
-                    if card1.term == card2.term and card1 != card2:
-                        if card1.duedate < card2.duedate:
-                            deck[dk][subd].remove(card1)
-                        else:
-                            deck[dk][subd].remove(card2) 
+            if subd != "options" and type(subd) == "dict":
+                for card in deck[dk][subd]["misc"]:
+                    if type(card.duedate) == str:
+                        card.duedate = datetime.datetime.fromisoformat(card.duedate)
+                    try:
+                        card.duedate = card.duedate.date()
+                    except:
+                        pass
+                for card1 in deck[dk][subd]:
+                    for card2 in deck[dk][subd]:
+                        if card1.term == card2.term and card1 != card2:
+                            if card1.duedate < card2.duedate:
+                                deck[dk][subd].remove(card1)
+                            else:
+                                deck[dk][subd].remove(card2) 
 
     # importing stats
     # checking for year
@@ -270,22 +291,28 @@ def impt():
     writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
     impted = 0 
     
-    impd = ppath()
+    impd = qpath()
+    if len(impd) == 1:
+        vars = deck[impd[0]]["options"]
+    elif len(impd) == 2:
+        vars = deck[impd[0]][impd[1]]["options"]
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
 
     separator = separator.replace(r"\t", "\t")
     separator = separator.replace(r"\n", "\n")
-
-    termdef = row.strip().split(separator)
+    if separator == "":
+        separator = "    "
 
     # import new cards into deck
-    vars = deck[path[0]][path[1]]["options"]
     for row in reader:
-        if row.strip() != "" and row[0].strip() != "":
+        row = row.strip().split(separator)
+        print(row)
+        print(vars)
+        if row[0].strip() != "":
             if len(impd) == 1:
-                deck[impd[0]]["misc"].append(flashcard(termdef[0],termdef[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]))
+                deck[impd[0]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]))
             else:
-                deck[impd[0]][impd[1]].append(flashcard(termdef[0],termdef[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
+                deck[impd[0]][impd[1]].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
             impted += 1
 
     if impted == 0:
@@ -294,7 +321,7 @@ def impt():
         print(f"    {impted} card(s) imported.")
 
 # LEARN
-def learn(deck):
+def learn():
     # initialise vars
     path = qpath()
     vars = deck[path[0]][path[1]]["options"]
@@ -440,20 +467,20 @@ def learn(deck):
 
     if vars[12][1]:
         for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls == 2:
+            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
                 queue[0].append(card)
                 revcount += 1
             if revcount >= vars[1][1]:
                 break
         for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False" and card.ls != 2:
+            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
                 queue[0].append(card)
                 newcount += 1
             if revcount + newcount >= vars[1][1]:
                 break
     else:
         for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == "False":
+            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
                 queue[0].append(card)
                 match card.ls:
                     case 2:
@@ -517,26 +544,27 @@ def learn(deck):
             queue.pop(0)
 
 # SAVE
-def save(deck):
-    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
+def save():
+    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')
     writestats = csv.writer(open(os.getcwd()+'/.mnakdata/stats.mnak', 'w'))
     saved = 0
 
     # save to 
     for dk in deck:
-        for subd in dk:
-            if subd != "options":
-                try:
-                    x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
-                except:
-                    pass
-                for tag in x.tags:
-                    if tag == "":
-                        x.tags.remove(tag)
-                for flag in x.flags:
-                    if flag == "":
-                        x.flags.remove(flag)
-                dict[dk][subd][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags]
+        for subd in deck[dk]:
+            for x in deck[dk][subd]:
+                if subd != "options":
+                    try:
+                        x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
+                    except:
+                        pass
+                    for tag in x.tags:
+                        if tag == "":
+                            x.tags.remove(tag)
+                    for flag in x.flags:
+                        if flag == "":
+                            x.flags.remove(flag)
+                    dict[dk][subd][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags]
 
     f.write(json.dumps(dict))
     
@@ -578,9 +606,9 @@ def settings():
                                     newval = int(newval)
                                 case "bool":
                                     match newval:
-                                        case "False":
+                                        case False:
                                           newval = False
-                                        case "True":
+                                        case True:
                                           newval = True
                                         case _:
                                           raise TypeError('value could not be converted to bool')
@@ -651,9 +679,9 @@ def guide():
                     print("    ~~~~~~~~~~~~~~~~~~~~")
 
 # deck
-def deck(deck):
+def browse():
     init()
-    save(deck)
+    save()
     path = qpath()
     vars = deck[path[0]][path[1]]["options"]
 
@@ -661,15 +689,9 @@ def deck(deck):
     
     # print out deck
     nocards = 0
-    
-    def digs(no):
-        if no == 0:
-            return 1
-        else:
-            return math.floor(math.log(no, 10))+1
 
     def susstr(card):
-        if card.suspended == "True":
+        if card.suspended == True:
             return " (suspended)"
         else:
             return ""
@@ -677,7 +699,6 @@ def deck(deck):
     def printcards(dk):
         # print out with line numbers
         cardcount = 0
-        spaceno = digs(nocards)
 
         for card in dk:
             try:
@@ -695,20 +716,15 @@ def deck(deck):
         comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
         match comm:
             case "exit":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', "w+"))
                 for card in dk:
-                    writer.writerow([card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags])
+                    path = ppath(card.location)
+                    card[ppath[0]][ppath[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags)
                 break
             case "add":
-                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
-                writer2 = open(os.getcwd()+'/.mnakdata/sample.json', 'a')
-             
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
 
-                writer.writerow([term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]])
-                writer2.write(str(term + defin + "\n"))
-                dk.append(flashcard(term,defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new",[],[]))
+                card[ppath[0]][ppath[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags)
             case "sort":
                 sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                 ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -761,9 +777,9 @@ def deck(deck):
                                 break
                             case "suspension":
                                 match card.suspended:
-                                    case "True":
+                                    case True:
                                         card.suspended = False
-                                    case "False":
+                                    case False:
                                         card.suspended = True
                                     case _:
                                         card.suspended = True
@@ -811,11 +827,8 @@ def deck(deck):
                                 dk.remove(card)
                                 break
                             case 'forget':
-                                dk.remove(card)
-                                writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
-                                
-                                writer.writerow([card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []])
-                                dk.append(flashcard(card.term,card.defin,0,variables[7][1],0,datetime.datetime.today(),False,0,"new", [], []))
+                                path = card.location
+                                deck[path[0]][path[1]].remove(card)
                                 break
                             case 'exit':
                                 break
@@ -865,7 +878,7 @@ def backuppath():
         case _:
             return path
 
-def stats(deck):
+def stats():
     print("    before we begin:")
     print("    you might want to zoom out as much as possible in your terminal before viewing the stats as this will allow us to display the graphs and charts more clearly.")
     input("    press enter to continue")
@@ -975,7 +988,7 @@ def stats(deck):
     titles = ["new", "learning", "relearning", "young", "mature", "suspended"]
     ccer = [0, 0, 0, 0, 0, 0]
     for card in deck:
-        if card.suspended == "True":
+        if card.suspended == True:
             ccer[5] += 1
         match card.status:
             case "new":

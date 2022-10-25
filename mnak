@@ -6,11 +6,10 @@ import sys
 import time
 import datetime
 import json
+import os
 
 minianki.nobackup()
 minianki.backup()
-
-deck = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 
 def compare_verno(vn1, vn2):
     vnone = vn1.split("-")[0]
@@ -68,21 +67,21 @@ def help():
     
 welc = """welcome to minianki! :> \n"""
 
-if minianki.variables[13][1] == True:
-    for ind in range(len(welc)):
-        if ind < len(welc)-3:
-            time.sleep(0.01)
-        else:
-            time.sleep(0.01)
-        sys.stdout.write(welc[ind])
-        sys.stdout.flush()
-else:
-    print(welc)
+# if minianki.variables[13][1] == True:
+#   for ind in range(len(welc)):
+#       if ind < len(welc)-3:
+#            time.sleep(0.01)
+#        else:
+#            time.sleep(0.01)
+#        sys.stdout.write(welc[ind])
+#        sys.stdout.flush()
+# else:
+print(welc)
     
 print(help())
 
-minianki.init(deck)
-minianki.save(deck)
+minianki.init()
+minianki.save()
 
 # console-like env
 while 1:
@@ -91,11 +90,11 @@ while 1:
         case "impt":
             minianki.impt()
         case "learn":
-            minianki.learn(deck)
+            minianki.learn()
         case "deck":
-            minianki.deck(deck)
+            minianki.deck()
         case "stats":
-            minianki.stats(deck)
+            minianki.stats()
         case "sett":
             minianki.settings()
         case "prefs":
@@ -103,7 +102,7 @@ while 1:
         case "guide":
             minianki.guide()
         case "help":
-            print(help)
+            print(help())
         case "update":
             cnfm = input("are you sure you would like to update? (y/N) ")
             if cnfm == "y":
@@ -132,6 +131,7 @@ while 1:
                 break
             else:
                 "invalid command. try again!"
-    minianki.init(deck)
-    minianki.save(deck)
+    
+    minianki.init()
+    minianki.save()
     minianki.backup()

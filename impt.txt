@@ -1,1 +1,3 @@
-
+card1    term1
+card2    term2
+card3    term3

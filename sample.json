@@ -1,13 +1,13 @@
 {
     "cards" : {
         "deck1" : {
-            "options" : ["options"],
+            "options" : [],
             "subdeck1" : {
-                "options" : ["options"], 
-                "card1" : ["card details"]
+                "options" : [],
+                "card1" : []
             },
             "misc" : {
-                "misc1" : ["card details"]
+                "card1" : []
             }
         }
     }
