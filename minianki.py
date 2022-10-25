@@ -617,7 +617,6 @@ def settings():
                         else:
                             varia.value = newval
                             break
-
                     f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
                     f.write(json.dumps(dict))
 
