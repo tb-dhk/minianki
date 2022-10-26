@@ -21,7 +21,7 @@ print("")
 verno =  "0.9"
 
 deck = {}
-dict = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
+dic = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
 
 # import learning variables
 vari = {
@@ -56,11 +56,9 @@ def qpath():
     while 1:
         try: 
             impd = ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. "))
-            impd[0]
             if len(impd) == 1:
-                dict[impd[0]]
-            elif len(impd) == 2:
-                dict[impd[0]][impd[1]]
+                impd.append("misc")
+            dic[impd[0]][impd[1]]
         except:
             print("    invalid. try again.")
         else:
@@ -120,70 +118,59 @@ for row in stat:
         except:
             pass
 
+defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[],""] 
+defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
+
+
 def init():
     vars = []
     variables = []
 
     print() 
     
-    # import csv into deck
-    defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[],""] 
-    defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
-
-    for dk in dict:
-        deck[dk] = {
-                "options" : [],
-                "misc" : []
-                } #function object does not support??? what the fuck
-        for subd in dict[dk]:
-            if subd == "options":
-                deck[dk]["options"] = dict[dk]["options"] + defaultopt[len(dict[dk]["options"]):]
-                print(deck[dk]["options"])
-            if type(dict[dk][subd]) == "dict":
+    for dk in dic:
+        deck[dk] = { "misc" : {} } 
+        for subd in dic[dk]:
+            if isinstance(dic[dk][subd], dict):
                 deck[dk][subd] = {
-                    "options" : [],
-                    "misc" : []
+                        "options" : [],
+                        "misc" : []
                 } 
-                for card in deck[dk][subd]:
-                    if card == "options":
-                        deck[dk][subd]["options"] = dict[dk][subd]["options"] + defaultopt[len(dict[dk][subd]["options"]):]
-                        print(deck[dk][subd]["options"])
-                    elif subd[card][0] == "" or card == "": # if term/def are empty + ignore options
+                for c in dic[dk][subd]:
+                    if c == "options":
+                        deck[dk][subd]["options"] = dic[dk][subd]["options"] + defaultopt[len(dic[dk][subd]["options"]):]
+                    elif c == "": # if term/def are empty + ignore options
                         continue
                     else:
-                        if len(card) < len(defaultcard)-1:
-                            card = card + defaultcard[len(card)+1:] 
-                        else:
-                            for card in subd:
-                                duedate = subd[card][4]
-                                if type(duedate) == str:
-                                    duedate = datetime.datetime.fromisoformat(duedate)
+                        if c == "misc":
+                            for c in dic[dk][subd]["misc"]:
+                                card = dic[dk][subd]["misc"][c]
                                 try:
-                                    duedate = duedate.date()
+                                    card[0]
                                 except:
-                                    pass
-                                if card.term == row[0] and datetime.datetime.combine(duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
-                                    deck[dk][subd]["misc"].remove(card)
-                                else:
                                     continue
-                        # format tags and flags
-                        tags = subd[card][8][1:-1].split("'")
-                        flags = subd[card][9][1:-1].split("'")
-                        for x in tags:
-                            if x in ["'", '"', ", "]:
-                                tags.remove(x)
-                            else:
-                                x = x[1:-1]
-                        for x in flags:
-                            if x in ["'", '"', ", "]:
-                                flags.remove(x)
-                            else:
-                                x = x[1:-1]
-                        deck[dk][subd]["misc"].append(flashcard(card, subd[card][0], int(subd[card][1]), float(subd[card][2]), float(subd[card][3]), subd[card][4], subd[card][5], int(subd[card][6]), subd[card][7], tags, flags, subd[card][10]))
+                                else:
+                                    if len(card) < len(defaultcard)-1:
+                                        card = card + defaultcard[len(card)+1:] 
+                                    else:
+                                        for c in dic[dk][subd]["misc"]:
+                                            card = dic[dk][subd]["misc"][c]
+                                            duedate = card[4]
+                                            if type(duedate) == str:
+                                                duedate = datetime.datetime.fromisoformat(duedate)
+                                            try:
+                                                duedate = duedate.date()
+                                            except:
+                                                pass
+                                            if card[0] == row[0] and datetime.datetime.combine(duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
+                                                deck[dk][subd]["misc"].remove(card)
+                                            else:
+                                                continue
+                                    deck[dk][subd]["misc"].append(flashcard(c, card[0], card[1], card[2], card[3], card[4], card[5], card[6], card[7], card[8], card[9], card[10]))
     # remove duplicates
     for dk in deck:
         for subd in deck[dk]:
-            if subd != "options" and type(subd) == "dict":
+            if subd != "options" and isinstance(subd, dict):
                 for card in deck[dk][subd]["misc"]:
                     if type(card.duedate) == str:
                         card.duedate = datetime.datetime.fromisoformat(card.duedate)
@@ -292,10 +279,7 @@ def impt():
     impted = 0 
     
     impd = qpath()
-    if len(impd) == 1:
-        vars = deck[impd[0]]["options"]
-    elif len(impd) == 2:
-        vars = deck[impd[0]][impd[1]]["options"]
+    vars = deck[impd[0]][impd[1]]["options"]
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
 
     separator = separator.replace(r"\t", "\t")
@@ -306,19 +290,14 @@ def impt():
     # import new cards into deck
     for row in reader:
         row = row.strip().split(separator)
-        print(row)
-        print(vars)
         if row[0].strip() != "":
-            if len(impd) == 1:
-                deck[impd[0]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]))
-            else:
-                deck[impd[0]][impd[1]].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
+            deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
             impted += 1
 
     if impted == 0:
         print("    no cards imported. maybe enter a separator or check impt.txt?")
     else:
-        print(f"    {impted} card(s) imported.")
+        print(f"    {impted} card(s) imported (including duplicates).")
 
 # LEARN
 def learn():
@@ -416,10 +395,7 @@ def learn():
                         print("    new due date:", str(card.duedate)[0:10])
                         print("    1 card less!")
                         loc = ppath(card.location)
-                        if len(loc) == 1:
-                            deck[loc[0]]["misc"].append(card)
-                        elif len(loc) == 2:
-                            deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
+                        deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
                         queue[0].remove(card) # remove card from queue
                     if card.status == "rev":
                         stat[datetime.datetime.today().month] = [int(i) for i in stat[datetime.datetime.today().month]]
@@ -552,21 +528,28 @@ def save():
     # save to 
     for dk in deck:
         for subd in deck[dk]:
-            for x in deck[dk][subd]:
-                if subd != "options":
-                    try:
-                        x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
-                    except:
-                        pass
-                    for tag in x.tags:
-                        if tag == "":
-                            x.tags.remove(tag)
-                    for flag in x.flags:
-                        if flag == "":
-                            x.flags.remove(flag)
-                    dict[dk][subd][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags]
-
-    f.write(json.dumps(dict))
+            if isinstance(deck[dk][subd], dict):
+                for thing in deck[dk][subd]:
+                    if thing == "options":
+                        dic[dk][subd]["options"] = deck[dk][subd]["options"]
+                    elif thing == "misc":
+                        for card in deck[dk][subd][thing]:
+                            x = card
+                            try:
+                                x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
+                            except:
+                                pass
+                            for tag in x.tags:
+                                if tag == "":
+                                    x.tags.remove(tag)
+                            for flag in x.flags:
+                                if flag == "":
+                                    x.flags.remove(flag)
+                            dic[dk][subd]["misc"][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags, x.location]
+            else: 
+                dic[dk][subd] = deck[dk][subd]
+                
+    f.write(json.dumps(dic, indent=4, default=str))
     
     # also save stats
     for x in stat:
@@ -618,7 +601,7 @@ def settings():
                             varia.value = newval
                             break
                     f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
-                    f.write(json.dumps(dict))
+                    f.write(json.dumps(dic))
 
 def preferences():
     while 1: 
@@ -682,9 +665,19 @@ def browse():
     init()
     save()
     path = qpath()
-    vars = deck[path[0]][path[1]]["options"]
-
-    dk = [x for x in deck[path[0]][path[1]]["misc"]]
+    
+    def sync():
+        if path[1] == "misc":
+            vars = deck[path[0]]["options"]
+            dk = []
+            for subd in deck[path[0]]:
+                if subd != "options":
+                    for x in deck[path[0]][subd]:
+                        dk.append(x)
+        else:
+            vars = deck[path[0]][path[1]]["options"]
+            dk = [x for x in deck[path[0]][path[1]]]
+        print(deck[path[0]])
     
     # print out deck
     nocards = 0
@@ -701,12 +694,14 @@ def browse():
 
         for card in dk:
             try:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
             except:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
             cardcount += 1
 
     while 1:
+        sync()
+
         print("    ~~~~~~~~~~~~~~~~~~~~")
         printcards(dk)
         print("    ~~~~~~~~~~~~~~~~~~~~")
@@ -717,13 +712,13 @@ def browse():
             case "exit":
                 for card in dk:
                     path = ppath(card.location)
-                    card[ppath[0]][ppath[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags)
+                    deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
                 break
             case "add":
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
-
-                card[ppath[0]][ppath[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags)
+                defc = defaultcard[2:]
+                deck[path[0]][path[1]][term] = flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], defc[9])
             case "sort":
                 sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                 ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -1089,10 +1084,10 @@ def changelog():
     print(tags)
     relbt = "https://api.github.com/repos/shuu-wasseo/minianki/releases/tags/"
     taglist = [tag["name"] for tag in tags]
-    tagdict = {}
+    tagdic = {}
     for entry in taglist:
         get = requests.get(relbt + entry).json()
-        tagdict[get["tag_name"]] = get["body"]
-    for entry in tagdict:
+        tagdic[get["tag_name"]] = get["body"]
+    for entry in tagdic:
         print(entry)
-        print(tagdict[entry] + "\n")
+        print(tagdic[entry] + "\n")
