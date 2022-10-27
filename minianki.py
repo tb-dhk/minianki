@@ -118,7 +118,7 @@ for row in stat:
         except:
             pass
 
-defaultcard = ["","",0,0,0,datetime.datetime.today(),False,0,"new",[],[],""] 
+defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],""] 
 defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
 
 
@@ -136,34 +136,38 @@ def init():
                         "options" : [],
                         "misc" : []
                 } 
-                for c in dic[dk][subd]:
-                    if c == "options":
+                for t in dic[dk][subd]:
+                    if t == "options":
                         deck[dk][subd]["options"] = dic[dk][subd]["options"] + defaultopt[len(dic[dk][subd]["options"]):]
-                    elif c == "": # if term/def are empty + ignore options
+                    elif t == "": # if term/def are empty + ignore options
                         continue
                     else:
-                        if c == "misc":
+                        if t == "misc":
                             for c in dic[dk][subd]["misc"]:
                                 card = dic[dk][subd]["misc"][c]
                                 try:
                                     card[0]
                                 except:
                                     continue
-                                else:
+                                else:                                    
                                     if len(card) < len(defaultcard)-1:
-                                        card = card + defaultcard[len(card)+1:] 
+                                        card = card + defaultcard[len(card)+1:]                                         
                                     else:
-                                        for c in dic[dk][subd]["misc"]:
-                                            card = dic[dk][subd]["misc"][c]
-                                            duedate = card[4]
-                                            if type(duedate) == str:
-                                                duedate = datetime.datetime.fromisoformat(duedate)
-                                            try:
-                                                duedate = duedate.date()
-                                            except:
-                                                pass
-                                            if card[0] == row[0] and datetime.datetime.combine(duedate, datetime.time(0,0)) <= datetime.datetime.fromisoformat(row[5]):
-                                                deck[dk][subd]["misc"].remove(card)
+                                        for d in dic[dk][subd]["misc"]:
+                                            ocard = dic[dk][subd]["misc"][d]                                    
+                                            if type(card[4]) == str:
+                                                card[4] = datetime.datetime.fromisoformat(card[4])
+                                            if type(ocard[4]) == str:
+                                                ocard[4] = datetime.datetime.fromisoformat(ocard[4])
+                                            if not isinstance(card[4], datetime.date):
+                                                card[4] = card[4].date()
+                                            if not isinstance(ocard[4], datetime.date):
+                                                ocard[4] = ocard[4].date()
+                                            if card[0] == ocard[0] and card[4] <= ocard[4]:
+                                                try:
+                                                    deck[dk][subd]["misc"].remove(card)
+                                                except:
+                                                    pass
                                             else:
                                                 continue
                                     deck[dk][subd]["misc"].append(flashcard(c, card[0], card[1], card[2], card[3], card[4], card[5], card[6], card[7], card[8], card[9], card[10]))
@@ -186,9 +190,10 @@ def init():
                             else:
                                 deck[dk][subd].remove(card2) 
 
+    
     # importing stats
     # checking for year
-    thisyear = datetime.datetime.today().year
+    thisyear = datetime.date.today().year
     lod = []
     if (thisyear % 4 == 0 and thisyear % 100 != 0) or thisyear % 400 == 0:
         lod = [31, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -398,8 +403,8 @@ def learn():
                         deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
                         queue[0].remove(card) # remove card from queue
                     if card.status == "rev":
-                        stat[datetime.datetime.today().month] = [int(i) for i in stat[datetime.datetime.today().month]]
-                        stat[datetime.datetime.today().month][datetime.datetime.today().day-1] += 1
+                        stat[datetime.date.today().month] = [int(i) for i in stat[datetime.date.today().month]]
+                        stat[datetime.date.today().month][datetime.date.today().day-1] += 1
                     match option:
                         case 0:
                             if card.status == "rev":
@@ -535,10 +540,8 @@ def save():
                     elif thing == "misc":
                         for card in deck[dk][subd][thing]:
                             x = card
-                            try:
-                                x.duedate = datetime.datetime.fromisoformat(x.duedate).date()
-                            except:
-                                pass
+                            if not isinstance(x.duedate, datetime.date):
+                                x.duedate = x.duedate.date()
                             for tag in x.tags:
                                 if tag == "":
                                     x.tags.remove(tag)
@@ -665,20 +668,21 @@ def browse():
     init()
     save()
     path = qpath()
-    
-    def sync():
+    dk = []
+
+    def sync(dec):
         if path[1] == "misc":
-            vars = deck[path[0]]["options"]
-            dk = []
-            for subd in deck[path[0]]:
-                if subd != "options":
-                    for x in deck[path[0]][subd]:
-                        dk.append(x)
-        else:
             vars = deck[path[0]][path[1]]["options"]
-            dk = [x for x in deck[path[0]][path[1]]]
-        print(deck[path[0]])
-    
+            for subd in deck[path[0]]:
+                for x in deck[path[0]][subd]["misc"]:
+                    dec.append(x)
+        else:
+            print()
+            vars = deck[path[0]][path[1]]["options"]
+            dec = [x for x in deck[path[0]][path[1]]["misc"]]
+        dec = list(dict.fromkeys(dec))
+        return dec
+           
     # print out deck
     nocards = 0
 
@@ -691,17 +695,12 @@ def browse():
     def printcards(dk):
         # print out with line numbers
         cardcount = 0
-
         for card in dk:
-            try:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
-            except:
-                print("    " + (spaceno - digs(cardcount)) * " " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
+            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
             cardcount += 1
 
     while 1:
-        sync()
-
+        dk = sync(dk)
         print("    ~~~~~~~~~~~~~~~~~~~~")
         printcards(dk)
         print("    ~~~~~~~~~~~~~~~~~~~~")
@@ -712,13 +711,16 @@ def browse():
             case "exit":
                 for card in dk:
                     path = ppath(card.location)
-                    deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
+                    try:
+                        deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
+                    except:
+                        pass
                 break
             case "add":
                 term = input("    enter term: ")
                 defin = input("    enter definition: ")
                 defc = defaultcard[2:]
-                deck[path[0]][path[1]][term] = flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], defc[9])
+                deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], defc[9]))
             case "sort":
                 sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                 ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -731,6 +733,8 @@ def browse():
                         dk.sort(key = lambda x: x.term, reverse = rev)
                     case "duedate":
                         dk.sort(key = lambda x: x.duedate, reverse = rev)
+                    case _:
+                        dk = dk
             case "search":
                 searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
                 searchkey = input("    enter what you would like to search for: ")
@@ -748,7 +752,7 @@ def browse():
                 
                 print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
                 printcards(found)
-                print("    ~~~~~~~~~~~~~~~~~~~~")
+                print("    ~~~~~~~~~~~~~~~~~~~~\n")
             case _:
                 try:
                     dk[int(comm)]
@@ -818,11 +822,12 @@ def browse():
                                 card.duedate += datetime.timedelta(days=1)
                                 break
                             case 'delete':
+                                path = card.location
+                                deck[path[0]][path[1]]["misc"].remove(card)
                                 dk.remove(card)
                                 break
                             case 'forget':
-                                path = card.location
-                                deck[path[0]][path[1]].remove(card)
+                                card.duedate == datetime.date.today()
                                 break
                             case 'exit':
                                 break
@@ -893,7 +898,7 @@ def stats():
     futstats = []
     num = []
     for x in deck:
-        futdues.append((x.duedate - datetime.datetime.today().date()).days)
+        futdues.append((x.duedate - datetime.date.today()).days)
     for x in futdues:
         try:
             futstats[x] += 1
@@ -917,12 +922,12 @@ def stats():
             return 0
         else:
             return date.weekday() + 1
-    for x in range(twkd(datetime.date(datetime.datetime.today().year,1,1))):
+    for x in range(twkd(datetime.date(datetime.date.today().year,1,1))):
         yearindow[x].append(0)
     for x in range(12):
         for y in range(len(stat[x+1])):
-            yearindow[twkd(datetime.date(datetime.datetime.today().year,x+1,y+1))].append(int(stat[x+1][y]))
-            if twkd(datetime.date(datetime.datetime.today().year,x+1,y+1)) == 6:
+            yearindow[twkd(datetime.date(datetime.date.today().year,x+1,y+1))].append(int(stat[x+1][y]))
+            if twkd(datetime.date(datetime.date.today().year,x+1,y+1)) == 6:
                 weekcount += 1
             if int(stat[x+1][y]) > max:
                 max = int(stat[x+1][y])
@@ -965,14 +970,14 @@ def stats():
     print("")
     
     # reviews per day
-    l30d = [datetime.datetime.today().date()]
+    l30d = [datetime.date.today()]
     stats = []
     for x in range(30):
         l30d.append((l30d[0] - datetime.timedelta(days=x+1)).isoformat())
     l30d[0] = l30d[0].isoformat()
     l30d.reverse()
-    tdydate = datetime.datetime.today().day
-    tdymonth = datetime.datetime.today().month
+    tdydate = datetime.date.today().day
+    tdymonth = datetime.date.today().month
     stats = stat[tdymonth-1][(tdydate-31):] + stat[tdymonth][:tdydate]
     stats = [int(i) for i in stats]
     plotgraph(l30d, stats, "reviews per day (past 30 days)")
