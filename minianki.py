@@ -42,7 +42,6 @@ vari = {
     "random insertion order?" : "whether new cards show up in random order or by order of the main database.",
     "leech threshold" : "number of times you select the 'again' option on a card before it is considered a leech and auto-suspended.",
     "review limit caps new card limit" : "whether the review limit now limits the new card limit. (e.g. if the maximum reviews are 200 and you have 190 reviews due you'll only be able to learn 10 new cards)",
-    "funky intro" : "enable the funky intro.",
     "timer limit" : "number of seconds the timer can run for per card.",
     "timer for every card" : "whether to show time taken for every card."
 }
@@ -166,7 +165,7 @@ for row in stat:
             pass
 
 defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],""] 
-defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, False, 60]
+defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
 
 
 def init():
@@ -580,9 +579,10 @@ def learn():
                 newint(card)
                 end = time.time()
                 num = end - start
-                if num > vars[14]:
-                    num = vars[14]
-                print(f"    time taken: {round(num, 2)}s")
+                if num > vars[13]:
+                    num = vars[13]
+                if vars[14]:
+                    print(f"    time taken: {round(num, 2)}s")
                 tt += round(num, 2)
                 if cardnum() > 0:
                     print("    " + countcards(queue))
@@ -638,7 +638,7 @@ def save():
 def settings():
     path = qpath()
     if path != "exit":
-        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "bool", "int"]
+        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "int", "bool"]
         vars = deck[path[0]][path[1]]["options"]
         varik = list(vari)
         variv = list(vari.values())

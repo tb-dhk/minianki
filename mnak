@@ -81,16 +81,16 @@ def help():
     
 welc = """welcome to minianki! :> """
 
-# if minianki.variables[13][1] == True:
-#   for ind in range(len(welc)):
-#       if ind < len(welc)-3:
-#            time.sleep(0.01)
-#        else:
-#            time.sleep(0.01)
-#        sys.stdout.write(welc[ind])
-#        sys.stdout.flush()
-# else:
-print(welc)
+if minianki.vari:
+    for ind in range(len(welc)):
+        if ind < len(welc)-3:
+            time.sleep(0.01)
+        else:
+            time.sleep(0.01)
+        sys.stdout.write(welc[ind])
+        sys.stdout.flush()
+else:
+    print(welc)
     
 print(help())
 
