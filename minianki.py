@@ -21,7 +21,11 @@ print("")
 verno =  "0.9"
 
 deck = {}
-dic = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
+
+try:
+    dic = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
+except:
+    dic = {}
 
 # import learning variables
 vari = {
@@ -55,12 +59,49 @@ def ppath(path):
 def qpath():
     while 1:
         try: 
-            impd = ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck. "))
+            impd = ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck and enter 'exit' to leave. "))
+            if impd[0] == "exit":
+                return "exit"
             if len(impd) == 1:
                 impd.append("misc")
             dic[impd[0]][impd[1]]
         except:
             print("    invalid. try again.")
+        else:
+            return impd
+
+def bpath(bb):
+    while 1:
+        try: 
+            impd = ppath(input("    enter the name of the deck/subdeck. use : to separate deck and subdeck and enter 'exit' to leave. to add a new deck, simply enter the name of the new deck and all parent decks will be added in automatically. "))
+            if impd[0] == "exit":
+                return "exit"
+            if len(impd) == 1:
+                impd.append("misc")
+            dic[impd[0]][impd[1]]
+        except:
+            dic[impd[0]] = {
+                "misc" : {
+                    "options" : [],
+                    "misc" : {}
+                }
+            }
+            dic[impd[0]][impd[1]] = {
+                "options" : [],
+                "misc" : {}
+            }
+
+            deck[impd[0]] = {
+                "misc" : {
+                    "options" : [],
+                    "misc" : []
+                }
+            }
+            deck[impd[0]][impd[1]] = {
+                "options" : [],
+                "misc" : []
+            }
+            return impd
         else:
             return impd
 
@@ -133,8 +174,8 @@ def init():
         for subd in dic[dk]:
             if isinstance(dic[dk][subd], dict):
                 deck[dk][subd] = {
-                        "options" : [],
-                        "misc" : []
+                    "options" : [],
+                    "misc" : []
                 } 
                 for t in dic[dk][subd]:
                     if t == "options":
@@ -284,25 +325,26 @@ def impt():
     impted = 0 
     
     impd = qpath()
-    vars = deck[impd[0]][impd[1]]["options"]
-    separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
+    if impd != "exit":
+        vars = deck[impd[0]][impd[1]]["options"]
+        separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
 
-    separator = separator.replace(r"\t", "\t")
-    separator = separator.replace(r"\n", "\n")
-    if separator == "":
-        separator = "    "
+        separator = separator.replace(r"\t", "\t")
+        separator = separator.replace(r"\n", "\n")
+        if separator == "":
+            separator = "    "
 
-    # import new cards into deck
-    for row in reader:
-        row = row.strip().split(separator)
-        if row[0].strip() != "":
-            deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
-            impted += 1
+        # import new cards into deck
+        for row in reader:
+            row = row.strip().split(separator)
+            if row[0].strip() != "":
+                deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
+                impted += 1
 
-    if impted == 0:
-        print("    no cards imported. maybe enter a separator or check impt.txt?")
-    else:
-        print(f"    {impted} card(s) imported (including duplicates).")
+        if impted == 0:
+            print("    no cards imported. maybe enter a separator or check impt.txt?")
+        else:
+            print(f"    {impted} card(s) imported (including duplicates).")
 
 # LEARN
 def learn():
@@ -667,172 +709,180 @@ def guide():
 def browse():
     init()
     save()
-    path = qpath()
-    dk = []
+    brk = False
+    path = bpath(brk)
+    if path != "exit":
+        dk = []
 
-    def sync(dec):
-        if path[1] == "misc":
-            vars = deck[path[0]][path[1]]["options"]
-            for subd in deck[path[0]]:
-                for x in deck[path[0]][subd]["misc"]:
-                    dec.append(x)
-        else:
-            print()
-            vars = deck[path[0]][path[1]]["options"]
-            dec = [x for x in deck[path[0]][path[1]]["misc"]]
-        dec = list(dict.fromkeys(dec))
-        return dec
-           
-    # print out deck
-    nocards = 0
+        def sync(dec):
+            if path[1] == "misc":
+                vars = deck[path[0]][path[1]]["options"]
+                for subd in deck[path[0]]:
+                    for x in deck[path[0]][subd]["misc"]:
+                        dec.append(x)
+            else:
+                print()
+                vars = deck[path[0]][path[1]]["options"]
+                dec = [x for x in deck[path[0]][path[1]]["misc"]]
+            dec = list(dict.fromkeys(dec))
+            return dec
+               
+        # print out deck
+        nocards = 0
 
-    def susstr(card):
-        if card.suspended == True:
-            return " (suspended)"
-        else:
-            return ""
-    
-    def printcards(dk):
-        # print out with line numbers
-        cardcount = 0
-        for card in dk:
-            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
-            cardcount += 1
-
-    while 1:
-        dk = sync(dk)
-        print("    ~~~~~~~~~~~~~~~~~~~~")
-        printcards(dk)
-        print("    ~~~~~~~~~~~~~~~~~~~~")
-
-
-        comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
-        match comm:
-            case "exit":
-                for card in dk:
-                    path = ppath(card.location)
-                    try:
-                        deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
-                    except:
-                        pass
-                break
-            case "add":
-                term = input("    enter term: ")
-                defin = input("    enter definition: ")
-                defc = defaultcard[2:]
-                deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], defc[9]))
-            case "sort":
-                sortby = input("    enter value by which you would like to sort by (term or duedate): ")
-                ascdesc = input("    would you like to sort in descending order? (y/N) ")
-                rev = False
-
-                if ascdesc == "y":
-                    rev = True
-                match sortby:
-                    case "term":
-                        dk.sort(key = lambda x: x.term, reverse = rev)
-                    case "duedate":
-                        dk.sort(key = lambda x: x.duedate, reverse = rev)
-                    case _:
-                        dk = dk
-            case "search":
-                searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
-                searchkey = input("    enter what you would like to search for: ")
-                found = []
-                
-                match searchby:
-                    case "term":
-                        found = [card for card in dk if searchkey in card.term]
-                    case "def":
-                        found = [card for card in dk if searchkey in card.defin]
-                    case "tags":
-                        found = [card for card in dk if searchkey in card.tags]
-                    case "flags":
-                        found = [card for card in dk if searchkey in card.flags]
-                
-                print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
-                printcards(found)
-                print("    ~~~~~~~~~~~~~~~~~~~~\n")
-            case _:
+        def susstr(card):
+            if card.suspended == True:
+                return " (suspended)"
+            else:
+                return ""
+        
+        def printcards(dk):
+            # print out with line numbers
+            cardcount = 0
+            for card in dk:
                 try:
-                    dk[int(comm)]
+                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
                 except:
-                    print("    invalid. try again.")
-                else:
-                    card = dk[int(comm)]
-                    try:
-                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
-                    except:
-                        print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
-                    while 1:
-                        toedit = input("""\n    enter:\n    - any value you would like to change (term, def, suspension, tags or flags)\n    - any card action ('delete', 'bury' or 'forget')\n    - 'exit' to cancel\n    ______\n    >>> """)
-                        match toedit:
-                            case "term":
-                                card.term = input("    enter new value: ")
-                                break
-                            case "def":
-                                card.defin = input("    enter new value: ")
-                                break
-                            case "suspension":
-                                match card.suspended:
-                                    case True:
-                                        card.suspended = False
-                                    case False:
-                                        card.suspended = True
-                                    case _:
-                                        card.suspended = True
-                                print("\n    suspension toggled to", card.suspended)
-                                break
-                            case "tags":
-                                while 1:
-                                    print("    " + str(card.tags))
-                                    addrm = input("    enter 'add/rm <tag>' to add or remove a tag. enter 'exit' to exit: ")
-                                    match addrm:
-                                        case "exit":
-                                            break
-                                        case _:
-                                            if addrm[0:4] == "add ":
-                                                card.tags.append(addrm[4:])
-                                            elif addrm[0:3] == "rm ":
-                                                try:
-                                                    card.tags.remove(addrm[3:])
-                                                except:
-                                                    print("    not an existing tag. try again.")
-                                            else:
-                                                print("    invalid. try again.")
-                            case "flags":
-                                while 1:
-                                    print("    " + str(card.flags))
-                                    addrm = input("    enter 'add/rm <tag>' to add or remove a flag. enter 'exit' to exit: ").strip()
-                                    match addrm:
-                                        case "exit":
-                                            break
-                                        case _:
-                                            if addrm[0:4] == "add ":
-                                                card.flags.append(addrm[4:])
-                                            elif addrm[0:3] == "rm ":
-                                                try:
-                                                    card.flags.remove(addrm[3:])
-                                                except:
-                                                    print("    not an existing flag. try again.")
-                                            else:
-                                                print("    invalid. try again.")
+                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
+                cardcount += 1
 
-                            case 'bury':
-                                card.duedate += datetime.timedelta(days=1)
-                                break
-                            case 'delete':
-                                path = card.location
-                                deck[path[0]][path[1]]["misc"].remove(card)
-                                dk.remove(card)
-                                break
-                            case 'forget':
-                                card.duedate == datetime.date.today()
-                                break
-                            case 'exit':
-                                break
-                            case _:
-                                print("    invalid. try again")
+        while 1:
+            dk = sync(dk)
+            print("    ~~~~~~~~~~~~~~~~~~~~")
+            printcards(dk)
+            print("    ~~~~~~~~~~~~~~~~~~~~")
+
+
+            comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
+            match comm:
+                case "exit":
+                    for card in dk:
+                        path = ppath(card.location)
+                        try:
+                            deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
+                        except:
+                            pass
+                    break
+                case "add":
+                    term = input("    enter term: ")
+                    defin = input("    enter definition: ")
+                    defc = defaultcard[2:]
+                    if len(path) == 1:
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":misc")))
+                    elif len(path) == 2:
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":" + path[1])))
+                case "sort":
+                    sortby = input("    enter value by which you would like to sort by (term or duedate): ")
+                    ascdesc = input("    would you like to sort in descending order? (y/N) ")
+                    rev = False
+
+                    if ascdesc == "y":
+                        rev = True
+                    match sortby:
+                        case "term":
+                            dk.sort(key = lambda x: x.term, reverse = rev)
+                        case "duedate":
+                            dk.sort(key = lambda x: x.duedate, reverse = rev)
+                        case _:
+                            dk = dk
+                case "search":
+                    searchby = input("    enter value by which you would like to search (term, def, tags or flags): ")
+                    searchkey = input("    enter what you would like to search for: ")
+                    found = []
+                    
+                    match searchby:
+                        case "term":
+                            found = [card for card in dk if searchkey in card.term]
+                        case "def":
+                            found = [card for card in dk if searchkey in card.defin]
+                        case "tags":
+                            found = [card for card in dk if searchkey in card.tags]
+                        case "flags":
+                            found = [card for card in dk if searchkey in card.flags]
+                    
+                    print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
+                    printcards(found)
+                    print("    ~~~~~~~~~~~~~~~~~~~~\n")
+                case _:
+                    try:
+                        dk[int(comm)]
+                    except:
+                        print("    invalid. try again.")
+                    else:
+                        card = dk[int(comm)]
+                        try:
+                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                        except:
+                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                        while 1:
+                            toedit = input("""\n    enter:\n    - any value you would like to change (term, def, suspension, tags or flags)\n    - any card action ('delete', 'bury' or 'forget')\n    - 'exit' to cancel\n    ______\n    >>> """)
+                            match toedit:
+                                case "term":
+                                    card.term = input("    enter new value: ")
+                                    break
+                                case "def":
+                                    card.defin = input("    enter new value: ")
+                                    break
+                                case "suspension":
+                                    match card.suspended:
+                                        case True:
+                                            card.suspended = False
+                                        case False:
+                                            card.suspended = True
+                                        case _:
+                                            card.suspended = True
+                                    print("\n    suspension toggled to", card.suspended)
+                                    break
+                                case "tags":
+                                    while 1:
+                                        print("    " + str(card.tags))
+                                        addrm = input("    enter 'add/rm <tag>' to add or remove a tag. enter 'exit' to exit: ")
+                                        match addrm:
+                                            case "exit":
+                                                break
+                                            case _:
+                                                if addrm[0:4] == "add ":
+                                                    card.tags.append(addrm[4:])
+                                                elif addrm[0:3] == "rm ":
+                                                    try:
+                                                        card.tags.remove(addrm[3:])
+                                                    except:
+                                                        print("    not an existing tag. try again.")
+                                                else:
+                                                    print("    invalid. try again.")
+                                case "flags":
+                                    while 1:
+                                        print("    " + str(card.flags))
+                                        addrm = input("    enter 'add/rm <tag>' to add or remove a flag. enter 'exit' to exit: ").strip()
+                                        match addrm:
+                                            case "exit":
+                                                break
+                                            case _:
+                                                if addrm[0:4] == "add ":
+                                                    card.flags.append(addrm[4:])
+                                                elif addrm[0:3] == "rm ":
+                                                    try:
+                                                        card.flags.remove(addrm[3:])
+                                                    except:
+                                                        print("    not an existing flag. try again.")
+                                                else:
+                                                    print("    invalid. try again.")
+
+                                case 'bury':
+                                    card.duedate += datetime.timedelta(days=1)
+                                    break
+                                case 'delete':
+                                    loc = ppath(card.location)
+                                    deck[loc[0]][path[1]]["misc"].remove(card)
+                                    dk.remove(card)
+                                    break
+                                case 'forget':
+                                    card.duedate = datetime.date.today()
+                                    break
+                                case 'exit':
+                                    break
+                                case _:
+                                    print("    invalid. try again")
 
 def update():
     print("\n    recloning minianki...")
