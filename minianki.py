@@ -848,14 +848,16 @@ def browse():
                     printcards(found)
                     print("    ~~~~~~~~~~~~~~~~~~~~\n")
                 case "rm":
-                    if path[1] == "misc":
-                        del deck[path[0]] 
-                        del dic[path[0]]
-                        print("    " + path[0] + " has been removed.")
-                    else:
-                        del deck[path[0]][path[1]]
-                        del dic[path[0]][path[1]]
-                        print("    " +path[0] + ":" + path[1] + " has been removed.")
+                    ans = input("    are you sure you would like to remove this deck? (y/N) ")
+                    if ans == "y":
+                        if path[1] == "misc":
+                            del deck[path[0]] 
+                            del dic[path[0]]
+                            print("    " + path[0] + " has been removed.")
+                        else:
+                            del deck[path[0]][path[1]]
+                            del dic[path[0]][path[1]]
+                            print("    " +path[0] + ":" + path[1] + " has been removed.")
                     break
                 case _:
                     try:
