@@ -16,7 +16,6 @@ subprocess.run(["git", "init"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "branch", "-m", "main"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "update-index", "--assume-unchanged", ".mnakdata/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 subprocess.run(["git", "remote", "add", "minianki", "https://github.com/shuu-wasseo/minianki"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-print("")
 
 verno =  "0.9"
 
@@ -350,221 +349,222 @@ def impt():
 def learn():
     # initialise vars
     path = qpath()
-    vars = deck[path[0]][path[1]]["options"]
+    if path != "exit":
+        vars = deck[path[0]][path[1]]["options"]
 
-    print("")
-    # variables:
-    # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-    learnsteps = [str(vars[2][1]), str(vars[3][1]), vars[4][1]]
-    # easy interval (time between picking easy and reviewing the card for the first time)
-    easyint = vars[5][1]
-    # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-    easybonus = vars[8][1]
-    # hard bonus (multiplier from last value, default 1.2)
-    hardint = vars[9][1]
-    
-    # FUNCTIONS
-    # function to generate intervals
-    def genints(card):
-        match int(card.ls):
-            case 0:
-                ints = [learnsteps[0], str(round((float(learnsteps[0])+float(learnsteps[1]))/2)), learnsteps[1], easyint]
-            case 1:
-                ints = learnsteps + [easyint]
-            case 2:
-                ints = ["10", math.ceil(card.lastint * hardint), math.ceil(card.lastint * card.ease), math.ceil(card.lastint * card.ease * easybonus)]
-            case _:
-                card.ls = 0
-                ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
-        for x in ints:
-            if type(x) == int and x > vars[6][1]:
-                x = varis[6][1]
-        return ints
-    
-    # function to print out intervals
-    def printno(no):
-        if type(no) == str:
-            return(no + "m")
-        elif type(no) == int:
-            return(str(no) + "d")
-    
-    # function to schedule a new card
-    def newint(card):
-        # prompting user
-        print("    ~~~~~~~~~~~~~~~~~~~~")
-        input(f"    term: {card.term}\n    ")
-        print(f"    definition: {card.defin}\n")
-        print("    enter 1-4 for:" + 
-        color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
-        color(f"\n    2. hard ({printno(genints(card)[1])})", prefs["hard"]) +
-        color(f"\n    3. good ({printno(genints(card)[2])})", prefs["good"]) +
-        color(f"\n    4. easy ({printno(genints(card)[3])})", prefs["easy"]) + "\n")
+        print("")
+        # variables:
+        # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
+        learnsteps = [str(vars[2][1]), str(vars[3][1]), vars[4][1]]
+        # easy interval (time between picking easy and reviewing the card for the first time)
+        easyint = vars[5][1]
+        # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
+        easybonus = vars[8][1]
+        # hard bonus (multiplier from last value, default 1.2)
+        hardint = vars[9][1]
+        
+        # FUNCTIONS
+        # function to generate intervals
+        def genints(card):
+            match int(card.ls):
+                case 0:
+                    ints = [learnsteps[0], str(round((float(learnsteps[0])+float(learnsteps[1]))/2)), learnsteps[1], easyint]
+                case 1:
+                    ints = learnsteps + [easyint]
+                case 2:
+                    ints = ["10", math.ceil(card.lastint * hardint), math.ceil(card.lastint * card.ease), math.ceil(card.lastint * card.ease * easybonus)]
+                case _:
+                    card.ls = 0
+                    ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
+            for x in ints:
+                if type(x) == int and x > vars[6][1]:
+                    x = varis[6][1]
+            return ints
+        
+        # function to print out intervals
+        def printno(no):
+            if type(no) == str:
+                return(no + "m")
+            elif type(no) == int:
+                return(str(no) + "d")
+        
+        # function to schedule a new card
+        def newint(card):
+            # prompting user
+            print("    ~~~~~~~~~~~~~~~~~~~~")
+            input(f"    term: {card.term}\n    ")
+            print(f"    definition: {card.defin}\n")
+            print("    enter 1-4 for:" + 
+            color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
+            color(f"\n    2. hard ({printno(genints(card)[1])})", prefs["hard"]) +
+            color(f"\n    3. good ({printno(genints(card)[2])})", prefs["good"]) +
+            color(f"\n    4. easy ({printno(genints(card)[3])})", prefs["easy"]) + "\n")
 
-        while 1:
-            try:
-                option = int(input("    "))-1 
-            except:
-                print("    invalid. try again.")
-            else:
-                if option < 0 or option > 3:
+            while 1:
+                try:
+                    option = int(input("    "))-1 
+                except:
                     print("    invalid. try again.")
                 else:
-                    print("\n    card delayed by:", printno(genints(card)[option]), "\n")
-                    stat[13] = [int(i) for i in stat[13]]
-                    stat[14] = [int(i) for i in stat[14]]
-                    stat[15] = [int(i) for i in stat[15]]
-                    if card.status == "learn" or card.status == "new":
-                        stat[15][option] += 1
-                    elif card.status == "rev":
-                        if card.lastint < 21:
-                            stat[15][4+option] += 1
-                        else:
-                            stat[15][8+option] += 1
-                    if type(genints(card)[option]) == str:
-                        card.status = "learn"
-                        # rescheduling card
-                        try:
-                            queue[int(genints(card)[option])].append(card)
-                        except:
-                            while len(queue) < int(genints(card)[option])+1:
-                                queue.append([])
-                            queue[-1].append(card)
-                        finally:
-                             queue[0].remove(card)
+                    if option < 0 or option > 3:
+                        print("    invalid. try again.")
                     else:
-                        card.status = "rev"
-                        # change data in deck
-                        for ocard in deck:
-                            if ocard.term == card.term:
-                                deck.remove(ocard) # remove old copy of card
-                        card.duedate = card.duedate + datetime.timedelta(days=genints(card)[option])
-                        card.lastint = genints(card)[option]
-                        print("    new due date:", str(card.duedate)[0:10])
-                        print("    1 card less!")
-                        loc = ppath(card.location)
-                        deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
-                        queue[0].remove(card) # remove card from queue
-                    if card.status == "rev":
-                        stat[datetime.date.today().month] = [int(i) for i in stat[datetime.date.today().month]]
-                        stat[datetime.date.today().month][datetime.date.today().day-1] += 1
-                    match option:
-                        case 0:
-                            if card.status == "rev":
-                                card.status = "learn"
+                        print("\n    card delayed by:", printno(genints(card)[option]), "\n")
+                        stat[13] = [int(i) for i in stat[13]]
+                        stat[14] = [int(i) for i in stat[14]]
+                        stat[15] = [int(i) for i in stat[15]]
+                        if card.status == "learn" or card.status == "new":
+                            stat[15][option] += 1
+                        elif card.status == "rev":
+                            if card.lastint < 21:
+                                stat[15][4+option] += 1
                             else:
-                                card.status = "relearn"
-                            card.ls = 0
-                            card.againcount += 1
-                            if card.againcount == vars[11][1]: # autosuspend leech
-                                card.suspended = True
-                                card.againcount = 0
-                                print("    card marked as leech. suspended")
-                        case 1:
-                            pass
-                        case 2:
-                            if card.ls < 2:
-                                card.ls += 1
-                        case 3:
-                            card.ls = 2
-                            card.ease *= easybonus 
-                    if option != 0:
-                        stat[14][datetime.datetime.now().hour] += 1
-                    stat[13][datetime.datetime.now().hour] += 1
-                    
-                break
-
-    # count cards
-    def cardnum():
-        count = 0
-        for x in queue:
-            count += len(x)
-        return count
-
-    # SESSION
-    # making queue
-    queue = [[]]
-    newcount = 0
-    revcount = 0
-
-    cdeck = [card for card in subd if indeck(card, path) for subd in dk for dk in deck]
-
-    if vars[12][1]:
-        for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
-                queue[0].append(card)
-                revcount += 1
-            if revcount >= vars[1][1]:
-                break
-        for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
-                queue[0].append(card)
-                newcount += 1
-            if revcount + newcount >= vars[1][1]:
-                break
-    else:
-        for card in cdeck:
-            if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
-                queue[0].append(card)
-                match card.ls:
-                    case 2:
-                        revcount += 1
-                    case _:
-                        newcount += 1
-            if newcount >= vars[0][1] or revcount >= vars[1][1]:
-                break
-    if vars[10][1]:
-        random.shuffle(queue[0])
-    
-    # begin!
-    print(f"    hello! welcome to your learning session.")
-    
-    if cardnum() == 0:
-        print("    no cards today. maybe check impt.txt?")
-    else:
-        print(f"    today's card count: {cardnum()}")
-
-    exitlearn = False
-
-    def countcards(queue):
-        new = 0
-        learn0 = 0
-        learn1 = 0
-        rev = 0
-        for x in queue:
-            for card in x:
-                match card.status:
-                    case "new":
-                        new += 1
-                    case "learn":
-                        if card.ls == 0:
-                            learn0 += 1
-                        elif card.ls == 1:
-                            learn1 += 1
-                    case "relearn":
-                        if card.ls == 0:
-                            learn0 += 1
-                        elif card.ls == 1:
-                            learn1 += 1
-                    case "rev":
-                        rev += 1
-        return color(new, prefs["cardcountnew"]) + " + " + color(learn0, prefs["cardcountlearn"]) + " + " + color(learn1, prefs["cardcountlearn"]) + " + " + color(rev, prefs["cardcountrev"])
-    
-    while queue != []:
-        for card in queue[0]:
-            newint(card)
-            if cardnum() > 0:
-                print("    " + countcards(queue))
-                print("    remaining cards:", cardnum())
-                if input("    continue? (Y/n) ") == "n":
-                    print("    exiting learn mode...")
-                    exitlearn = True
+                                stat[15][8+option] += 1
+                        if type(genints(card)[option]) == str:
+                            card.status = "learn"
+                            # rescheduling card
+                            try:
+                                queue[int(genints(card)[option])].append(card)
+                            except:
+                                while len(queue) < int(genints(card)[option])+1:
+                                    queue.append([])
+                                queue[-1].append(card)
+                            finally:
+                                 queue[0].remove(card)
+                        else:
+                            card.status = "rev"
+                            # change data in deck
+                            for ocard in deck:
+                                if ocard.term == card.term:
+                                    deck.remove(ocard) # remove old copy of card
+                            card.duedate = card.duedate + datetime.timedelta(days=genints(card)[option])
+                            card.lastint = genints(card)[option]
+                            print("    new due date:", str(card.duedate)[0:10])
+                            print("    1 card less!")
+                            loc = ppath(card.location)
+                            deck[loc[0]][loc[1]]["misc"].append(card) # add new copy of card
+                            queue[0].remove(card) # remove card from queue
+                        if card.status == "rev":
+                            stat[datetime.date.today().month] = [int(i) for i in stat[datetime.date.today().month]]
+                            stat[datetime.date.today().month][datetime.date.today().day-1] += 1
+                        match option:
+                            case 0:
+                                if card.status == "rev":
+                                    card.status = "learn"
+                                else:
+                                    card.status = "relearn"
+                                card.ls = 0
+                                card.againcount += 1
+                                if card.againcount == vars[11][1]: # autosuspend leech
+                                    card.suspended = True
+                                    card.againcount = 0
+                                    print("    card marked as leech. suspended")
+                            case 1:
+                                pass
+                            case 2:
+                                if card.ls < 2:
+                                    card.ls += 1
+                            case 3:
+                                card.ls = 2
+                                card.ease *= easybonus 
+                        if option != 0:
+                            stat[14][datetime.datetime.now().hour] += 1
+                        stat[13][datetime.datetime.now().hour] += 1
+                        
                     break
-            else:
-                print("    good job! you finished the deck.")
-        if exitlearn:
-            break
-        if queue[0] == []:
-            queue.pop(0)
+
+        # count cards
+        def cardnum():
+            count = 0
+            for x in queue:
+                count += len(x)
+            return count
+
+        # SESSION
+        # making queue
+        queue = [[]]
+        newcount = 0
+        revcount = 0
+
+        cdeck = [card for card in subd if indeck(card, path) for subd in dk for dk in deck]
+
+        if vars[12][1]:
+            for card in cdeck:
+                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
+                    queue[0].append(card)
+                    revcount += 1
+                if revcount >= vars[1][1]:
+                    break
+            for card in cdeck:
+                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
+                    queue[0].append(card)
+                    newcount += 1
+                if revcount + newcount >= vars[1][1]:
+                    break
+        else:
+            for card in cdeck:
+                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
+                    queue[0].append(card)
+                    match card.ls:
+                        case 2:
+                            revcount += 1
+                        case _:
+                            newcount += 1
+                if newcount >= vars[0][1] or revcount >= vars[1][1]:
+                    break
+        if vars[10][1]:
+            random.shuffle(queue[0])
+        
+        # begin!
+        print(f"    hello! welcome to your learning session.")
+        
+        if cardnum() == 0:
+            print("    no cards today. maybe check impt.txt?")
+        else:
+            print(f"    today's card count: {cardnum()}")
+
+        exitlearn = False
+
+        def countcards(queue):
+            new = 0
+            learn0 = 0
+            learn1 = 0
+            rev = 0
+            for x in queue:
+                for card in x:
+                    match card.status:
+                        case "new":
+                            new += 1
+                        case "learn":
+                            if card.ls == 0:
+                                learn0 += 1
+                            elif card.ls == 1:
+                                learn1 += 1
+                        case "relearn":
+                            if card.ls == 0:
+                                learn0 += 1
+                            elif card.ls == 1:
+                                learn1 += 1
+                        case "rev":
+                            rev += 1
+            return color(new, prefs["cardcountnew"]) + " + " + color(learn0, prefs["cardcountlearn"]) + " + " + color(learn1, prefs["cardcountlearn"]) + " + " + color(rev, prefs["cardcountrev"])
+        
+        while queue != []:
+            for card in queue[0]:
+                newint(card)
+                if cardnum() > 0:
+                    print("    " + countcards(queue))
+                    print("    remaining cards:", cardnum())
+                    if input("    continue? (Y/n) ") == "n":
+                        print("    exiting learn mode...")
+                        exitlearn = True
+                        break
+                else:
+                    print("    good job! you finished the deck.")
+            if exitlearn:
+                break
+            if queue[0] == []:
+                queue.pop(0)
 
 # SAVE
 def save():
@@ -753,7 +753,7 @@ def browse():
             print("    ~~~~~~~~~~~~~~~~~~~~")
 
 
-            comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
+            comm = input("""\n    enter:\n    - any number to edit its corresponding card\n    - 'add' to add a card\n    - 'sort' to sort the deck\n    - 'search' to search the deck\n    - 'rm' to remove this deck\n    - 'exit' to save and exit the deck\n    ______\n    >>> """)
             match comm:
                 case "exit":
                     for card in dk:
@@ -803,6 +803,16 @@ def browse():
                     print(f"\n    {searchby}: {searchkey}\n    ~~~~~~~~~~~~~~~~~~~~")
                     printcards(found)
                     print("    ~~~~~~~~~~~~~~~~~~~~\n")
+                case "rm":
+                    if path[1] == "misc":
+                        del deck[path[0]] 
+                        del dic[path[0]]
+                        print("    " + path[0] + " has been removed.")
+                    else:
+                        del deck[path[0]][path[1]]
+                        del dic[path[0]][path[1]]
+                        print("    " + path[0] + ":" + path[1] + " has been removed.")
+                    break
                 case _:
                     try:
                         dk[int(comm)]
