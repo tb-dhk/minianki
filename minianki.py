@@ -195,9 +195,11 @@ def init():
                                     card[0]
                                 except:
                                     continue
-                                else:                                    
-                                    if len(card) < len(defaultcard)-1:
-                                        card = card + defaultcard[len(card)+1:]                                         
+                                else:
+                                    dc = defaultcard
+                                    dc[3] = dic[dk][subd]["options"][7]
+                                    if len(card) < len(dc)-1:
+                                        card = card + dc[len(card)+1:]                                         
                                     else:
                                         for d in dic[dk][subd]["misc"]:
                                             ocard = dic[dk][subd]["misc"][d]                                    
@@ -315,9 +317,10 @@ def init():
             tdy = datetime.date.today()
             try:
                 daysp = tdy - datetime.date.fromisoformat(stat[16][0])
+                print(daysp)
             except:
                 daysp = datetime.timedelta(days=0)
-            stat[16] = [stat[16][0]] + stat[16][daysp.days+1:]
+            stat[16] = [tdy] + stat[16][daysp.days+1:]
             while len(stat[16]) < 32:
                 stat[16].append(0)
 
@@ -733,19 +736,19 @@ def browse():
     path = bpath(brk)
     if path != "exit":
         dk = []
-
-        def sync(dec):
+        vars = []
+        def sync(dec, var):
             if path[1] == "misc":
-                vars = deck[path[0]][path[1]]["options"]
                 for subd in deck[path[0]]:
                     for x in deck[path[0]][subd]["misc"]:
                         dec.append(x)
             else:
-                print()
-                vars = deck[path[0]][path[1]]["options"]
                 dec = [x for x in deck[path[0]][path[1]]["misc"]]
+            if deck[path[0]][path[1]]["options"] == [] or var == []:
+                var = defaultopt 
+                deck[path[0]][path[1]]["options"] = defaultopt
             dec = list(dict.fromkeys(dec))
-            return dec
+            return dec, var
                
         # print out deck
         nocards = 0
@@ -770,7 +773,7 @@ def browse():
                 cardcount += 1
 
         while 1:
-            dk = sync(dk)
+            dk, vars = sync(dk, vars)
             print("    ~~~~~~~~~~~~~~~~~~~~")
             printcards(dk)
             print("    ~~~~~~~~~~~~~~~~~~~~")
@@ -790,10 +793,13 @@ def browse():
                     term = input("    enter term: ")
                     defin = input("    enter definition: ")
                     defc = defaultcard[2:]
+
                     if len(path) == 1:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":misc")))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":misc")))
                     elif len(path) == 2:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], defc[1], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":" + path[1])))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":" + path[1])))
+                    stat[16] = [datetime.date.today()] + [int(i) for i in stat[16][1:]]
+                    stat[16][-1] += 1
                 case "sort":
                     sortby = input("    enter value by which you would like to sort by (term or duedate): ")
                     ascdesc = input("    would you like to sort in descending order? (y/N) ")
@@ -983,8 +989,13 @@ def stats():
     futdues = []
     futstats = []
     num = []
-    for x in deck:
-        futdues.append((x.duedate - datetime.date.today()).days)
+    for dk in deck:
+        for subd in deck[dk]:
+            for x in deck[dk][subd]["misc"]:
+                try:
+                    futdues.append((x.duedate.date() - datetime.date.today()).days)
+                except:
+                    futdues.append((x.duedate - datetime.date.today()).days)
     for x in futdues:
         try:
             futstats[x] += 1
@@ -1072,21 +1083,23 @@ def stats():
     print("    card stats:")
     titles = ["new", "learning", "relearning", "young", "mature", "suspended"]
     ccer = [0, 0, 0, 0, 0, 0]
-    for card in deck:
-        if card.suspended == True:
-            ccer[5] += 1
-        match card.status:
-            case "new":
-                ccer[0] += 1
-            case "learn":
-                ccer[1] += 1
-            case "relearn":
-                ccer[2] += 1
-            case "rev":
-                if card.lastint < 21:
-                    ccer[3] += 1
-                else:
-                    ccer[4] += 1
+    for dk in deck:
+        for subd in deck[dk]:
+            for x in deck[dk][subd]["misc"]:
+                if x.suspended == True:
+                    ccer[5] += 1
+                match x.status:
+                    case "new":
+                        ccer[0] += 1
+                    case "learn":
+                        ccer[1] += 1
+                    case "relearn":
+                        ccer[2] += 1
+                    case "rev":
+                        if x.lastint < 21:
+                            ccer[3] += 1
+                        else:
+                            ccer[4] += 1
     if sum(ccer) == 0:
         print("    you have 0 cards.")
     else:
@@ -1099,8 +1112,10 @@ def stats():
     revdues = []
     revstats = []
     num = []
-    for x in deck:
-        revdues.append(x.lastint)
+    for dk in deck:
+        for subd in deck[dk]:
+            for x in deck[dk][subd]["misc"]:
+                revdues.append(x.lastint)
     for x in revdues:
         try:
             revstats[int(x)] += 1
@@ -1117,10 +1132,13 @@ def stats():
     easerounds = []
     easestats = []
     num = []
-    for x in deck:
-        eases.append(x.ease)
+    for dk in deck:
+        for subd in deck[dk]:
+            for x in deck[dk][subd]["misc"]:        
+                eases.append(x.ease)
     for x in eases:
-        easerounds.append(round(x*0.05,2)/0.05)
+        print(x)
+        easerounds.append(x)
     for x in easerounds:
         try:
             easestats[int(x*20)] += 1
