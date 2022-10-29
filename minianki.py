@@ -23,7 +23,7 @@ verno =  "0.9"
 deck = {}
 
 try:
-    dic = json.load(open(os.getcwd()+'/.mnakdata/sample.json'))
+    dic = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 except:
     dic = {}
 
@@ -329,7 +329,7 @@ def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    writer = csv.writer(open(os.getcwd()+'/.mnakdata/sample.json', 'a'))
+    writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
     impted = 0 
     
     impd = qpath()
@@ -602,7 +602,7 @@ def learn():
 
 # SAVE
 def save():
-    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')
+    f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')
     writestats = csv.writer(open(os.getcwd()+'/.mnakdata/stats.mnak', 'w'))
     saved = 0
 
@@ -683,7 +683,7 @@ def settings():
                         deck[path[0]][path[1]]["options"] = vars
                         save()
 
-                        f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
+                        f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')["cards"]
                         f.write(json.dumps(dic))
 
 def preferences():
@@ -975,7 +975,7 @@ def backup():
     subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def nobackup():
-    reader = open(os.getcwd()+'/.mnakdata/sample.json', 'r').readlines()
+    reader = open(os.getcwd()+'/.mnakdata/deck.mnak', 'r').readlines()
     rows = []
     for x in reader:
         rows.append(x)
