@@ -4,6 +4,7 @@ import os
 import random
 import math
 import subprocess
+import time
 from colors import color
 import plotext as plt
 import requests
@@ -165,7 +166,7 @@ for row in stat:
             pass
 
 defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],""] 
-defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
+defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, False, 60]
 
 
 def init():
@@ -439,7 +440,7 @@ def learn():
                                     queue.append([])
                                 queue[-1].append(card)
                             finally:
-                                 queue[0].remove(card)
+                                queue[0].remove(card)
                         else:
                             card.status = "rev"
                             # change data in deck
@@ -572,17 +573,27 @@ def learn():
                             rev += 1
             return color(new, prefs["cardcountnew"]) + " + " + color(learn0, prefs["cardcountlearn"]) + " + " + color(learn1, prefs["cardcountlearn"]) + " + " + color(rev, prefs["cardcountrev"])
         
+        tt = 0
         while queue != []:
             for card in queue[0]:
+                start = time.time()
                 newint(card)
+                end = time.time()
+                num = end - start
+                if num > vars[14]:
+                    num = vars[14]
+                print(f"    time taken: {round(num, 2)}s")
+                tt += round(num, 2)
                 if cardnum() > 0:
                     print("    " + countcards(queue))
                     print("    remaining cards:", cardnum())
                     if input("    continue? (Y/n) ") == "n":
+
                         print("    exiting learn mode...")
                         exitlearn = True
                         break
                 else:
+                    print(f"\n    you studied for {round(tt, 2)}s.")
                     print("    good job! you finished the deck.")
             if exitlearn:
                 break
@@ -626,50 +637,54 @@ def save():
 # SETTINGS
 def settings():
     path = qpath()
-    vars = deck[path[0]][path[1]]["options"]
+    if path != "exit":
+        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "bool", "int"]
+        vars = deck[path[0]][path[1]]["options"]
+        varik = list(vari)
+        variv = list(vari.values())
+        while 1: 
+            string = "\n    variables: \n"
+            for x in range(len(vars)):
+                string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varik[x]} ({str(x)}): {str(vars[x])}  \n    {variv[x]} \n" 
+            string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
+            print("    " + string)
+            comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit this menu.\n    _______\n    >>> ")
+            match comm:
+                case 'exit':
+                    break
+                case _:
+                    try:
+                        comm = int(comm)
+                    except:
+                        print("    invalid command. try again!")
+                    else:
+                        print("    " + varik[comm] + " (" + str(int(comm)) + ") - " + variv[comm] + "\n    current value: " + str(vars[comm]))
+                        while 1:
+                            newval = input("    enter new value: ")
+                            try:
+                                match forms[comm]:
+                                    case "float":
+                                        newval = float(newval)
+                                    case "int":
+                                        newval = int(newval)
+                                    case "bool":
+                                        match newval:
+                                            case "False":
+                                              newval = False
+                                            case "True":
+                                              newval = True
+                                            case _:
+                                              raise TypeError('value could not be converted to bool')
+                            except:
+                                print("    invalid. try again")
+                            else:
+                                vars[comm] = newval
+                                break
+                        deck[path[0]][path[1]]["options"] = vars
+                        save()
 
-    while 1: 
-        string = "\n    variables: \n"
-        for x in range(len(vars)):
-            varia = vars[x]
-            string = string + f"    ~~~~~~~~~~~~~~~~~~~~\n    {varia.name} ({str(x)}): {str(varia.value)}  \n    {varia.exp } \n" 
-        string = string + "    ~~~~~~~~~~~~~~~~~~~~\n"
-        print("    " + string)
-        comm = input("    enter any number to change the value of its corresponding variable or 'exit' to save and exit this menu.\n    _______\n    >>> ")
-        match comm:
-            case 'exit':
-                break
-            case _:
-                try:
-                    comm = int(comm)
-                    varia = vars[comm]
-                except:
-                    print("    invalid command. try again!")
-                else:
-                    print("    " + varia.name + " (" + str(int(comm)) + ") - " + varia.exp + "\n    current value: " + str(varia.value))
-                    while 1:
-                        newval = input("    enter new value: ")
-                        try:
-                            match varia.format:
-                                case "float":
-                                    newval = float(newval)
-                                case "int":
-                                    newval = int(newval)
-                                case "bool":
-                                    match newval:
-                                        case False:
-                                          newval = False
-                                        case True:
-                                          newval = True
-                                        case _:
-                                          raise TypeError('value could not be converted to bool')
-                        except:
-                            print("    invalid. try again")
-                        else:
-                            varia.value = newval
-                            break
-                    f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
-                    f.write(json.dumps(dic))
+                        f = open(os.getcwd()+'/.mnakdata/sample.json', 'w')["cards"]
+                        f.write(json.dumps(dic))
 
 def preferences():
     while 1: 
@@ -853,9 +868,9 @@ def browse():
                         if location[-5:] == ":misc":
                             location = location[:-5]
                         try:
-                            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
+                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                         except:
-                            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
+                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                         while 1:
                             toedit = input("""\n    enter:\n    - any value you would like to change (term, def, suspension, tags or flags)\n    - any card action ('delete', 'bury' or 'forget')\n    - 'exit' to cancel\n    ______\n    >>> """)
                             match toedit:
@@ -915,11 +930,26 @@ def browse():
                                     break
                                 case 'delete':
                                     loc = ppath(card.location)
-                                    deck[loc[0]][path[1]]["misc"].remove(card)
+                                    deck[loc[0]][loc[1]]["misc"].remove(card)
                                     dk.remove(card)
                                     break
                                 case 'forget':
-                                    card.duedate = datetime.date.today()
+                                    term = card.term
+                                    defin = card.defin
+                                    defc = defaultcard[2:]
+                                    print(defc)
+                                    card.ls = defc[0]
+                                    card.ease = defc[1]
+                                    card.lastint = defc[2]
+                                    card.duedate = defc[3]
+                                    card.againcount = defc[5]
+                                    card.status = defc[6]
+                                    if len(path) == 1:
+                                        card.location = (path[0] + ":misc")
+                                    elif len(path) == 2:
+                                        card.location = (path[0] + ":" + path[1])
+                                    print("card has been reset")
+
                                     break
                                 case 'exit':
                                     break
