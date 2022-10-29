@@ -971,8 +971,8 @@ def update():
 
 def backup():
     # backs up old file 
-    subprocess.run(["rm", "-r", backuppath()+"/.mnakdata"])
-    subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()])
+    subprocess.run(["rm", "-r", backuppath()+"/.mnakdata"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.run(["cp", "-r", os.getcwd()+"/.mnakdata", backuppath()], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def nobackup():
     reader = open(os.getcwd()+'/.mnakdata/sample.json', 'r').readlines()
