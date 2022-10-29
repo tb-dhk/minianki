@@ -79,23 +79,25 @@ def bpath(bb):
                 impd.append("misc")
             dic[impd[0]][impd[1]]
         except:
-            dic[impd[0]] = {
-                "misc" : {
-                    "options" : [],
-                    "misc" : {}
+            if impd[0] not in dic:
+                dic[impd[0]] = {
+                    "misc" : {
+                        "options" : [],
+                        "misc" : {}
+                    }
                 }
-            }
             dic[impd[0]][impd[1]] = {
                 "options" : [],
                 "misc" : {}
             }
 
-            deck[impd[0]] = {
-                "misc" : {
-                    "options" : [],
-                    "misc" : []
+            if impd[0] not in deck:
+                deck[impd[0]] = {
+                    "misc" : {
+                        "options" : [],
+                        "misc" : []
+                    }
                 }
-            }
             deck[impd[0]][impd[1]] = {
                 "options" : [],
                 "misc" : []
@@ -106,13 +108,17 @@ def bpath(bb):
 
 def indeck(card, deck): # takes a card (location string form) and a deck (list form)
     loc = ppath(card.location) # converts card to list
-    if len(impd) == 1:
-        if loc[0] == impd[0]:
+    if loc[1] == "misc":
+        loc = loc[:1]
+    if deck[1] == "misc":
+        deck = deck[:1]
+    if len(deck) == 1:
+        if loc[0] == deck[0]:
             return True
         else:
             return False
-    elif len(impd == 2):
-        if loc == impd:
+    elif len(deck) == 2:
+        if loc == deck:
             return True
         else:
             return False
@@ -355,13 +361,13 @@ def learn():
         print("")
         # variables:
         # learning steps (intervals when a card is first learned, 1m 10m 1d by default)
-        learnsteps = [str(vars[2][1]), str(vars[3][1]), vars[4][1]]
+        learnsteps = [str(vars[2]), str(vars[3]), vars[4]]
         # easy interval (time between picking easy and reviewing the card for the first time)
-        easyint = vars[5][1]
+        easyint = vars[5]
         # easy bonus (bonus multiplier to ease when easy picked, default 1.3)
-        easybonus = vars[8][1]
+        easybonus = vars[8]
         # hard bonus (multiplier from last value, default 1.2)
-        hardint = vars[9][1]
+        hardint = vars[9]
         
         # FUNCTIONS
         # function to generate intervals
@@ -377,8 +383,8 @@ def learn():
                     card.ls = 0
                     ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
             for x in ints:
-                if type(x) == int and x > vars[6][1]:
-                    x = varis[6][1]
+                if type(x) == int and x > vars[6]:
+                    x = varis[6]
             return ints
         
         # function to print out intervals
@@ -434,9 +440,10 @@ def learn():
                         else:
                             card.status = "rev"
                             # change data in deck
-                            for ocard in deck:
+                            cloc = ppath(card.location)
+                            for ocard in deck[cloc[0]][cloc[1]]["misc"]:
                                 if ocard.term == card.term:
-                                    deck.remove(ocard) # remove old copy of card
+                                    deck[cloc[0]][cloc[1]]["misc"].remove(ocard) # remove old copy of card
                             card.duedate = card.duedate + datetime.timedelta(days=genints(card)[option])
                             card.lastint = genints(card)[option]
                             print("    new due date:", str(card.duedate)[0:10])
@@ -482,27 +489,40 @@ def learn():
 
         # SESSION
         # making queue
+        cdeck = []
         queue = [[]]
         newcount = 0
         revcount = 0
 
-        cdeck = [card for card in subd if indeck(card, path) for subd in dk for dk in deck]
+        for dk in deck:
+            for subd in deck[dk]:
+                for card in deck[dk][subd]["misc"]:
+                    if indeck(card, path):
+                        cdeck.append(card)
 
-        if vars[12][1]:
+        if vars[12]:
             for card in cdeck:
+                try:
+                    card.duedate = card.duedate.date()
+                except:
+                    pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
                     queue[0].append(card)
                     revcount += 1
-                if revcount >= vars[1][1]:
+                if revcount >= vars[1]:
                     break
             for card in cdeck:
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
                     queue[0].append(card)
                     newcount += 1
-                if revcount + newcount >= vars[1][1]:
+                if revcount + newcount >= vars[1]:
                     break
         else:
             for card in cdeck:
+                try:
+                    card.duedate = card.duedate.date()
+                except:
+                    pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
                     queue[0].append(card)
                     match card.ls:
@@ -510,9 +530,9 @@ def learn():
                             revcount += 1
                         case _:
                             newcount += 1
-                if newcount >= vars[0][1] or revcount >= vars[1][1]:
+                if newcount >= vars[0] or revcount >= vars[1]:
                     break
-        if vars[10][1]:
+        if vars[10]:
             random.shuffle(queue[0])
         
         # begin!
@@ -740,10 +760,13 @@ def browse():
             # print out with line numbers
             cardcount = 0
             for card in dk:
+                location = card.location
+                if location[-5:] == ":misc":
+                    location = location[:-5]
                 try:
-                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
+                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                 except:
-                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(card.location) + susstr(card))
+                    print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                 cardcount += 1
 
         while 1:
@@ -811,7 +834,7 @@ def browse():
                     else:
                         del deck[path[0]][path[1]]
                         del dic[path[0]][path[1]]
-                        print("    " + path[0] + ":" + path[1] + " has been removed.")
+                        print("    " +path[0] + ":" + path[1] + " has been removed.")
                     break
                 case _:
                     try:
@@ -820,10 +843,13 @@ def browse():
                         print("    invalid. try again.")
                     else:
                         card = dk[int(comm)]
+                        location = card.location
+                        if location[-5:] == ":misc":
+                            location = location[:-5]
                         try:
-                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate.date()) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                         except:
-                            print("    " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + susstr(card))
+                            print("    " + str(cardcount) + ". " + card.term + ", " + card.defin + ", " + str(card.duedate) + ", " + card.status + ", " + str(card.tags) + ", " + str(card.flags) + ", " + str(location) + susstr(card))
                         while 1:
                             toedit = input("""\n    enter:\n    - any value you would like to change (term, def, suspension, tags or flags)\n    - any card action ('delete', 'bury' or 'forget')\n    - 'exit' to cancel\n    ______\n    >>> """)
                             match toedit:
