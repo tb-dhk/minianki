@@ -5,11 +5,11 @@ import requests
 import sys
 import time
 import datetime
+import json
+import os
 
 minianki.nobackup()
 minianki.backup()
-
-deck = []
 
 def compare_verno(vn1, vn2):
     vnone = vn1.split("-")[0]
@@ -33,45 +33,57 @@ def compare_verno(vn1, vn2):
 # new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
     
 def help():
-    string = ("\n    you are using minianki v" + minianki.verno + ".")
+    string = ("    you are using minianki v" + minianki.verno + ".")
     # if compare_verno(github_verno, minianki.verno) != minianki.verno:
     #    if (datetime.datetime.fromisoformat(new_release_date[:-1]).date() - datetime.datetime.today().date()).days <= 14:
     #        string = string + (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
     #    else:
     #        string = string + (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
-    string = string + ("""\n
+    string += ("""\n
     list of commands:
 
     importing:
     - impt: import cards in import.txt to the main database.
 
     manage/use deck:
-    - deck: see all your cards and edit, suspend or delete them.
+    - browse: see all your cards and edit, suspend or delete them.
     - learn: an anki-esque learning session.
     - stats: see your stats for the deck.
     
     settings and help:
     - guide: see guides.
-    - help: view all commands again.
+    - help: view all commands and deck directory again.
     - prefs: configure general preferences.
-    - settings: configure deck options.
+    - sett: configure deck options.
 
     misc:
+    - clog: see changelog.
     - exit: leave minianki.
     - load: load backup.
     - update: update and restart minianki.
 
     for support, please contact joshuasoh2008@gmail.com.\n""")
+    
+    minianki.save()
+    minianki.init()
+
+    string += ("\n    deck directory:")
+    
+    if len(minianki.deck) == 0:
+        string += "\n    you have no decks."
+    else:
+        for dk in minianki.deck:
+            string += "\n    - " + dk
+            for subd in minianki.deck[dk]:
+                if subd != "misc":
+                    string += "\n        - " + subd
     return string
     
-welc = """welcome to minianki! :> \n"""
+welc = """welcome to minianki! :> """
 
-if minianki.variables[13][1] == True:
+if minianki.prefs["funky intro"] == "True":
     for ind in range(len(welc)):
-        if ind < len(welc)-3:
-            time.sleep(0.01)
-        else:
-            time.sleep(0.01)
+        time.sleep(0.01)
         sys.stdout.write(welc[ind])
         sys.stdout.flush()
 else:
@@ -79,55 +91,62 @@ else:
     
 print(help())
 
-minianki.init(deck)
-minianki.save(deck)
-
+minianki.save()
+minianki.init()
 # console-like env
 while 1:
-    command = input("__________\n>>> ")
-    match command:
-        case "impt":
-            minianki.impt()
-        case "learn":
-            minianki.learn(deck)
-        case "deck":
-            minianki.deck(deck)
-        case "stats":
-            minianki.stats(deck)
-        case "settings":
-            minianki.settings()
-        case "prefs":
-            minianki.preferences()
-        case "guide":
-            minianki.guide()
-        case "help":
-            print(help)
-        case "update":
-            cnfm = input("are you sure you would like to update? (y/N) ")
-            if cnfm == "y":
-                minianki.update()
-            else:
-                print("update cancelled.")
-        case "load":
-            minianki.load()
-        case "shua":
-            print("    hewwo :>")
-        case "kiki":
-            print("    <3")
-        case "":
-            print("\n")
-        case "exit":
-            print("thanks for using minianki! bye!")
-            break
-        case "bye":
-            print("see you soon! and thanks for using minianki!")
-        case __:
-            if command[0] == ":" and "q" in command:
-                print("oh my GOD I KNEW IT I KNEW YOU WERE A VIM USER")
-                print("but yes bye and thanks for using minianki!")
+    try:
+        command = input("__________\n>>> ")
+    except KeyboardInterrupt:
+        print("\n    byeeee")
+        break
+    else:
+        match command:
+            case "impt":
+                minianki.impt()
+            case "learn":
+                minianki.learn()
+            case "browse":
+                minianki.browse()
+            case "stats":
+                minianki.stats()
+            case "sett":
+                minianki.settings()
+            case "prefs":
+                minianki.preferences()
+            case "guide":
+                minianki.guide()
+            case "help":
+                print(help())
+            case "update":
+                cnfm = input("    are you sure you would like to update? (y/N) ")
+                if cnfm == "y":
+                    minianki.update()
+                else:
+                    print("    update cancelled.")
+            case "load":
+                minianki.load()
+            case "clog":
+                minianki.changelog()
+            case "shua":
+                print("    hewwo :>")
+            case "kiki":
+                print("    <3")
+            case "":
+                print("\n")
+            case "exit":
+                print("    thanks for using minianki! bye!")
                 break
-            else:
-                "invalid command. try again!"
-    minianki.init(deck)
-    minianki.save(deck)
+            case "bye":
+                print("    see you soon! and thanks for using minianki!")
+            case __:
+                if command[0] == ":" and "q" in command:
+                    print("    oh my GOD I KNEW IT I KNEW YOU WERE A VIM USER")
+                    print("    but yes bye and thanks for using minianki!")
+                    break
+                else:
+                    print("    invalid command. try again!")
+    
+    minianki.save()
+    minianki.init()
     minianki.backup()
