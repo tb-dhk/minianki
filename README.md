@@ -10,7 +10,7 @@ an unofficial CLI version of anki.
 5. [directory](#directory)
 	- [main directory](#main-directory)
 	- [subdirectories](#subdirectories)
-7. [guides](#guides)
+6. [guides](#guides)
 	- [import and export](#import-and-export)
 	- [faq](#faq)
 
