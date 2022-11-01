@@ -7,10 +7,7 @@ an unofficial CLI version of anki.
 2. [installation](#installation)
 3. [updation/upgradation](#updation-and-upgradation)
 4. [commands](#commands)
-5. [directory](#directory)
-	- [main directory](#main-directory)
-	- [subdirectories](#subdirectories)
-6. [guides](#guides)
+5. [guides](#guides)
 	- [import and export](#import-and-export)
 	- [faq](#faq)
 
@@ -67,23 +64,6 @@ misc:
 - exit: leave minianki.
 - load: load backup.
 - update: update and restart minianki.
-
-## directory
-### main directory
-- [README.md](https://github.com/shuu-wasseo/minianki/blob/main/READNE.md) - the file you are reading now :>
-- [impt.txt](https://github.com/shuu-wasseo/minianki/blob/main/impt.txt) - file for importing new cards.
-- [minianki.py](https://github.com/shuu-wasseo/minianki/blob/main/minianki.py) - package file, contains all functions for main.py
-- [mnak](https://github.com/shuu-wasseo/minianki/blob/main/mnak) - main user interface.
-
-### subdirectories
-- [.userdata](https://github.com/shuu-wasseo/minianki/tree/main/.userdata) - exportable data.
-  - [learnvars.csv](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/learnvars.csv) - all customised deck options.
-  - [nsched.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/nsched.mnak) - all cards without scheduling.
-  - [sched.mnak](https://github.com/shuu-wasseo/minianki/blob/main/.userdata/sched.mnak) - all cards with scheduling.
-
-- [.guides](https://github.com/shuu-wasseo/minianki/tree/main/export) - guides.
-  - [faq.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/faq.txt)
-  - [imexportguide.txt](https://github.com/shuu-wasseo/minianki/blob/main/.guides/imexportguide.txt) - exporting instructions.
 
 ## guides
 the following can also be found in [`./guides/`](https://github.com/shuu-wasseo/minianki/tree/main/export).
