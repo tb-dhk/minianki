@@ -27,9 +27,10 @@ $ git clone https://github.com/shuu-wasseo/minianki
 
 secondly, add the minianki directory into your PATH. 
 
-thirdly, make the mnak file executable with the following code (replace 'mnak' below with the path for the mnak file)
+thirdly, make the mnak file executable with the following code.
 
 ```
+$ cd minianki
 $ chmod +x mnak
 ```
 
