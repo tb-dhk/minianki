@@ -43,7 +43,8 @@ vari = {
     "leech threshold" : "number of times you select the 'again' option on a card before it is considered a leech and auto-suspended.",
     "review limit caps new card limit" : "whether the review limit now limits the new card limit. (e.g. if the maximum reviews are 200 and you have 190 reviews due you'll only be able to learn 10 new cards)",
     "timer limit" : "number of seconds the timer can run for per card.",
-    "timer for every card" : "whether to show time taken for every card."
+    "timer for every card" : "whether to show time taken for every card.",
+    "sibling burying" : "whether to bury siblings (reverse cards) of a card that will be revised on the day."
 }
 
 prefs = {}
@@ -53,7 +54,11 @@ for x in readprefs:
     prefs[x[0]] = x[1]
 
 def ppath(path):
-    return path.strip().split(":")
+    try:
+        return path.strip().split(":")
+    except:
+        print("    invalid path.")
+        exit()
 
 def qpath():
     while 1:
@@ -135,7 +140,7 @@ def indeck(card, deck): # takes a card (location string form) and a deck (list f
 
 # card structure
 class flashcard:
-    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status, tags, flags, location):
+    def __init__(self, term, defin, ls, ease, lastint, duedate, suspended, againcount, status, tags, flags, location, type):
         self.term = term
         self.defin = defin
         self.ls = ls
@@ -148,6 +153,7 @@ class flashcard:
         self.tags = tags
         self.flags = flags
         self.location = location
+        self.type = type
 
 # initialisation function
 stat = []
@@ -164,14 +170,11 @@ for row in stat:
         except:
             pass
 
-defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],""] 
-defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False]
+defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],"",""] 
+defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False, False]
 
 
 def init():
-    vars = []
-    variables = []
-
     print() 
     
     for dk in dic:
@@ -218,7 +221,7 @@ def init():
                                                     pass
                                             else:
                                                 continue
-                                    deck[dk][subd]["misc"].append(flashcard(c, card[0], card[1], card[2], card[3], card[4], card[5], card[6], card[7], card[8], card[9], card[10]))
+                                    deck[dk][subd]["misc"].append(flashcard(c, *card))
     # remove duplicates
     for dk in deck:
         for subd in deck[dk]:
@@ -329,7 +332,6 @@ def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    writer = csv.writer(open(os.getcwd()+'/.mnakdata/deck.mnak', 'a'))
     impted = 0 
     
     impd = qpath()
@@ -341,12 +343,21 @@ def impt():
         separator = separator.replace(r"\n", "\n")
         if separator == "":
             separator = "    "
+        while 1:
+            type = input("    enter card type ('basic' or 'basic and reversed'). ")
+            if type in ["basic", "basic and reversed"]:
+                break
+            else:
+                print("    invalid type.")
 
         # import new cards into deck
         for row in reader:
             row = row.strip().split(separator)
             if row[0].strip() != "":
-                deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1]))
+                deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
+                if type == "basic and reversed":
+                    deck[impd[0]][impd[1]]["misc"].append(flashcard(row[1],row[0],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
+                    impted += 1
                 impted += 1
 
         if impted == 0:
@@ -387,7 +398,7 @@ def learn():
                     ints = [learnsteps[0], str((int(learnsteps[0])+int(learnsteps[1]))/2), learnsteps[1], easyint]
             for x in ints:
                 if type(x) == int and x > vars[6]:
-                    x = varis[6]
+                    x = vars[6]
             return ints
         
         # function to print out intervals
@@ -510,14 +521,26 @@ def learn():
                 except:
                     pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
-                    queue[0].append(card)
-                    revcount += 1
+                    if vars[15]:
+                        for ocard in queue[0]:
+                            if not (ocard.term == card.defin and ocard.defin == card.term):
+                                queue[0].append(card)
+                                revcount += 1
+                    else:
+                        queue[0].append(card)
+                        revcount += 1
                 if revcount >= vars[1]:
                     break
             for card in cdeck:
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
-                    queue[0].append(card)
-                    newcount += 1
+                    if vars[15]:
+                        for ocard in queue[0]:
+                            if not (ocard.term == card.defin and ocard.defin == card.term):
+                                queue[0].append(card)
+                                newcount += 1
+                    else:
+                        queue[0].append(card)
+                        newcount += 1
                 if revcount + newcount >= vars[1]:
                     break
         else:
@@ -527,12 +550,22 @@ def learn():
                 except:
                     pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
-                    queue[0].append(card)
-                    match card.ls:
-                        case 2:
-                            revcount += 1
-                        case _:
-                            newcount += 1
+                    if vars[15]:
+                        for ocard in queue[0]:
+                            if not (ocard.term == card.defin and ocard.defin == card.term):
+                                queue[0].append(card)
+                                match card.ls:
+                                    case 2:
+                                        revcount += 1
+                                    case _:
+                                        newcount += 1
+                    else:
+                        queue[0].append(card)
+                        match card.ls:
+                            case 2:
+                                revcount += 1
+                            case _:
+                                newcount += 1                
                 if newcount >= vars[0] or revcount >= vars[1]:
                     break
         if vars[10]:
@@ -624,7 +657,7 @@ def save():
                             for flag in x.flags:
                                 if flag == "":
                                     x.flags.remove(flag)
-                            dic[dk][subd]["misc"][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags, x.location]
+                            dic[dk][subd]["misc"][x.term] = [x.defin.strip(), x.ls, x.ease, x.lastint, x.duedate, x.suspended, x.againcount, x.status, x.tags, x.flags, x.location, x.type]
             else: 
                 dic[dk][subd] = deck[dk][subd]
                 
@@ -638,7 +671,7 @@ def save():
 def settings():
     path = qpath()
     if path != "exit":
-        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "int", "bool"]
+        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "int", "bool", "bool"]
         vars = deck[path[0]][path[1]]["options"]
         varik = list(vari)
         variv = list(vari.values())
@@ -683,7 +716,7 @@ def settings():
                         deck[path[0]][path[1]]["options"] = vars
                         save()
 
-                        f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')["cards"]
+                        f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')
                         f.write(json.dumps(dic))
 
 def preferences():
@@ -800,7 +833,7 @@ def browse():
                     for card in dk:
                         path = ppath(card.location)
                         try:
-                            deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location)
+                            deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location, card.type)
                         except:
                             pass
                     break
@@ -810,9 +843,9 @@ def browse():
                     defc = defaultcard[2:]
 
                     if len(path) == 1:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":misc")))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":misc")))
                     elif len(path) == 2:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], defc[2], defc[3], defc[4], defc[5], defc[6], defc[7], defc[8], (path[0] + ":" + path[1])))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":" + path[1])))
                     stat[16] = [datetime.date.today()] + [int(i) for i in stat[16][1:]]
                     stat[16][-1] += 1
                 case "sort":
@@ -934,6 +967,10 @@ def browse():
                                     loc = ppath(card.location)
                                     deck[loc[0]][loc[1]]["misc"].remove(card)
                                     dk.remove(card)
+                                    for x in dk:
+                                        if x.term == card.defin and x.defin == card.term:
+                                            dk.remove(card)
+                                            deck[loc[0]][loc[1]]["misc"].remove(card)
                                     break
                                 case 'forget':
                                     term = card.term
@@ -950,7 +987,7 @@ def browse():
                                         card.location = (path[0] + ":misc")
                                     elif len(path) == 2:
                                         card.location = (path[0] + ":" + path[1])
-                                    print("card has been reset")
+                                    print("    card has been reset.")
 
                                     break
                                 case 'exit':
