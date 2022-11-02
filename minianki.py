@@ -559,9 +559,7 @@ def learn():
                     if vars[15]:
                         dup = False
                         for ocard in queue[0]:
-                            print(card.term, card.defin)
-                            print(ocard.term, ocard.defin)
-                            if not (ocard.term == card.defin and ocard.defin == card.term):
+                            if (ocard.term == card.defin and ocard.defin == card.term):
                                 dup = True
                         if not dup:
                             queue[0].append(card)
@@ -577,7 +575,6 @@ def learn():
                                 revcount += 1
                             case _:
                                 newcount += 1
-                print([(card.term, card.defin) for card in queue[0]])
                 if newcount >= vars[0] or revcount >= vars[1]:
                     break
         if vars[10]:
@@ -844,6 +841,7 @@ def browse():
                 case "exit":
                     for card in dk:
                         path = ppath(card.location)
+                        deck[path[0]][path[1]]["options"] = dic[path[0]][path[1]]["options"]
                         try:
                             deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location, card.type)
                         except:
