@@ -717,7 +717,7 @@ def settings():
                         save()
 
                         f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')
-                        f.write(json.dumps(dic))
+                        f.write(json.dumps(dic, default=str))
 
 def preferences():
     while 1: 
