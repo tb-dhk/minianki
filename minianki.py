@@ -536,6 +536,8 @@ def learn():
                     if vars[15]:
                         for ocard in queue[0]:
                             if not (ocard.term == card.defin and ocard.defin == card.term):
+                                print(card.term, card.defin)
+                                print(ocard.term, ocard.defin)
                                 queue[0].append(card)
                                 newcount += 1
                     else:
