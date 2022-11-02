@@ -476,7 +476,7 @@ def learn():
                                     card.status = "relearn"
                                 card.ls = 0
                                 card.againcount += 1
-                                if card.againcount == vars[11][1]: # autosuspend leech
+                                if card.againcount == vars[11]: # autosuspend leech
                                     card.suspended = True
                                     card.againcount = 0
                                     print("    card marked as leech. suspended")
