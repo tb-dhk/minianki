@@ -522,10 +522,13 @@ def learn():
                     pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
                     if vars[15]:
+                        dup = False
                         for ocard in queue[0]:
-                            if not (ocard.term == card.defin and ocard.defin == card.term):
-                                queue[0].append(card)
-                                revcount += 1
+                            if (ocard.term == card.defin and ocard.defin == card.term):
+                                dup = True
+                        if not dup:
+                            queue[0].append(card)
+                            revcount += 1
                     else:
                         queue[0].append(card)
                         revcount += 1
@@ -534,12 +537,13 @@ def learn():
             for card in cdeck:
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
                     if vars[15]:
+                        dup = False
                         for ocard in queue[0]:
-                            if not (ocard.term == card.defin and ocard.defin == card.term):
-                                print(card.term, card.defin)
-                                print(ocard.term, ocard.defin)
-                                queue[0].append(card)
-                                newcount += 1
+                            if (ocard.term == card.defin and ocard.defin == card.term):
+                                dup = True
+                        if not dup:
+                            queue[0].append(card)
+                            newcount += 1
                     else:
                         queue[0].append(card)
                         newcount += 1
@@ -553,21 +557,27 @@ def learn():
                     pass
                 if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
                     if vars[15]:
+                        dup = False
                         for ocard in queue[0]:
+                            print(card.term, card.defin)
+                            print(ocard.term, ocard.defin)
                             if not (ocard.term == card.defin and ocard.defin == card.term):
-                                queue[0].append(card)
-                                match card.ls:
-                                    case 2:
-                                        revcount += 1
-                                    case _:
-                                        newcount += 1
+                                dup = True
+                        if not dup:
+                            queue[0].append(card)
+                            match card.ls:
+                                case 2:
+                                    revcount += 1
+                                case _:
+                                    newcount += 1
                     else:
                         queue[0].append(card)
                         match card.ls:
                             case 2:
                                 revcount += 1
                             case _:
-                                newcount += 1                
+                                newcount += 1
+                print([(card.term, card.defin) for card in queue[0]])
                 if newcount >= vars[0] or revcount >= vars[1]:
                     break
         if vars[10]:
