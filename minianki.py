@@ -23,6 +23,7 @@ verno =  "0.9"
 deck = {}
 
 try:
+    print("importing data...")
     dic = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 except:
     dic = {}
@@ -44,7 +45,8 @@ vari = {
     "review limit caps new card limit" : "whether the review limit now limits the new card limit. (e.g. if the maximum reviews are 200 and you have 190 reviews due you'll only be able to learn 10 new cards)",
     "timer limit" : "number of seconds the timer can run for per card.",
     "timer for every card" : "whether to show time taken for every card.",
-    "sibling burying" : "whether to bury siblings (reverse cards) of a card that will be revised on the day."
+    "sibling burying" : "whether to bury siblings (reverse cards) of a card that will be revised on the day.",
+    "parent scheduling overrides child" : "whether the parent's card limits affect the child (when only the child is being studied)."
 }
 
 prefs = {}
@@ -87,25 +89,29 @@ def bpath(bb):
             if impd[0] not in dic:
                 dic[impd[0]] = {
                     "misc" : {
-                        "options" : [],
-                        "misc" : {}
+                        "options" : defaultopt,
+                        "misc" : {},
+                        "rvtdy" : [datetime.date.today(), 0, 0]
                     }
                 }
             dic[impd[0]][impd[1]] = {
-                "options" : [],
-                "misc" : {}
+                "options" : defaultopt,
+                "misc" : {},
+                "rvtdy" : [datetime.date.today(), 0, 0]
             }
 
             if impd[0] not in deck:
                 deck[impd[0]] = {
                     "misc" : {
-                        "options" : [],
-                        "misc" : []
+                        "options" : defaultopt,
+                        "misc" : {},
+                        "rvtdy" : [datetime.date.today(), 0, 0]
                     }
                 }
             deck[impd[0]][impd[1]] = {
-                "options" : [],
-                "misc" : []
+                "options" : defaultopt,
+                "misc" : [],
+                "rvtdy" : [datetime.date.today(), 0, 0]
             }
             return impd
         else:
@@ -171,27 +177,42 @@ for row in stat:
             pass
 
 defaultcard = ["","",0,0,0,datetime.date.today(),False,0,"new",[],[],"",""] 
-defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False, False]
+defaultopt = [999, 9999, 1, 10, 1, 4, 36500, 2.5, 1.3, 1.2, True, 8, False, 60, False, False, False]
 
 
 def init():
     print() 
     
     for dk in dic:
-        deck[dk] = { "misc" : {} } 
+        deck[dk] = { 
+            "misc" : {},
+        } 
         for subd in dic[dk]:
             if isinstance(dic[dk][subd], dict):
                 deck[dk][subd] = {
                     "options" : [],
-                    "misc" : []
+                    "misc" : [],
+                    "rvtdy" : []
                 } 
                 for t in dic[dk][subd]:
-                    if t == "options":
-                        deck[dk][subd]["options"] = dic[dk][subd]["options"] + defaultopt[len(dic[dk][subd]["options"]):]
-                    elif t == "": # if term/def are empty + ignore options
-                        continue
-                    else:
-                        if t == "misc":
+                    match t:
+                        case "options":
+                            deck[dk][subd]["options"] = dic[dk][subd]["options"] + defaultopt[len(dic[dk][subd]["options"]):]
+                        case "":
+                            continue
+                        case "rvtdy":
+                            if dic[dk][subd]["rvtdy"] == []:
+                                deck[dk][subd]["rvtdy"] = [datetime.date.today(), 0, 0]
+                            else:
+                                try:
+                                    td = datetime.datetime.fromisoformat(dic[dk][subd]["rvtdy"][0])
+                                except:
+                                    td = dic[dk][subd]["rvtdy"][0]
+                                if td != datetime.date.today():
+                                    deck[dk][subd]["rvtdy"] = [datetime.date.today(), 0, 0]
+                                else:
+                                    deck[dk][subd]["rvtdy"] = dic[dk][subd]["rvtdy"]
+                        case "misc":
                             for c in dic[dk][subd]["misc"]:
                                 card = dic[dk][subd]["misc"][c]
                                 try:
@@ -371,6 +392,9 @@ def learn():
     path = qpath()
     if path != "exit":
         vars = deck[path[0]][path[1]]["options"]
+        if vars[16]:
+            vars = deck[path[0]]["misc"]["options"] + deck[path[0]][path[1]]["options"][2:]
+        tdyc = deck[path[0]][path[1]]["rvtdy"]
 
         print("")
         # variables:
@@ -505,8 +529,8 @@ def learn():
         # making queue
         cdeck = []
         queue = [[]]
-        newcount = 0
-        revcount = 0
+        newcount = tdyc[1]
+        revcount = tdyc[2]
 
         for dk in deck:
             for subd in deck[dk]:
@@ -520,7 +544,7 @@ def learn():
                     card.duedate = card.duedate.date()
                 except:
                     pass
-                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls == 2:
+                if card.duedate <= datetime.date.today() and card.suspended == False and card.ls == 2:
                     if vars[15]:
                         dup = False
                         for ocard in queue[0]:
@@ -535,7 +559,7 @@ def learn():
                 if revcount >= vars[1]:
                     break
             for card in cdeck:
-                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False and card.ls != 2:
+                if card.duedate <= datetime.date.today() and card.suspended == False and card.ls != 2:
                     if vars[15]:
                         dup = False
                         for ocard in queue[0]:
@@ -555,7 +579,7 @@ def learn():
                     card.duedate = card.duedate.date()
                 except:
                     pass
-                if str(card.duedate).strip() == str(datetime.date.today()).strip() and card.suspended == False:
+                if card.duedate <= datetime.date.today() and card.suspended == False:
                     if vars[15]:
                         dup = False
                         for ocard in queue[0]:
@@ -577,6 +601,10 @@ def learn():
                                 newcount += 1
                 if newcount >= vars[0] or revcount >= vars[1]:
                     break
+
+        deck[path[0]][path[1]]["rvtdy"] = [datetime.date.today(), newcount, revcount]
+        print(deck[path[0]][path[1]]["rvtdy"])
+
         if vars[10]:
             random.shuffle(queue[0])
         
@@ -653,8 +681,8 @@ def save():
         for subd in deck[dk]:
             if isinstance(deck[dk][subd], dict):
                 for thing in deck[dk][subd]:
-                    if thing == "options":
-                        dic[dk][subd]["options"] = deck[dk][subd]["options"]
+                    if thing == "options" or thing == "rvtdy":
+                        dic[dk][subd][thing] = deck[dk][subd][thing]
                     elif thing == "misc":
                         for card in deck[dk][subd][thing]:
                             x = card
@@ -680,7 +708,7 @@ def save():
 def settings():
     path = qpath()
     if path != "exit":
-        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "int", "bool", "bool"]
+        forms = ["int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "bool", "int", "bool", "int", "bool", "bool", "bool"]
         vars = deck[path[0]][path[1]]["options"]
         varik = list(vari)
         variv = list(vari.values())
@@ -801,9 +829,7 @@ def browse():
                         dec.append(x)
             else:
                 dec = [x for x in deck[path[0]][path[1]]["misc"]]
-            if deck[path[0]][path[1]]["options"] == [] or var == []:
-                var = defaultopt 
-                deck[path[0]][path[1]]["options"] = defaultopt
+            var = deck[path[0]][path[1]]["options"]
             dec = list(dict.fromkeys(dec))
             return dec, var
                
@@ -850,12 +876,19 @@ def browse():
                 case "add":
                     term = input("    enter term: ")
                     defin = input("    enter definition: ")
+                    while 1:
+                        type = input("    enter card type ('basic' or 'basic and reversed'). ")
+                        if type in ["basic", "basic and reversed"]:
+                            break
+                        else:
+                            print("    invalid type.")
+                    
                     defc = defaultcard[2:]
 
                     if len(path) == 1:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":misc")))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":misc"), type))
                     elif len(path) == 2:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":" + path[1])))
+                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":" + path[1]), type))
                     stat[16] = [datetime.date.today()] + [int(i) for i in stat[16][1:]]
                     stat[16][-1] += 1
                 case "sort":
