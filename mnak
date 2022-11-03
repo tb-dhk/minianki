@@ -29,16 +29,16 @@ def compare_verno(vn1, vn2):
         if two[x] > one[x]:
             return vntwo
 
-github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
-new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
+#github_verno = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["name"][1:]
+#new_release_date = requests.get("https://api.github.com/repos/shuu-wasseo/minianki/releases/latest").json()["created_at"]
     
 def help():
     string = ("    you are using minianki v" + minianki.verno + ".")
-    if compare_verno(github_verno, minianki.verno) != minianki.verno:
-       if (datetime.datetime.today().date() - datetime.datetime.fromisoformat(new_release_date[:-1]).date()) <= 14:
-           string = string + (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
-       else:
-           string = string + (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
+    #if compare_verno(github_verno, minianki.verno) != minianki.verno:
+    #   if (datetime.datetime.today().date() - datetime.datetime.fromisoformat(new_release_date[:-1]).date()) <= 14:
+    #       string += (f"\n    a new version of minianki (v{github_verno}) was released not too long ago on {datetime.datetime.fromisoformat(new_release_date[:-1]).date()}! if you would like to update, please use the 'update' command.")
+    #   else:
+    #       string += (f"\n    note: your version of minianki (v{minianki.verno}) is outdated. if you would like to update to the latest version (v{github_verno}), please use the 'update' command.")
     string += ("""\n
     list of commands:
 
