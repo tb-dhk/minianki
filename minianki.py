@@ -375,11 +375,16 @@ def impt():
         for row in reader:
             row = row.strip().split(separator)
             if row[0].strip() != "":
-                deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
-                if type == "basic and reversed":
-                    deck[impd[0]][impd[1]]["misc"].append(flashcard(row[1],row[0],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
-                    impted += 1
-                impted += 1
+                match type:
+                    case "basic": 
+                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),false,0,"new",[],[],impd[0]+":"+impd[1],type))
+                        impted += 1
+                    case "basic and reversed":
+                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),false,0,"new",[],[],impd[0]+":"+impd[1],type))
+                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[1],row[0],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
+                        impted += 2
+                    case "cloze":
+                        pass
 
         if impted == 0:
             print("    no cards imported. maybe enter a separator or check impt.txt?")
