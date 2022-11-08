@@ -528,7 +528,7 @@ def learn():
                                     pass
                                 else:
                                     plt.show()
-                                plt.delete_file(path)
+                                    plt.delete_file(path)
                                 url = url.replace(x, "")
                 return url
 
