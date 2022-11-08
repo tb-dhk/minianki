@@ -23,7 +23,10 @@ verno =  "0.9"
 deck = {}
 
 try:
+<<<<<<< Updated upstream
     print("importing data...")
+=======
+>>>>>>> Stashed changes
     dic = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 except:
     dic = {}
@@ -91,50 +94,50 @@ def bpath(bb):
                     "misc" : {
                         "options" : defaultopt,
                         "misc" : {},
-                        "rvtdy" : [datetime.date.today(), 0, 0]
+                            "rvtdy" : [datetime.date.today(), 0, 0]
+                        }
                     }
+                dic[impd[0]][impd[1]] = {
+                    "options" : defaultopt,
+                    "misc" : {},
+                    "rvtdy" : [datetime.date.today(), 0, 0]
                 }
-            dic[impd[0]][impd[1]] = {
-                "options" : defaultopt,
-                "misc" : {},
-                "rvtdy" : [datetime.date.today(), 0, 0]
-            }
 
-            if impd[0] not in deck:
-                deck[impd[0]] = {
-                    "misc" : {
+                if impd[0] not in deck:
+                    deck[impd[0]] = {
+                        "misc" : {
+                            "options" : defaultopt,
+                            "misc" : {},
+                                "rvtdy" : [datetime.date.today(), 0, 0]
+                            }
+                        }
+                    deck[impd[0]][impd[1]] = {
                         "options" : defaultopt,
-                        "misc" : {},
+                        "misc" : [],
                         "rvtdy" : [datetime.date.today(), 0, 0]
                     }
-                }
-            deck[impd[0]][impd[1]] = {
-                "options" : defaultopt,
-                "misc" : [],
-                "rvtdy" : [datetime.date.today(), 0, 0]
-            }
-            return impd
-        else:
-            return impd
+                    return impd
+                else:
+                    return impd
 
-def indeck(card, deck): # takes a card (location string form) and a deck (list form)
-    loc = ppath(card.location) # converts card to list
-    if loc[1] == "misc":
-        loc = loc[:1]
-    if deck[1] == "misc":
-        deck = deck[:1]
-    if len(deck) == 1:
-        if loc[0] == deck[0]:
-            return True
-        else:
-            return False
-    elif len(deck) == 2:
-        if loc == deck:
-            return True
-        else:
-            return False
-    else:
-        return False
+        def indeck(card, deck): # takes a card (location string form) and a deck (list form)
+            loc = ppath(card.location) # converts card to list
+            if loc[1] == "misc":
+                loc = loc[:1]
+            if deck[1] == "misc":
+                deck = deck[:1]
+            if len(deck) == 1:
+                if loc[0] == deck[0]:
+                    return True
+                else:
+                    return False
+            elif len(deck) == 2:
+                if loc == deck:
+                    return True
+                else:
+                    return False
+            else:
+                return False
 
 # INIT
 
@@ -801,8 +804,13 @@ def settings():
                         deck[path[0]][path[1]]["options"] = vars
                         save()
 
+<<<<<<< Updated upstream
                         f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')
                         f.write(json.dumps(dic, default=str))
+=======
+                        f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')["cards"]
+                        f.write(json.dumps(dic))
+>>>>>>> Stashed changes
 
 def preferences():
     while 1: 
