@@ -885,34 +885,6 @@ def preferences():
                     for x in prefs:
                         writeprefs.writerow([x, prefs[x]])
 
-# GUIDE
-def guide():
-    guidelist = {
-        "faq" : "see frequently asked questions.",
-        "imexportguide" : "see instructions on how to import and export data."
-    }
-    for x in guidelist:
-        print("    " + x + ": " + guidelist[x])
-    while 1:
-        comm = input("""\n    enter: \n    - the name of the guide you want to see\n    - 'help' to see the list of guides again\n    - 'exit' to exit guides\n    ______\n    >>> """)
-        match comm:
-            case "help":
-                for x in guidelist:
-                    print("    " + x + ": " + guidelist[x])
-            case "exit":
-                break
-            case _:
-                try:
-                    f = open(os.getcwd()+'/.guides/'+comm+'.txt', 'r')
-                except:
-                    print("    invalid. try again")
-                else:
-                    print("\n    ~~~~~~~~~~~~~~~~~~~~")
-                    for line in f.readlines():
-                        print("    " + line)
-                    f.close()
-                    print("    ~~~~~~~~~~~~~~~~~~~~")
-
 # deck
 def browse():
     init()
