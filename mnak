@@ -42,8 +42,9 @@ def help():
     string += ("""\n
     list of commands:
 
-    importing:
-    - impt: import cards in import.txt to the main database.
+    importing and exporting:
+    - impt: import cards in imex/impt.txt to the main database.
+    - expt: export cards to imex/expt.txt from the main database.
 
     manage/use deck:
     - browse: see all your cards and edit, suspend or delete them.
@@ -104,6 +105,8 @@ while 1:
         match command:
             case "impt":
                 minianki.impt()
+            case "expt":
+                minianki.expt()
             case "learn":
                 minianki.learn()
             case "browse":
