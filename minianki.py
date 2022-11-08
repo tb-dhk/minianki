@@ -9,6 +9,7 @@ from colors import color
 import plotext as plt
 import requests
 import json
+import re
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -411,8 +412,9 @@ def impt():
             print("    invalid type.")
 
     impd = qpath()
-    impted = 0 
+    
     if impd != "exit":
+        ol = len(deck[impd[0]][impd[1]]["misc"])
         if type != "cloze":
             separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
             separator = separator.replace(r"\t", "\t")
@@ -421,17 +423,15 @@ def impt():
                 separator = "    "
             for row in reader:
                 row = row.strip().split(separator)
+                if len(row) == 1:
+                    row.append("")
                 if row[0].strip() != "":
-                    if type == "basic":
-                        impted += 1
-                    elif type == "basic and reversed":
-                        impted += 2
-                    add(*row, type, impd)
+                    add(row[0], row[1], type, impd)
         else:
             for row in reader:
                 if row.strip() != "":
-                    impted += 1
                     add(row, "", type, impd)
+        impted = len(deck[impd[0]][impd[1]]["misc"]) - ol
         if impted == 0:
             print("    no cards imported. maybe enter a separator or check impt.txt?")
         else:
@@ -446,14 +446,25 @@ def expt():
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
     separator = separator.replace(r"\t", "\t")
     separator = separator.replace(r"\n", "\n")    
+    if separator == "":
+        separator = "    "
+    
+    expted = 0
 
     if path[1] == "misc":
         for subd in deck[path[0]]:
             for x in deck[path[0]][subd]["misc"]:
-                writer.write(x.term + separator + x.defin)
+                expted += 1
+                writer.write(x.term + separator + x.defin + "\n")
     else:
         for x in deck[path[0]][path[1]]["misc"]:
-            writer.write(x.term + separator + x.defin)
+            expted += 1
+            writer.write(x.term + separator + x.defin + "\n")
+
+    if expted == 0:
+        print("    no cards imported. maybe enter a separator or check impt.txt?")
+    else:
+        print(f"    {expted} card(s) exported (including duplicates).")
 # LEARN
 def learn():
     # initialise vars
@@ -502,9 +513,38 @@ def learn():
         
         # function to schedule a new card
         def newint(card):
+            # converts links  to images if possible
+            def findmedia(url):
+                print(url)
+                while 1:
+                    url = url.replace(re.search("(?P<url>https?://[^\s]+)", url), "")
+                    if url == None:
+                        break
+                    else:
+                        path = '.mnakdata/media'
+                        plt.download(url, path)
+                        try:
+                            if "youtube.com" in url:
+                                yt = True
+                            else:
+                                yt = False
+                            plt.play_video(path, from_youtube = yt)
+                        except:
+                            try:
+                                plt.play_gif(path)
+                            except:
+                                try:
+                                    plt.image_plot(path)
+                                    plt.show()
+                                except:
+                                    pass
+                        plt.delete_file(path)
+
             # prompting user
             print("    ~~~~~~~~~~~~~~~~~~~~")
+            findmedia(card.term)
             input(f"    term: {card.term}\n    ")
+            findmedia(card.defin)
             print(f"    definition: {card.defin}\n")
             print("    enter 1-4 for:" + 
             color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
@@ -600,11 +640,14 @@ def learn():
         newcount = tdyc[1]
         revcount = tdyc[2]
 
-        for dk in deck:
-            for subd in deck[dk]:
-                for card in deck[dk][subd]["misc"]:
-                    if indeck(card, path):
-                        cdeck.append(card)
+        if path[1] == "misc":
+            for subd in deck[path[0]]:
+                for card in deck[path[0]][subd]["misc"]:
+                    cdeck.append(card)
+        else:
+            for card in deck[path[0]][path[1]]["misc"]:
+                cdeck.append(card)
+
 
         if vars[12]:
             for card in cdeck:
@@ -1006,6 +1049,8 @@ def browse():
                         print("    invalid. try again.")
                     else:
                         card = dk[int(comm)]
+                        copy = {"term":card.term, "def":card.defin, "suspension":card.suspended, "tags":card.tags, "flags":card.flags}
+                        print(copy["term"], card.term)
                         location = card.location
                         if location[-5:] == ":misc":
                             location = location[:-5]
@@ -1018,9 +1063,17 @@ def browse():
                             match toedit:
                                 case "term":
                                     card.term = input("    enter new value: ")
+                                    for x in deck[path[0]][path[1]]["misc"]:
+                                        if x.term == copy["term"] and x.defin == copy["defin"]:
+                                            deck[path[0]][path[1]]["misc"].remove(x)
+                                    del dic[path[0]][path[1]]["misc"][copy["term"]]
                                     break
                                 case "def":
                                     card.defin = input("    enter new value: ")
+                                    for x in deck[path[0]][path[1]]["misc"]:
+                                        if x.term == copy["term"] and x.defin == copy["defin"]:
+                                            deck[path[0]][path[1]]["misc"].remove(x)
+                                    del dic[path[0]][path[1]]["misc"][copy["term"]]
                                     break
                                 case "suspension":
                                     match card.suspended:
@@ -1078,8 +1131,8 @@ def browse():
                                             del dic[loc[0]][loc[1]]["misc"][x]
                                     for x in dk:
                                         if x.term == card.defin and x.defin == card.term:
-                                            dk.remove(card)
-                                            deck[loc[0]][loc[1]]["misc"].remove(card)
+                                            dk.remove(x)
+                                            deck[loc[0]][loc[1]]["misc"].remove(x)
                                             for y in dic[loc[0]][loc[1]]["misc"].copy():
                                                 if y == card.term and dic[loc[0]][loc[1]]["misc"][y][0] == card.defin:
                                                     del dic[loc[0]][loc[1]]["misc"][y]
