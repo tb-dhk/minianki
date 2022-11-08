@@ -348,49 +348,93 @@ def init():
             while len(stat[16]) < 32:
                 stat[16].append(0)
 
+def pcloze(str, id):
+    cloze = str.split("::")
+    for x in range(len(cloze)):
+        cloze[x] = cloze[x].strip("{}")
+    if id == cloze[0]:
+        if len(cloze) == 3:
+            return cloze[2]
+        else:
+            return "__"
+    else:
+        return cloze[1]
+
+
+def add(term, defin, type, impd):
+    impted = 0
+    vars = deck[impd[0]][impd[1]]["options"]
+    
+    # import new cards into deck
+    match type:
+        case "basic": 
+            deck[impd[0]][impd[1]]["misc"].append(flashcard(term,defin,0,vars[7],0,*defaultcard[5:11],impd[0]+":"+impd[1],type))
+        case "basic and reversed":
+            deck[impd[0]][impd[1]]["misc"].append(flashcard(term,defin,0,vars[7],0,*defaultcard[5:11],impd[0]+":"+impd[1],type))
+            deck[impd[0]][impd[1]]["misc"].append(flashcard(defin,term,0,vars[7],0,*defaultcard[5:11],impd[0]+":"+impd[1],type))
+        case "cloze":
+            tc = False
+            cloze = []
+            for x in range(len(term)):
+                if term[x:x+2] == "{{": #}}
+                    cloze.append("")
+                    tc = True
+                    x += 1
+                if term[x:x+2] == "}}":
+                    cloze[-1] += "}}"
+                    tc = False
+                if tc:
+                    cloze[-1] += term[x]
+            for d in cloze:
+                sp = d.split("::")
+                id = sp[0].strip("{}")
+                nt = term.strip()
+                for e in cloze:
+                    nt = nt.replace(e, pcloze(e, id))
+                nd = sp[1].strip("{}")
+                deck[impd[0]][impd[1]]["misc"].append(flashcard(nt,nd,0,vars[7],0,*defaultcard[5:11],impd[0]+":"+impd[1],type))
+
 #IMPT
 def impt():
     print("")
     # make a deck
     reader = open('impt.txt', 'r').readlines()
-    impted = 0 
-    
-    impd = qpath()
-    if impd != "exit":
-        vars = deck[impd[0]][impd[1]]["options"]
-        separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
 
-        separator = separator.replace(r"\t", "\t")
-        separator = separator.replace(r"\n", "\n")
-        if separator == "":
-            separator = "    "
-        while 1:
-            type = input("    enter card type ('basic' or 'basic and reversed'). ")
-            if type in ["basic", "basic and reversed"]:
-                break
-            else:
-                print("    invalid type.")
-
-        # import new cards into deck
-        for row in reader:
-            row = row.strip().split(separator)
-            if row[0].strip() != "":
-                match type:
-                    case "basic": 
-                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),false,0,"new",[],[],impd[0]+":"+impd[1],type))
-                        impted += 1
-                    case "basic and reversed":
-                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[0],row[1],0,vars[7],0,datetime.date.today(),false,0,"new",[],[],impd[0]+":"+impd[1],type))
-                        deck[impd[0]][impd[1]]["misc"].append(flashcard(row[1],row[0],0,vars[7],0,datetime.date.today(),False,0,"new",[],[],impd[0]+":"+impd[1],type))
-                        impted += 2
-                    case "cloze":
-                        pass
-
-        if impted == 0:
-            print("    no cards imported. maybe enter a separator or check impt.txt?")
+    while 1:
+        type = input("    enter card type ('basic', 'basic and reversed' or 'cloze'). ")
+        if type in ["basic", "basic and reversed", "cloze"]:
+            break
         else:
-            print(f"    {impted} card(s) imported (including duplicates).")
+            print("    invalid type.")
 
+    impd = qpath()
+    impted = 1
+    if impd != "exit":
+        if type != "cloze":
+            separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
+            separator = separator.replace(r"\t", "\t")
+            separator = separator.replace(r"\n", "\n")
+            if separator == "":
+                separator = "    "
+            for row in reader:
+                row = row.strip().split(separator)
+                if row[0].strip() != "":
+                    if type == "basic":
+                        impted += 1
+                    elif type == "basic and reversed":
+                        impted += 2
+                    add(*row, type, impd)
+        else:
+            for row in reader:
+                row = [row, ""]
+                if row[0].strip() != "":
+                    impted += 1
+                    add(*row, type, impd)
+    if impted == 0:
+        print("    no cards imported. maybe enter a separator or check impt.txt?")
+    else:
+        print(f"    {impted} card(s) added (including duplicates).")
+   
 # LEARN
 def learn():
     # initialise vars
@@ -689,8 +733,7 @@ def save():
                     if thing == "options" or thing == "rvtdy":
                         dic[dk][subd][thing] = deck[dk][subd][thing]
                     elif thing == "misc":
-                        for card in deck[dk][subd][thing]:
-                            x = card
+                        for x in deck[dk][subd][thing]:
                             if not isinstance(x.duedate, datetime.date):
                                 x.duedate = x.duedate.date()
                             for tag in x.tags:
@@ -704,7 +747,7 @@ def save():
                 dic[dk][subd] = deck[dk][subd]
                 
     f.write(json.dumps(dic, indent=4, default=str))
-    
+     
     # also save stats
     for x in stat:
         writestats.writerow(x)
@@ -874,26 +917,23 @@ def browse():
                         path = ppath(card.location)
                         deck[path[0]][path[1]]["options"] = dic[path[0]][path[1]]["options"]
                         try:
-                            deck[path[0]][path[1]][card.term] = flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location, card.type)
+                            deck[path[0]][path[1]]["misc"].append(flashcard(card.term, card.defin.strip(), card.ls, card.ease, card.lastint, card.duedate, card.suspended, card.againcount, card.status, card.tags, card.flags, card.location, card.type))
                         except:
                             pass
                     break
                 case "add":
-                    term = input("    enter term: ")
-                    defin = input("    enter definition: ")
                     while 1:
-                        type = input("    enter card type ('basic' or 'basic and reversed'). ")
-                        if type in ["basic", "basic and reversed"]:
+                        type = input("    enter card type ('basic', 'basic and reversed' or 'cloze'). ")
+                        if type in ["basic", "basic and reversed", "cloze"]:
                             break
                         else:
                             print("    invalid type.")
-                    
-                    defc = defaultcard[2:]
-
-                    if len(path) == 1:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":misc"), type))
-                    elif len(path) == 2:
-                        deck[path[0]][path[1]]["misc"].append(flashcard(term, defin.strip(), defc[0], vars[7], *defc[2:9], (path[0] + ":" + path[1]), type))
+                    term = input("    enter term: ")
+                    if type != "cloze":
+                        defin = input("    enter definition: ")
+                        add(term, defin, type, path)
+                    else:
+                        add(term, "", type,  path) 
                     stat[16] = [datetime.date.today()] + [int(i) for i in stat[16][1:]]
                     stat[16][-1] += 1
                 case "sort":
@@ -1007,7 +1047,6 @@ def browse():
                                                         print("    not an existing flag. try again.")
                                                 else:
                                                     print("    invalid. try again.")
-
                                 case 'bury':
                                     card.duedate += datetime.timedelta(days=1)
                                     break
@@ -1015,10 +1054,17 @@ def browse():
                                     loc = ppath(card.location)
                                     deck[loc[0]][loc[1]]["misc"].remove(card)
                                     dk.remove(card)
+                                    for x in dic[loc[0]][loc[1]]["misc"].copy():
+                                        if x == card.term and dic[loc[0]][loc[1]]["misc"][x][0] == card.defin:
+                                            del dic[loc[0]][loc[1]]["misc"][x]
                                     for x in dk:
                                         if x.term == card.defin and x.defin == card.term:
                                             dk.remove(card)
                                             deck[loc[0]][loc[1]]["misc"].remove(card)
+                                            for y in dic[loc[0]][loc[1]]["misc"].copy():
+                                                if y == card.term and dic[loc[0]][loc[1]]["misc"][y][0] == card.defin:
+                                                    del dic[loc[0]][loc[1]]["misc"][y]
+
                                     break
                                 case 'forget':
                                     term = card.term
@@ -1036,7 +1082,6 @@ def browse():
                                     elif len(path) == 2:
                                         card.location = (path[0] + ":" + path[1])
                                     print("    card has been reset.")
-
                                     break
                                 case 'exit':
                                     break
