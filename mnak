@@ -52,7 +52,6 @@ def help():
     - stats: see your stats for the deck.
     
     settings and help:
-    - guide: see guides.
     - help: view all commands and deck directory again.
     - prefs: configure general preferences.
     - sett: configure deck options.
@@ -117,8 +116,6 @@ while 1:
                 minianki.settings()
             case "prefs":
                 minianki.preferences()
-            case "guide":
-                minianki.guide()
             case "help":
                 print(help())
             case "update":
