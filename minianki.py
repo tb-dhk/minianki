@@ -515,37 +515,22 @@ def learn():
         def newint(card):
             # converts links  to images if possible
             def findmedia(url):
-                print(url)
-                while 1:
-                    url = url.replace(re.search("(?P<url>https?://[^\s]+)", url), "")
-                    if url == None:
-                        break
-                    else:
-                        path = '.mnakdata/media'
-                        plt.download(url, path)
-                        try:
-                            if "youtube.com" in url:
-                                yt = True
-                            else:
-                                yt = False
-                            plt.play_video(path, from_youtube = yt)
-                        except:
-                            try:
-                                plt.play_gif(path)
-                            except:
-                                try:
-                                    plt.image_plot(path)
-                                    plt.show()
-                                except:
-                                    pass
-                        plt.delete_file(path)
+                plt.plot_size(plt.tw()/2, plt.th()/2)
+                for x in re.search("(?P<url>https?://[^\s]+)", url).groups():
+                    path = '.mnakdata/media'
+                    try:
+                        plt.image_plot(path)
+                        plt.show()
+                    except:
+                        pass
+                    plt.delete_file(path)
+                    url = url.replace(x, "")
+                return url
 
             # prompting user
             print("    ~~~~~~~~~~~~~~~~~~~~")
-            findmedia(card.term)
-            input(f"    term: {card.term}\n    ")
-            findmedia(card.defin)
-            print(f"    definition: {card.defin}\n")
+            input(f"    term: {findmedia(card.term)}\n    ")
+            print(f"    definition: {findmedia(card.defin)}\n")
             print("    enter 1-4 for:" + 
             color(f"\n    1. again ({printno(genints(card)[0])})", prefs["again"]) + 
             color(f"\n    2. hard ({printno(genints(card)[1])})", prefs["hard"]) +
