@@ -23,10 +23,8 @@ verno =  "0.9"
 deck = {}
 
 try:
-<<<<<<< Updated upstream
     print("importing data...")
-=======
->>>>>>> Stashed changes
+
     dic = json.load(open(os.getcwd()+'/.mnakdata/deck.mnak'))
 except:
     dic = {}
@@ -119,6 +117,8 @@ def bpath(bb):
                     return impd
                 else:
                     return impd
+        else:
+            return impd
 
         def indeck(card, deck): # takes a card (location string form) and a deck (list form)
             loc = ppath(card.location) # converts card to list
@@ -411,7 +411,7 @@ def impt():
             print("    invalid type.")
 
     impd = qpath()
-    impted = 1
+    impted = 0 
     if impd != "exit":
         if type != "cloze":
             separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
@@ -429,15 +429,31 @@ def impt():
                     add(*row, type, impd)
         else:
             for row in reader:
-                row = [row, ""]
-                if row[0].strip() != "":
+                if row.strip() != "":
                     impted += 1
-                    add(*row, type, impd)
-    if impted == 0:
-        print("    no cards imported. maybe enter a separator or check impt.txt?")
+                    add(row, "", type, impd)
+        if impted == 0:
+            print("    no cards imported. maybe enter a separator or check impt.txt?")
+        else:
+            print(f"    {impted} card(s) added (including duplicates).")
+
+def expt():
+    print("")
+
+    path = qpath()
+    writer = open('expt.txt', 'w')
+     
+    separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
+    separator = separator.replace(r"\t", "\t")
+    separator = separator.replace(r"\n", "\n")    
+
+    if path[1] == "misc":
+        for subd in deck[path[0]]:
+            for x in deck[path[0]][subd]["misc"]:
+                writer.write(x.term + separator + x.defin)
     else:
-        print(f"    {impted} card(s) added (including duplicates).")
-   
+        for x in deck[path[0]][path[1]]["misc"]:
+            writer.write(x.term + separator + x.defin)
 # LEARN
 def learn():
     # initialise vars
@@ -804,13 +820,8 @@ def settings():
                         deck[path[0]][path[1]]["options"] = vars
                         save()
 
-<<<<<<< Updated upstream
                         f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')
                         f.write(json.dumps(dic, default=str))
-=======
-                        f = open(os.getcwd()+'/.mnakdata/deck.mnak', 'w')["cards"]
-                        f.write(json.dumps(dic))
->>>>>>> Stashed changes
 
 def preferences():
     while 1: 
