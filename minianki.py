@@ -516,15 +516,20 @@ def learn():
             # converts links  to images if possible
             def findmedia(url):
                 plt.plot_size(plt.tw()/2, plt.th()/2)
-                for x in re.search("(?P<url>https?://[^\s]+)", url).groups():
-                    path = '.mnakdata/media'
-                    try:
-                        plt.image_plot(path)
-                        plt.show()
-                    except:
-                        pass
-                    plt.delete_file(path)
-                    url = url.replace(x, "")
+                if re.search(r"(?P<url>https?://[^\s]+)", url) != None:
+                    for x in re.search(r"(?P<url>https?://[^\s]+)", url).groups():
+                        for ext in ['JPG', 'PNG', 'GIF', 'WEBP', 'TIFF', 'PSD', 'RAW', 'BMP', 'HEIF', 'INDD', 'JPEG']:
+                            if x[-len(ext):] == ext.lower():
+                                path = '.mnakdata/media'
+                                try:
+                                    plt.download(x, path)
+                                    plt.image_plot(path)
+                                except:
+                                    pass
+                                else:
+                                    plt.show()
+                                plt.delete_file(path)
+                                url = url.replace(x, "")
                 return url
 
             # prompting user
