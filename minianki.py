@@ -402,7 +402,7 @@ def add(term, defin, type, impd):
 def impt():
     print("")
     # make a deck
-    reader = open('impt.txt', 'r').readlines()
+    reader = open(os.getcwd()+'/imex/impt.txt', 'r').readlines()
 
     while 1:
         type = input("    enter card type ('basic', 'basic and reversed' or 'cloze'). ")
@@ -441,7 +441,7 @@ def expt():
     print("")
 
     path = qpath()
-    writer = open('expt.txt', 'w')
+    writer = open(os.getcwd()+'/imex/expt.txt', 'w')
      
     separator = input(r"    enter your separator: (default separator is four spaces, enter \t for tab and \n for newline) ")
     separator = separator.replace(r"\t", "\t")
