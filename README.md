@@ -1,3 +1,5 @@
+**minianki has been archived. no further progress will be made on this project.**
+
 # minianki
 
 an unofficial CLI version of anki.
